@@ -1,10 +1,14 @@
 #!/usr/bin/env julia
+import Pkg
+# Pkg.add("QuadGK")
+
 import FFTW
 import Plots
 import Random
 import Statistics
 import SparseArrays
 import LinearAlgebra
+import QuadGK
 
 sparse = SparseArrays
 linalg = LinearAlgebra
@@ -15,11 +19,15 @@ sym = PyCall.pyimport("sympy")
 # PHYSICAL PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ, β = .01, 1;
+# γ, β = .01, 1;
+γ, β = 100, 2;
 
 # Potential and its derivative
-V = q -> (1 .- cos.(q) .- sin.(3*q))/2;
+V = q -> (1 .- cos.(q))/2;
 dV = q -> sin.(q)/2;
+
+# Normalization constant
+Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1]
 
 # CONSTRUCTION OF THE STIFFNESS MATRIX {{{1
 # Number of Fourier and Hermite modes
@@ -27,10 +35,10 @@ dV = q -> sin.(q)/2;
 # Bounds of the index space, taken to be a square
 # ωmax is the number of Fourier modes and
 # L is the number of Hermite modes
-ωmax, dmax, = 10, 10;
+ωmax, dmax = 30, 60;
 
 # FOURIER TOOLS {{{1
-function series(func)
+function flat_fourier(func)
     ngrid = 1 + 2*ωmax;
     qgrid = (2π/ngrid)*collect(0:ngrid-1);
     result = (1/ngrid) * FFTW.fft(func(qgrid))
@@ -75,23 +83,23 @@ end
 function to_sin_cos()
     len = 2*ωmax + 1
     result = zeros(Complex, len, len)
-    result[1, ωmax + 1] = 1
+    result[1,ωmax+1] = sqrt(2π)
     # Constant, sin(x), cos(x), sin(2x), cos(2x)…
     for ω in 1:ωmax
-        result[1+2*ω, ωmax+1-ω] += 1
-        result[1+2*ω-1, ωmax+1-ω] += -im
-        result[1+2*ω, ωmax+1+ω] += 1
-        result[1+2*ω-1, ωmax+1+ω] += im
+        result[1+2*ω, ωmax+1-ω] += sqrt(π)
+        result[1+2*ω-1, ωmax+1-ω] += -im*sqrt(π)
+        result[1+2*ω, ωmax+1+ω] += 1*sqrt(π)
+        result[1+2*ω-1, ωmax+1+ω] += im*sqrt(π)
     end
     return result
 end
 
-# Change of basis
+# Change of basis (normalization constants cancel out)
 T = to_sin_cos();
 T¯¹ = inv(T);
 
 # Fourier series of dV
-dVf = series(dV);
+dVf = flat_fourier(dV);
 
 # Differentiation operator
 Q = real(T*(prod_operator(β/2*dVf) + diff_operator())*T¯¹);
@@ -112,13 +120,13 @@ end
 # This determines the map for going from multidimensional to linear indices an
 # back. This will need to be optimized at some point if we want to reduce the
 # stiffness matrix bandwidth.
-K, L = 1 + 2*ωmax, 1 + dmax
-multi_indices = zeros(Int, K*L, 2);
-lin_indices = zeros(Int, K, L);
+Nq, Np = 1 + 2*ωmax, 1 + dmax
+multi_indices = zeros(Int, Nq*Np, 2);
+lin_indices = zeros(Int, Nq, Np);
 
 lin_index = 1;
-for k in 1:K
-    for l in 1:L
+for k in 1:Nq
+    for l in 1:Np
         multi_indices[lin_index,:] = [k l];
         lin_indices[k, l] = lin_index;
         lin_index += 1;
@@ -162,9 +170,34 @@ function tensorize(qmat, pmat)
     return sparse.sparse(R, C, V, np*nq, np*nq);
 end
 
+function tensorize_vecs(qvec, pvec)
+    result = zeros(Nq*Np)
+    for i in 1:(Nq*Np)
+        iq, ip = multi_indices[i, 1], multi_indices[i, 2]
+        result[i] = qvec[iq]*pvec[ip]
+    end
+    return result
+end
+
 # Assemble the generator
 I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
-L = (1/β)*(tensorize(Q, P') - tensorize(Q', P) + γ*tensorize(I, N));
+L = (1/β)*(tensorize(Q, P') - tensorize(Q', P)) + γ*tensorize(I, N);
+
+# Right-hand side
+one_q = real(T*flat_fourier(q -> exp.(-β*V(q)/2)/sqrt(Zν)))
+rhs_p = zeros(Np); rhs_p[2] = 1/sqrt(β)
+one_p = zeros(Np); one_p[1] = 1;
+rhs = tensorize_vecs(one_q, rhs_p)
+u = tensorize_vecs(one_q, one_p)
+
+# Matrix
+A = [[L u]; [u' 0]]
+b = [rhs; 0]
+
+# Effective diffusion
+# D = (Array(L)\rhs)'rhs
+solution = (Array(A)\b)[1:end-1]
+D = solution'rhs
 
 # MONTE CARLO METHOD {{{1
 
@@ -175,11 +208,11 @@ L = (1/β)*(tensorize(Q, P') - tensorize(Q', P) + γ*tensorize(I, N));
 function sample_gibbs(np)
     p = (1/sqrt(β)) * Statistics.randn(np);
     q, naccepts = zeros(Float64, np), 0;
-    maxρ = exp(-V(pi));
+    maxρ = exp(-β*V(pi));
     while naccepts < length(q)
         proposal = - pi + 2*pi*Statistics.rand();
         u = Statistics.rand();
-        if v <= exp(-V(proposal))/exp(-V(0))
+        if v <= exp(-β*V(proposal))/exp(-β*V(0))
             naccepts += 1;
             q[naccepts] = u;
         end

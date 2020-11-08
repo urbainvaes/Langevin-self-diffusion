@@ -1,6 +1,8 @@
 #!/usr/bin/env julia
-import Pkg
+# import Pkg
 # Pkg.add("QuadGK")
+# Pkg.add("SpecialFunctions")
+# Pkg.add("Elliptic")
 
 import FFTW
 import Plots
@@ -16,11 +18,11 @@ linalg = LinearAlgebra
 import PyCall
 sym = PyCall.pyimport("sympy")
 
-# PHYSICAL PARAMETERS {{{1
+# PARAMETERS {{{1
 
 # Friction and inverse temperature
 # γ, β = .01, 1;
-γ, β = 100, 2;
+γ, β = .005, 1;
 
 # Potential and its derivative
 V = q -> (1 .- cos.(q))/2;
@@ -29,13 +31,22 @@ dV = q -> sin.(q)/2;
 # Normalization constant
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1]
 
-# CONSTRUCTION OF THE STIFFNESS MATRIX {{{1
-# Number of Fourier and Hermite modes
+# Numerical parameters
+p = 200
 
-# Bounds of the index space, taken to be a square
-# ωmax is the number of Fourier modes and
-# L is the number of Hermite modes
-ωmax, dmax = 30, 60;
+# ωmax is the highest frequency of trigonometric functions in q and
+# dmax is the highest degree of Hermite polynomials in p
+ωmax, dmax = p, p*2;
+
+# UNDERDAMPED LIMIT {{{1
+import SpecialFunctions
+import Elliptic
+
+inf = 100
+Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besselj(0, β/2)
+S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z)
+integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1]
+diffusion_underdamped = (1/Zb)*(1/β)*8*π^2*integral
 
 # FOURIER TOOLS {{{1
 function flat_fourier(func)
@@ -135,7 +146,7 @@ end
 
 function toCOO(matCSC)
     size_vecs = length(matCSC.nzval);
-    R, C, V = zeros(Integer, size_vecs), zeros(Integer, size_vecs), zeros(size_vecs)
+    R, C, V = zeros(Int, size_vecs), zeros(Int, size_vecs), zeros(size_vecs)
     for (c, i) in enumerate(matCSC.colptr[1:end-1])
         centries = matCSC.colptr[c + 1] - matCSC.colptr[c]
         for z in 0:(centries-1)
@@ -155,8 +166,8 @@ function tensorize(qmat, pmat)
     pmat = sparse.sparse(pmat);
     (Rq, Cq, Vq, np, _) = toCOO(qmat);
     (Rp, Cp, Vp, nq, _) = toCOO(pmat);
-    R = zeros(Integer, length(Vp)*length(Vq));
-    C = zeros(Integer, length(Vp)*length(Vq));
+    R = zeros(Int, length(Vp)*length(Vq));
+    C = zeros(Int, length(Vp)*length(Vq));
     V = zeros(length(Vp)*length(Vq));
     counter = 1;
     for i in 1:length(Rq)
@@ -184,19 +195,19 @@ I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
 L = (1/β)*(tensorize(Q, P') - tensorize(Q', P)) + γ*tensorize(I, N);
 
 # Right-hand side
-one_q = real(T*flat_fourier(q -> exp.(-β*V(q)/2)/sqrt(Zν)))
-rhs_p = zeros(Np); rhs_p[2] = 1/sqrt(β)
+one_q = real(T*flat_fourier(q -> exp.(-β*V(q)/2)/sqrt(Zν)));
+rhs_p = zeros(Np); rhs_p[2] = 1/sqrt(β);
 one_p = zeros(Np); one_p[1] = 1;
-rhs = tensorize_vecs(one_q, rhs_p)
-u = tensorize_vecs(one_q, one_p)
+rhs = tensorize_vecs(one_q, rhs_p);
+u = tensorize_vecs(one_q, one_p);
 
 # Matrix
-A = [[L u]; [u' 0]]
-b = [rhs; 0]
+A = [[L u]; [u' 0]];
+b = [rhs; 0];
 
 # Effective diffusion
 # D = (Array(L)\rhs)'rhs
-solution = (Array(A)\b)[1:end-1]
+solution = (A\b)[1:end-1];
 D = solution'rhs
 
 # MONTE CARLO METHOD {{{1

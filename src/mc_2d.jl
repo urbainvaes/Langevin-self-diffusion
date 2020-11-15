@@ -1,15 +1,11 @@
 #!/usr/bin/env julia
 # import Pkg
-# Pkg.add("QuadGK")
 # Pkg.add("SpecialFunctions")
 # Pkg.add("Elliptic")
 
-import FFTW
 import Plots
 import Random
 import Statistics
-import SparseArrays
-import LinearAlgebra
 import QuadGK
 
 sparse = SparseArrays;
@@ -22,7 +18,7 @@ sym = PyCall.pyimport("sympy");
 
 # Friction and inverse temperature
 # γ, β = .01, 1;
-γ, β = .001, 1;
+γ, β = .1, 1;
 
 # Potential and its derivative
 V = q -> (1 .- cos.(q))/2;
@@ -46,7 +42,7 @@ Es = E₀:Estep:Einf
 
 function ∇p_φ₀(q, p)
     E = V(q) + p*p/2
-    E > 1 ? sign(p)*p*2π/S(E) : 0
+    E > E₀ ? sign(p)*p*2π/S(E) : 0
 end
 
 # MONTE CARLO METHOD {{{1
@@ -60,10 +56,9 @@ function sample_gibbs(np)
     q, naccepts = zeros(Float64, np), 0;
     maxρ = exp(-β*V(pi));
     while naccepts < length(q)
-        proposal = - pi + 2*pi*Statistics.rand();
         v = Statistics.rand()
         u = -π + 2π*Statistics.rand();
-        if v <= exp(-β*V(proposal))/exp(-β*V(0))
+        if v <= exp(-β*V(u))/exp(-β*V(0))
             naccepts += 1;
             q[naccepts] = u;
         end
@@ -76,7 +71,7 @@ np = 1000;
 
 # Time step and final time
 Δt = .01;
-tf = 500;
+tf = 200;
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);
@@ -127,8 +122,13 @@ q2 = broadcast(*, q - q0, q - q0);
 # Estimation of the effective diffusion
 D = Statistics.mean(q2) / (2*tf)
 
+Statistics.var(q - q0) / (2*tf)
+Statistics.var(q - q0 - ξ) / (2*tf)
+
 # Estimation of the effective diffusion with control variate
 D = (1/γ)*Du - (1/γ)*Statistics.mean(ξ.^2)/tf + Statistics.mean((q - q0).^2)/(2*tf)
 
-# Plots.plot(q)
-Plots.histogram(q0)
+Plots.histogram((q - q0)/sqrt(tf), bins=10)
+# Plots.histogram(q0, bins=-π:(π/10):π)
+# Plots.histogram(p0, bins=20)
+

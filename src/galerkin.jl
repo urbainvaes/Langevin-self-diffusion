@@ -1,13 +1,4 @@
-#!/usr/bin/env julia
-# import Pkg
-# Pkg.add("QuadGK")
-# Pkg.add("SpecialFunctions")
-# Pkg.add("Elliptic")
-
 import FFTW
-import Plots
-import Random
-import Statistics
 import SparseArrays
 import LinearAlgebra
 import QuadGK
@@ -22,7 +13,7 @@ sym = PyCall.pyimport("sympy");
 
 # Friction and inverse temperature
 # γ, β = .01, 1;
-γ, β = 1, 1;
+γ, β = .01, 1;
 
 # Potential and its derivative
 V = q -> (1 .- cos.(q))/2;
@@ -32,11 +23,11 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 5;
+p = 500;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
-ωmax, dmax = p, p*2;
+ωmax, dmax = p÷4, p*2;
 
 # FOURIER TOOLS {{{1
 function flat_fourier(func)
@@ -108,8 +99,8 @@ Q = real(T*(prod_operator(β/2*dVf) + diff_operator())*T¯¹);
 # Identity matrix
 
 # HERMITE TOOLS {{{1
-P = zeros(dmax + 1, dmax + 1)
-N = zeros(dmax + 1, dmax + 1)
+P = zeros(dmax + 1, dmax + 1);
+N = zeros(dmax + 1, dmax + 1);
 for d in 1:dmax
     i = d + 1
     P[i-1, i] = sqrt(β*d)

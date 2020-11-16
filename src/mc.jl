@@ -57,7 +57,6 @@ end
 function sample_gibbs(np)
     p = (1/sqrt(β)) * Statistics.randn(np);
     q, naccepts = zeros(Float64, np), 0;
-    maxρ = exp(-β*V(pi));
     while naccepts < length(q)
         v = Statistics.rand()
         u = -π + 2π*Statistics.rand();
@@ -70,11 +69,11 @@ function sample_gibbs(np)
 end
 
 # Number of particles
-np = 100;
+np = 1000;
 
 # Time step and final time
 Δt = .01;
-tf = 100000;
+tf = 1000000;
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);
@@ -98,41 +97,45 @@ end
 mean_q² = zeros(niter)
 times = Δt*(1:niter) |> collect
 
+nsave = 100
+qsave = zeros(nsave, np)
+qsave[0, :] = q0
+
 # Integrate the evolution
 for i = 1:niter
-    if i % (niter ÷ 100) == 0
-        print("Pogress: ", (100*i) ÷ niter, "%. ")
-        f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
-        println("D = ", f.coeffs[2] / 2)
-    end
     global p, q
     method = "geometric_langevin"
+
     if method == "geometric_langevin"
         # Generate Gaussian increments
         gaussian_increments = rt_cov*Random.randn(2, np)
         Δw, gs = gaussian_increments[1, :], gaussian_increments[2, :]
 
-        # Control variate
         ξ += ∇p_φ₀.(q, p) .* Δw
-
-        # Geometric Langevin
         p += - (Δt/2)*dV(q);
         q += Δt*p;
         p += - (Δt/2)*dV(q);
         p = α*p + sqrt(2γ/β)*gs
+
     elseif method == "euler_maruyama"
         Δw = sqrt(Δt)*Random.randn(np);
 
-        # Euler-Maruyama for ξ
         ξ += ∇p_φ₀.(q, p) .* Δw
-        # ξ += p .* Δw
-
-        # Euler-Maruyama for (q, p)
         q += Δt*p;
         p += - Δt*dV(q) - Δt*γ*p + Δw*sqrt(2*γ/β)
     end
 
     mean_q²[i] = Statistics.mean((q-q0).^2)
+
+    if i % (niter ÷ nsave) == 0
+        qsave[i ÷ (niter ÷ nsave), :] = q
+    end
+
+    if i % (niter ÷ 100) == 0
+        print("Pogress: ", (100*i) ÷ niter, "%. ")
+        f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
+        println("D = ", f.coeffs[2] / 2)
+    end
 end
 
 # Check energy conservation is Δt²

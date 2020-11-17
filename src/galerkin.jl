@@ -6,14 +6,11 @@ import QuadGK
 sparse = SparseArrays;
 linalg = LinearAlgebra;
 
-import PyCall
-sym = PyCall.pyimport("sympy");
-
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-# γ, β = .01, 1;
-γ, β = .001, 1;
+γ, β = .01, 1;
+# γ, β = .001, 1;
 
 # Potential and its derivative
 V = q -> (1 .- cos.(q))/2;
@@ -23,7 +20,7 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 200;
+p = 300;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p

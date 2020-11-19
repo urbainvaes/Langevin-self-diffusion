@@ -8,22 +8,23 @@ import LinearAlgebra
 import DelimitedFiles
 import Printf
 linalg = LinearAlgebra;
-include("src/lib.jl")
+include("lib.jl")
 
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-β, γ = 1, .001
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
+β = 1  # β always 1!
 
 # Parse the files
 datadir = "data/γ=$γ/"
 listfiles = readdir(datadir);
 index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
-q0file = filter(s -> contains(s, r"q0.txt"), listfiles)[1];
-p0file = filter(s -> contains(s, r"p0.txt"), listfiles)[1];
-qfiles = filter(s -> contains(s, r"Δt=0.01-i=.*q.txt"), listfiles);
-pfiles = filter(s -> contains(s, r"Δt=0.01-i=.*p.txt"), listfiles);
-ξfiles = filter(s -> contains(s, r"Δt=0.01-i=.*ξ.txt"), listfiles);
+q0file = filter(s -> occursin(r"q0.txt", s), listfiles)[1];
+p0file = filter(s -> occursin(r"p0.txt", s), listfiles)[1];
+qfiles = filter(s -> occursin(r"Δt=0.01-i=.*q.txt", s), listfiles);
+pfiles = filter(s -> occursin(r"Δt=0.01-i=.*p.txt", s), listfiles);
+ξfiles = filter(s -> occursin(r"Δt=0.01-i=.*ξ.txt", s), listfiles);
 qfiles = sort(qfiles, by=index);
 pfiles = sort(pfiles, by=index);
 ξfiles = sort(ξfiles, by=index);

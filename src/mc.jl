@@ -4,7 +4,7 @@ import Statistics
 import Polynomials
 import QuadGK
 import DelimitedFiles
-include("src/lib.jl")
+include("lib.jl")
 
 # PARAMETERS {{{1
 
@@ -13,6 +13,7 @@ include("src/lib.jl")
 β = 1;
 
 # Create directory for data
+run(`rm -rf "data/γ=$γ"`)
 run(`mkdir -p "data/γ=$γ"`)
 
 # Potential and its derivative
@@ -25,11 +26,11 @@ dV(q) = sin(q)/2;
 Random.seed!(0);
 
 # Number of particles
-np = 1000;
+np = 5000;
 
 # Time step and final time
 Δt = .01;
-tf = ceil(Int, 10/γ);
+tf = ceil(Int, 100/γ);
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);

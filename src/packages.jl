@@ -9,6 +9,8 @@ dependencies = [
     "SparseArrays",
     "LinearAlgebra",
     "Polynomials",
+    "SpecialFunctions",
+    "Elliptic",
     "Plotly",
 ]
 

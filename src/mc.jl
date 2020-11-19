@@ -3,22 +3,16 @@
 import Plots
 import Random
 import Statistics
-import SparseArrays
-import LinearAlgebra
-import QuadGK
 import Polynomials
-
-sparse = SparseArrays;
+import QuadGK
+import LinearAlgebra
 linalg = LinearAlgebra;
-
-import PyCall
-sym = PyCall.pyimport("sympy");
 
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-# γ, β = .01, 1;
-γ, β = .0001, 1;
+γ, β = 1, 1;
+# γ, β = .0001, 1;
 
 # Potential and its derivative
 V = q -> (1 .- cos.(q))/2;
@@ -73,7 +67,8 @@ np = 1000;
 
 # Time step and final time
 Δt = .01;
-tf = 1000000;
+tf = 100;
+# tf = 1000000;
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);
@@ -99,7 +94,7 @@ times = Δt*(1:niter) |> collect
 
 nsave = 100
 qsave = zeros(nsave, np)
-qsave[0, :] = q0
+qsave[1, :] = q0
 
 # Integrate the evolution
 for i = 1:niter
@@ -117,7 +112,7 @@ for i = 1:niter
         p += - (Δt/2)*dV(q);
         p = α*p + sqrt(2γ/β)*gs
 
-    elseif method == "euler_maruyama"
+    elseif method == "simpler_splitting"
         Δw = sqrt(Δt)*Random.randn(np);
 
         ξ += ∇p_φ₀.(q, p) .* Δw
@@ -131,10 +126,16 @@ for i = 1:niter
         qsave[i ÷ (niter ÷ nsave), :] = q
     end
 
-    if i % (niter ÷ 100) == 0
-        print("Pogress: ", (100*i) ÷ niter, "%. ")
+    if i % (niter ÷ 1000) == 0
+        print("Pogress: ", (1000*i) ÷ niter, "‰. ")
         f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
-        println("D = ", f.coeffs[2] / 2)
+        D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
+        D2 = f.coeffs[2] / 2
+        D3 = (1/γ)*Du - (1/γ)*Statistics.mean(ξ.^2)/(i*Δt) + D1
+        println("D₁ = ", D1, " D₂ = ", D2, " D₃ = ", D3)
+
+        # Estimation of the effective diffusion with control variate
+        D = (1/γ)*Du - (1/γ)*Statistics.mean(ξ.^2)/tf + Statistics.mean((q - q0).^2)/(2*tf)
     end
 end
 

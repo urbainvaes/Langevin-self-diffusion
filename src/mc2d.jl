@@ -12,16 +12,16 @@ include("src/lib.jl")
 
 # Friction and inverse temperature
 γ, β, α = 0, 1, 1;
-γ, β, α = 1, 1, 0;
+γ, β, α = .01, 1, .64;
 
 # Potential and its derivative
 V = (q₁, q₂) -> - cos(q₁)/2 - cos(q₂)/2 - α*cos(q₁)*cos(q₂);
 d₁V = (q₁, q₂) -> sin(q₁)/2 + α*sin(q₁)*cos(q₂);
 d₂V = (q₁, q₂) -> sin(q₂)/2 + α*cos(q₁)*sin(q₂);
 
-V = (q₁, q₂) -> - cos(q₁)/2 - cos(q₂)/2;
-d₁V = (q₁, q₂) -> sin(q₁)/2;
-d₂V = (q₁, q₂) -> sin(q₂)/2;
+# V = (q₁, q₂) -> - cos(q₁)/2 - cos(q₂)/2;
+# d₁V = (q₁, q₂) -> sin(q₁)/2;
+# d₂V = (q₁, q₂) -> sin(q₂)/2;
 
 # V = (q₁, q₂) -> - cos(q₁)/2 - cos(q₂)/2
 # d₁V = (q₁, q₂) -> sin(q₁)/2
@@ -50,7 +50,7 @@ np = 5000;
 
 # Time step and final time
 Δt = .01;
-tf = 1000;
+tf = 100;
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);
@@ -71,8 +71,8 @@ elseif γ == 0
 end
 
 # Track q2 at each iteration
-mean_q² = zeros(niter)
-times = Δt*(1:niter) |> collect
+mean_q² = zeros(niter);
+times = Δt*(1:niter) |> collect;
 
 # nsave = 100
 # qsave = zeros(nsave, np)
@@ -107,7 +107,7 @@ for i = 1:niter
     # if i % (niter ÷ nsave) == 0
     #     qsave[i ÷ (niter ÷ nsave), :] = q
     # end
-    nprints = 100
+    nprints = 1000
     if i % (niter ÷ nprints) == 0
         D = (q - q0)' * (q - q0) / np
         print("Pogress: ", (nprints*i) ÷ niter, "‰.")

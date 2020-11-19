@@ -57,7 +57,6 @@ Du = diff_underdamped(β);
 # Covariance matrix of (Δw, ∫ e¯... dW)
 rt_cov = root_cov(γ, Δt);
 
-
 # Integrate the evolution
 for i = 1:niter
     global p, q, ξ

@@ -77,10 +77,10 @@ linalg = LinearAlgebra;
 
 function root_cov(γ, Δt)
     α = exp(-γ*Δt)
-    if γ > 0
-        cov = [Δt (1-α)/γ; (1-α)/γ (1-α*α)/(2γ)];
+    cov = [Δt (1-α)/γ; (1-α)/γ (1-α*α)/(2γ)];
+    if linalg.isposdef(cov)
         rt_cov = (linalg.cholesky(cov).L);
-    elseif γ == 0
+    else
         rt_cov = sqrt(Δt)*[1 0; 1 0];
     end
     return rt_cov

@@ -48,9 +48,28 @@ end
 
 # CONTROL VARIATE {{{1
 function ∇p_φ₀(q, p)
+    E₀ = 1
     E = V(q) + p*p/2
+    S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
     E > E₀ ? sign(p)*p*2π/S(E) : 0
 end
+
+# This takes vectors!
+import DifferentialEquations
+import Elliptic
+
+function solution_underdamped()
+    E₀ = 1
+    S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
+    diff(u, p, t) = t < E₀ ? 0 : 2π/S(t)
+    prob = DifferentialEquations.ODEProblem(diff, 0, (0, 100))
+    sol = DifferentialEquations.solve(prob, reltol=1e-14, abstol=1e-14)
+    V(q) = (1 - cos(q))/2;
+
+    # This takes vectors
+    φ0(q, p) = p > 0 ? sol(V(q) + p*p/2) : - sol(V(q) + p*p/2)
+end
+
 
 # COVARIANCE MATRIX BETWEEN Δw AND OU GAUSSIAN INCREMENTS {{{1
 import LinearAlgebra

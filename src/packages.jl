@@ -20,6 +20,7 @@ dependencies = [
     "Elliptic",
     "Plotly",
     "DelimitedFiles",
+    "DifferentialEquations"
 ]
 
 Pkg.add(dependencies)

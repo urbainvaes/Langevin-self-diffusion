@@ -13,8 +13,9 @@ include("lib.jl")
 β = 1;
 
 # Create directory for data
-run(`rm -rf "data/γ=$γ"`)
-run(`mkdir -p "data/γ=$γ"`)
+datadir = "data/γ=$γ"
+run(`rm -rf "$datadir"`)
+run(`mkdir -p "$datadir"`)
 
 # Potential and its derivative
 V(q) = (1 - cos(q))/2;
@@ -42,9 +43,9 @@ q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Track q2 at each iteration
 mean_q² = zeros(niter);
-DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-mean_q2.txt", "");
-DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-q0.txt", q0)
-DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-p0.txt", p0)
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-mean_q2.txt", "");
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
 times = Δt*(1:niter) |> collect;
 nsave = 1000;
@@ -73,10 +74,10 @@ for i = 1:niter
 
     mean_q²[i] = Statistics.mean((q-q0).^2)
     if i % nslice == 0
-        DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-i=$i-p.txt", p)
-        DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-i=$i-q.txt", q)
-        DelimitedFiles.writedlm("data/γ=$γ/Δt=$Δt-i=$i-ξ.txt", ξ)
-        open("data/γ=$γ/Δt=$Δt-mean_q2.txt", "a") do io
+        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
+        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
+        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
+        open("$datadir/Δt=$Δt-mean_q2.txt", "a") do io
             DelimitedFiles.writedlm(io, mean_q²[i-nslice+1:i])
         end
         print("Pogress: ", (1000*i) ÷ niter, "‰. ")

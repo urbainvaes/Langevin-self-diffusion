@@ -47,10 +47,11 @@ function diff_underdamped(β)
 end
 
 # CONTROL VARIATE {{{1
+E₀ = 1
+V_1d(q) = (1 - cos(q))/2;
+S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
 function ∇p_φ₀(q, p)
-    E₀ = 1
-    E = V(q) + p*p/2
-    S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
+    E = V_1d(q) + p*p/2
     E > E₀ ? sign(p)*p*2π/S(E) : 0
 end
 

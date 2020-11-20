@@ -32,3 +32,6 @@ q2 = q*q
 # Estimation of the effective diffusion
 D = numpy.mean(q2) / (2*tf)
 print(D)
+[200~q = numpy.zeros(np)[201~
+[200~q = numpy.zeros(np)[201~
+[200~np = 10**3[201~

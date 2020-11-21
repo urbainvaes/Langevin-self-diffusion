@@ -1,4 +1,18 @@
 # SAMPLE FROM THE GIBBS DISTRIBUTION {{{1
+function sample_gibbs(V, β, np)
+    p = (1/sqrt(β)) * Statistics.randn(np);
+    q, naccepts = zeros(Float64, np), 0;
+    while naccepts < length(q)
+        v = Statistics.rand()
+        u = -π + 2π*Statistics.rand();
+        if v <= exp(-β*V(u))/exp(-β*V(0))
+            naccepts += 1;
+            q[naccepts] = u;
+        end
+    end
+    return q, p
+end
+
 function sample_gibbs_2d(V, β, np)
     p₁ = (1/sqrt(β)) * Statistics.randn(np);
     p₂ = (1/sqrt(β)) * Statistics.randn(np);
@@ -30,4 +44,45 @@ function diff_underdamped(β)
     S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
     integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1];
     Du = (1/Zb)*(1/β)*8*π^2*integral;
+end
+
+# CONTROL VARIATE {{{1
+E₀ = 1
+V_1d(q) = (1 - cos(q))/2;
+S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
+function ∇p_φ₀(q, p)
+    E = V_1d(q) + p*p/2
+    E > E₀ ? sign(p)*p*2π/S(E) : 0
+end
+
+# This takes vectors!
+import DifferentialEquations
+import Elliptic
+
+function solution_underdamped()
+    E₀ = 1
+    S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
+    diff(u, p, t) = t < E₀ ? 0 : 2π/S(t)
+    prob = DifferentialEquations.ODEProblem(diff, 0, (0, 100))
+    sol = DifferentialEquations.solve(prob, reltol=1e-14, abstol=1e-14)
+    V(q) = (1 - cos(q))/2;
+
+    # This takes vectors
+    φ0(q, p) = p > 0 ? sol(V(q) + p*p/2) : - sol(V(q) + p*p/2)
+end
+
+
+# COVARIANCE MATRIX BETWEEN Δw AND OU GAUSSIAN INCREMENTS {{{1
+import LinearAlgebra
+linalg = LinearAlgebra;
+
+function root_cov(γ, Δt)
+    α = exp(-γ*Δt)
+    cov = [Δt (1-α)/γ; (1-α)/γ (1-α*α)/(2γ)];
+    if linalg.isposdef(cov)
+        rt_cov = (linalg.cholesky(cov).L);
+    else
+        rt_cov = sqrt(Δt)*[1 0; 1 0];
+    end
+    return rt_cov
 end

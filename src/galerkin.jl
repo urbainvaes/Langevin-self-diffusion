@@ -9,7 +9,7 @@ linalg = LinearAlgebra;
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ, β = .01, 1;
+γ, β = .001, 1;
 # γ, β = .001, 1;
 
 # Potential and its derivative

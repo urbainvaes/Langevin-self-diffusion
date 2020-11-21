@@ -5,13 +5,14 @@ import Polynomials
 import QuadGK
 import DelimitedFiles
 import Printf
-include("src/lib.jl")
+include("lib.jl")
 
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-δ, β = .2, 1;
+δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .2;
+β = 1;
 
 # Create directory for data
 datadir = "data2d/γ=$γ-δ=$δ"

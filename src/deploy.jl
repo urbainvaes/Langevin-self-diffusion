@@ -5,6 +5,7 @@ end
 γs = round.(logspace(-3, 0, 10), sigdigits=3)
 
 
+δ = .04
 for γ in γs
-    run(`tmux new-window -n "γ=$γ " julia mc.jl $γ`)
+    run(`tmux new-window -n "γ=$γ,δ=$δ " julia mc.jl $γ $δ`)
 end

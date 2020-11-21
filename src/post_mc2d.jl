@@ -52,7 +52,7 @@ for i in 1:length(indices)
     ξ = DelimitedFiles.readdlm(string(datadir, ξfiles[i]));
 
     println("Iteration: ", indices[i], ". ");
-    term11 = (q[:, 1] - q0[:, 1]).^2 / (2*i*Δt)
+    term11 = (q[:, 1] - q0[:, 1]).^2 / (2*time)
     term12 = (q[:, 1] - q0[:, 1]).*(q[:, 2] - q0[:, 2]) / (2*time)
     term22 = (q[:, 2] - q0[:, 2]).^2 / (2*time)
     D11 = Statistics.mean(term11)
@@ -74,9 +74,3 @@ for i in 1:length(indices)
     println(@Printf.sprintf("D₁₁ = %.3E, D₂₂ = %.3E, σ₁₁ = %.3E, σ₂₂ = %.3E",
                             D11, D22, σ11, σ22))
 end
-
-qend = DelimitedFiles.readdlm(string(datadir, qfiles[end]));
-pend = DelimitedFiles.readdlm(string(datadir, pfiles[end]));
-ξend = DelimitedFiles.readdlm(string(datadir, ξfiles[end]));
-control_end = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
-tend = indices[end]*Δt

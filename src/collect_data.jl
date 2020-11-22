@@ -104,19 +104,22 @@ for iγ in 1:length(γs)
             continue
         end
         data1, data2 = data;
-        println("Parameters: γ=$γ, δ=$δ, with and without control variate:");
+        println("Parameters: γ=$γ, δ=$δ, without and with control variate:");
         println(@Printf.sprintf("-> D₁₁ = %.3E, D₂₂ = %.3E, σ₁₁ = %.3E, σ₂₂ = %.3E",
                                 data1["D11"], data1["D22"], data1["σ11"], data1["σ22"]));
         println(@Printf.sprintf("-> D₁₁ = %.3E, D₂₂ = %.3E, σ₁₁ = %.3E, σ₂₂ = %.3E",
                                 data2["D11"], data2["D22"], data2["σ11"], data2["σ22"]));
         D11_wo[iγ, iδ] = data1["D11"];
-        D11_wi[iγ, iδ] = data2["σ11"];
-        σ11_wo[iγ, iδ] = data1["D11"];
+        D11_wi[iγ, iδ] = data2["D11"];
+        σ11_wo[iγ, iδ] = data1["σ11"];
         σ11_wi[iγ, iδ] = data2["σ11"];
     end
 end
 
-DelimitedFiles.writedlm("data_D11_wo.txt", D11_wo);
-DelimitedFiles.writedlm("data_σ11_wo.txt", σ11_wo);
-DelimitedFiles.writedlm("data_D11_wi.txt", σ11_wi);
-DelimitedFiles.writedlm("data_σ11_wi.txt", σ11_wi);
+run(`mkdir -p "data"`)
+DelimitedFiles.writedlm("data/data_D11_wo.txt", D11_wo);
+DelimitedFiles.writedlm("data/data_σ11_wo.txt", σ11_wo);
+DelimitedFiles.writedlm("data/data_D11_wi.txt", D11_wi);
+DelimitedFiles.writedlm("data/data_σ11_wi.txt", σ11_wi);
+DelimitedFiles.writedlm("data/data_γs.txt", γs);
+DelimitedFiles.writedlm("data/data_δs.txt", δs);

@@ -10,17 +10,13 @@ import Printf
 linalg = LinearAlgebra;
 include("lib.jl");
 
-γs = [.001, .00215, .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
-δs = [.04, .08, .16, .32, .64];
-β = 1;
-
 # Underdamped limit
+β = 1
 Du = diff_underdamped(β);
 φ₀ = solution_underdamped();
 
 function get_diffusion(γ, δ)
-    datadir = "data2d/γ=$γ-δ=$δ/"
-
+    datadir = δ == 0 ? "data/γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
     if !isdir(datadir)
         return -1
     end
@@ -48,6 +44,22 @@ function get_diffusion(γ, δ)
     indices = map(index, qfiles);
     tend = indices[end]*Δt
 
+    if δ == 0
+        # Without control
+        term = (qend - q0).^2 / (2*tend)
+        D = Statistics.mean(term)
+        σ = Statistics.std(term)
+        wout_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+
+        # With control
+        control = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
+        term = (1/γ)*Du .- control.^2 / (2*tend) + term
+        D = Statistics.mean(term)
+        σ = Statistics.std(term)
+        with_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+        return (wout_control, with_control)
+    end
+
     # Without control
     term11 = (qend[:, 1] - q0[:, 1]).^2 / (2*tend)
     term12 = (qend[:, 1] - q0[:, 1]).*(qend[:, 2] - q0[:, 2]) / (2*tend)
@@ -72,6 +84,13 @@ function get_diffusion(γ, δ)
 
     return (wout_control, with_control)
 end
+
+
+# Parameters
+γs = [.0001, .000215, .000464, .001, .00215, .00464,
+      .01, .0215, .0464, .1, .215, .464, 1.0];
+δs = [.0, .04, .08, .16, .32, .64];
+β = 1;
 
 D11_wo = zeros(length(γs), length(δs));
 σ11_wo, D11_wi, σ11_wi = copy(D11_wo), copy(D11_wo), copy(D11_wo);

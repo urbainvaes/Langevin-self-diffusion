@@ -11,6 +11,14 @@ D11_wo = np.loadtxt("data/data_D11_wo.txt")
 
 fig, ax = plt.subplots()
 for iδ, δ in enumerate(δs):
+    ax.loglog(γs, D11_wo[:, iδ], ".-")
+    ax.set_prop_cycle(None)
+    ax.loglog(γs, D11_wi[:, iδ], ".--")
+    ax.set_xlabel("$γ$")
+plt.show()
+
+fig, ax = plt.subplots()
+for iδ, δ in enumerate(δs):
     fig, ax = plt.subplots()
     ax.loglog(γs, σ11_wo[:, iδ], ".-")
     ax.set_prop_cycle(None)

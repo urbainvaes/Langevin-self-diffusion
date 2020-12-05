@@ -20,7 +20,7 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 300;
+p = 200;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
@@ -77,7 +77,7 @@ function to_sin_cos()
     for ω in 1:ωmax
         result[1+2*ω, ωmax+1-ω] += sqrt(π)
         result[1+2*ω-1, ωmax+1-ω] += -im*sqrt(π)
-        result[1+2*ω, ωmax+1+ω] += 1*sqrt(π)
+        result[1+2*ω, ωmax+1+ω] += sqrt(π)
         result[1+2*ω-1, ωmax+1+ω] += im*sqrt(π)
     end
     return result
@@ -166,6 +166,43 @@ function tensorize_vecs(qvec, pvec)
         result[i] = qvec[iq]*pvec[ip]
     end
     return result
+end
+
+function hermite_eval(dmax, p)
+    rec_a(d) = 1/sqrt(d+1)
+    rec_b(d) = sqrt(d)/sqrt(d+1)
+    result = zeros(dmax+1)
+    result[1] = 1
+    result[2] = p/sqrt(β)
+    for i in 2:dmax
+        result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-2)*result[i-1]
+    end
+    return result
+end
+
+function fourier_eval(ωmax, q)
+    result = zeros(2*ωmax + 1)
+    result[1] = 1/sqrt(2π)
+    z, r = 1, exp(q*1im)
+    for ω in 1:ωmax
+        z *= r
+        result[2ω] = real(z)/sqrt(π)
+        result[2ω + 1] = imag(z)/sqrt(π)
+    end
+    return result
+end
+
+function eval_series(series, q, p)
+    Nq, Np = 1 + 2*ωmax, 1 + dmax
+    multi_indices = zeros(Int, Nq*Np, 2);
+    lin_indices = zeros(Int, Nq, Np);
+    fevals = fourier_eval(ωmax, q)
+    hevals = hermite_eval(dmax, p)
+    result = 0
+    for i in length(series)
+        iq, ip = multi_indices[i]
+        result += series[i]*fevals[iq]*hevals[ip]
+    end
 end
 
 # Assemble the generator

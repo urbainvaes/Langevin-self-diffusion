@@ -9,7 +9,7 @@ linalg = LinearAlgebra;
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ, β = .1, 1;
+γ, β = 1, 1;
 # γ, β = .001, 1;
 
 # Potential and its derivative
@@ -20,7 +20,7 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 40;
+p = 20;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
@@ -210,6 +210,7 @@ end
 # Assemble the generator
 I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
 L = (1/β)*(tensorize(Q, P') - tensorize(Q', P)) + γ*tensorize(I, N);
+diffp =  tensorize(I, P)
 
 # Right-hand side
 one_q = real(T*flat_fourier(q -> exp.(-β*V(q)/2)/sqrt(Zν)));
@@ -225,6 +226,7 @@ b = [rhs; 0];
 # Effective diffusion
 # D = (Array(L)\rhs)'rhs
 solution = (A\b)[1:end-1];
+dp_solution = diffp*solution
 D = solution'rhs
 
 # Plot
@@ -233,15 +235,17 @@ dq, dp = 2π/nq, Lp/np;
 qgrid = -π .+ dq*collect(0:nq);
 pgrid = dp*collect(-np:np);
 solution_fun = eval_series(solution);
+dp_solution_fun = eval_series(dp_solution);
 
 # import Plots
 # Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
 
 q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
 p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
-values = solution_fun.(q, p);
+solution_values = solution_fun.(q, p);
+dp_solution_values = dp_solution_fun.(q, p);
 
-function bilinear_interpolant(q, p)
+function bilinear_interpolant(values, q, p)
     q = q - 2π*floor(Int, (q+π)/2π);
     if abs(p) >= Lp
         println("p is out of interpolation grid!")
@@ -256,4 +260,7 @@ function bilinear_interpolant(q, p)
     return a11 + a21*x + a12*y + a22*x*y
 end
 
-# Plots.contourf(5 .+ qgrid[2:end-1], pgrid[2:end-1], (q, p) -> bilinear_interpolant(q, p))
+φ(q, p) = bilinear_interpolant(solution_values, q, p)
+∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
+
+Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)

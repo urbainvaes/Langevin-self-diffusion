@@ -9,7 +9,7 @@ linalg = LinearAlgebra;
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ, β = .001, 1;
+γ, β = .1, 1;
 # γ, β = .001, 1;
 
 # Potential and its derivative
@@ -20,7 +20,7 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 200;
+p = 40;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
@@ -162,7 +162,7 @@ end
 function tensorize_vecs(qvec, pvec)
     result = zeros(Nq*Np)
     for i in 1:(Nq*Np)
-        iq, ip = multi_indices[i, 1], multi_indices[i, 2]
+        iq, ip = multi_indices[i, :]
         result[i] = qvec[iq]*pvec[ip]
     end
     return result
@@ -186,23 +186,25 @@ function fourier_eval(ωmax, q)
     z, r = 1, exp(q*1im)
     for ω in 1:ωmax
         z *= r
-        result[2ω] = real(z)/sqrt(π)
-        result[2ω + 1] = imag(z)/sqrt(π)
+        result[2ω] = imag(z)/sqrt(π)
+        result[2ω + 1] = real(z)/sqrt(π)
     end
-    return result
+    return result * sqrt(exp(V(q))*Zν)
 end
 
-function eval_series(series, q, p)
-    Nq, Np = 1 + 2*ωmax, 1 + dmax
-    multi_indices = zeros(Int, Nq*Np, 2);
-    lin_indices = zeros(Int, Nq, Np);
-    fevals = fourier_eval(ωmax, q)
-    hevals = hermite_eval(dmax, p)
-    result = 0
-    for i in length(series)
-        iq, ip = multi_indices[i]
-        result += series[i]*fevals[iq]*hevals[ip]
+function eval_series(series)
+    function result(q, p)
+        Nq, Np = 1 + 2*ωmax, 1 + dmax
+        fevals = fourier_eval(ωmax, q)
+        hevals = hermite_eval(dmax, p)
+        val = 0
+        for i in 1:length(series)
+            iq, ip = multi_indices[i,:]
+            val += series[i]*fevals[iq]*hevals[ip]
+        end
+        return val
     end
+    return result
 end
 
 # Assemble the generator
@@ -224,3 +226,34 @@ b = [rhs; 0];
 # D = (Array(L)\rhs)'rhs
 solution = (A\b)[1:end-1];
 D = solution'rhs
+
+# Plot
+nq, np, Lp = 100, 100, 5;
+dq, dp = 2π/nq, Lp/np;
+qgrid = -π .+ dq*collect(0:nq);
+pgrid = dp*collect(-np:np);
+solution_fun = eval_series(solution);
+
+# import Plots
+# Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
+
+q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
+p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
+values = solution_fun.(q, p);
+
+function bilinear_interpolant(q, p)
+    q = q - 2π*floor(Int, (q+π)/2π);
+    if abs(p) >= Lp
+        println("p is out of interpolation grid!")
+    end
+    iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
+    println(iq, " ", ip, " ", length(qgrid), " ", length(pgrid))
+    x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
+    a11 = values[iq, ip];
+    a21 = values[iq+1, ip] - values[iq, ip];
+    a12 = values[iq, ip+1] - values[iq, ip];
+    a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
+    return a11 + a21*x + a12*y + a22*x*y
+end
+
+# Plots.contourf(5 .+ qgrid[2:end-1], pgrid[2:end-1], (q, p) -> bilinear_interpolant(q, p))

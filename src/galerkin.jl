@@ -2,11 +2,12 @@ import FFTW
 import SparseArrays
 import LinearAlgebra
 import QuadGK
+import Plots
 
 sparse = SparseArrays;
 linalg = LinearAlgebra;
 
-function get_controls(γ, β, interpolant)
+function get_controls(V, dV, γ, β, interpolant)
     # PARAMETERS {{{1
 
     # Friction and inverse temperature
@@ -14,14 +15,14 @@ function get_controls(γ, β, interpolant)
     # γ, β = .001, 1;
 
     # Potential and its derivative
-    V = q -> (1 - cos(q))/2;
-    dV = q -> sin(q)/2;
+    # V = q -> (1 - cos(q))/2;
+    # dV = q -> sin(q)/2;
 
     # Normalization constant
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 50;
+    p = 100;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
@@ -93,8 +94,6 @@ function get_controls(γ, β, interpolant)
 
     # Differentiation operator
     Q = real(T*(prod_operator(β/2*dVf) + diff_operator())*T¯¹);
-
-    # Identity matrix
 
     # HERMITE TOOLS {{{1
     P = zeros(dmax + 1, dmax + 1);
@@ -212,7 +211,7 @@ function get_controls(γ, β, interpolant)
 
     # Assemble the generator
     I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
-    L = (1/β)*(tensorize(Q, P') - tensorize(Q', P)) + γ*tensorize(I, N);
+    minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
     diffp =  tensorize(I, P);
 
     # Right-hand side
@@ -223,7 +222,7 @@ function get_controls(γ, β, interpolant)
     u = tensorize_vecs(one_q, one_p);
 
     # Matrix
-    A = [[L u]; [u' 0]];
+    A = [[minusL u]; [u' 0]];
     b = [rhs; 0];
 
     # Effective diffusion
@@ -240,7 +239,7 @@ function get_controls(γ, β, interpolant)
     end
 
     # Plot
-    nq, np, Lp = 500, 500, 9;
+    nq, np, Lp = 100, 100, 9;
     dq, dp = 2π/nq, Lp/np;
     qgrid = -π .+ dq*collect(0:nq);
     pgrid = dp*collect(-np:np);

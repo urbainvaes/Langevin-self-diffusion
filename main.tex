@@ -1,0 +1,226 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{verbatim}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,latexsym}
+\usepackage{bbm}
+\usepackage{setspace}
+\usepackage{xparse}
+\usepackage{epstopdf}
+\usepackage{pgf}
+\usepackage[colorlinks=true,citecolor=blue]{hyperref}
+\usepackage[nameinlink,capitalise]{cleveref}
+
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.14}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{angles}
+\usetikzlibrary{quotes}
+\usetikzlibrary{external}
+
+\onehalfspacing
+% \setlength{\parskip}{6pt}
+
+\DeclareDocumentCommand\abs{s m} {\IfBooleanTF{#1}{\left|#2\right|}{\left|#2\right|}}
+\DeclareDocumentCommand\cont{o m o} {C\IfNoValueF{#1}{^{#1}}(#2\IfNoValueF{#3}{;#3})}
+\DeclareDocumentCommand\contc{o m o} {C_c\IfNoValueF{#1}{^{#1}}(#2\IfNoValueF{#3}{;#3})}
+\DeclareDocumentCommand\sobolev{m m o} {H^{#1}(#2 \IfNoValueF{#3}{,#3})}
+\DeclareDocumentCommand\lp{m m o} {L^{#1}\left(#2 \IfNoValueF{#3}{,#3}\right)}
+\DeclareDocumentCommand\norm{s m o} {\IfBooleanTF{#1}{\|#2\|}{\left\|#2\right\|}\IfNoValueF{#3}{_{#3}}}
+\DeclareDocumentCommand\seminorm{m o o} {\left|#1\right|\IfNoValueF{#2}{_{#2 \IfNoValueF{#3}{,#3}}}}
+\DeclareDocumentCommand\ip{s m m o} {\IfBooleanTF{#1}{\langle #2,#3 \rangle}{\left\langle #2,#3 \right\rangle}\IfNoValueF{#4}{_{#4}}}
+\DeclareDocumentCommand\dup{m m o} {\left\langle{#1,#2}\right\rangle\IfNoValueF{#3}{_{#3', #3}}}
+\DeclareDocumentCommand\gaussian{O{0} O{I}} {g_{#1, #2}}
+\DeclareDocumentCommand\littleo{s o m} {o\IfNoValueF{#2}{_{#2}}\IfBooleanTF{#1}{(#3)}{\left(#3\right)}}
+\DeclareDocumentCommand\bigo{s o m} {\mathcal O\IfNoValueF{#2}{_{#2}}\IfBooleanTF{#1}{(#3)}{\left(#3\right)}}
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\re}{Re}
+\DeclareMathOperator*{\trace}{tr}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\sym}{sym}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\e}{e}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\offdiag}{offdiag}
+
+\newcommand{\revision}[1]{\textcolor{blue}{#1}}
+\renewcommand{\revision}[1]{#1}
+\newcommand{\gab}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\commut}[2]{[#1, #2]}
+\newcommand{\correlation}[1]{\left< #1 \right>}
+\newcommand{\dummy}{\,\cdot\,}
+\newcommand{\expect}[0]{\mathbf{E}}
+\newcommand{\iip}[2]{\left(\!\left(#1, #2\right)\!\right)}
+\newcommand{\nat}{\mathbf N}
+\newcommand{\poly}{\mathbf P}
+\newcommand{\real}{\mathbf R}
+\newcommand{\integer}{\mathbf Z}
+\newcommand{\torus}{\mathbf T}
+\newcommand{\grad}{\boldsymbol \nabla}
+\newcommand{\hess}{\nabla^2}
+\newcommand{\vect}[1]{\boldsymbol{\mathbf #1}}
+\newcommand{\mat}[1]{\vect #1}
+\renewcommand{\det}[1]{\mathrm{det} \left( #1 \right)}
+\renewcommand{\d}{\mathrm d}
+\renewcommand{\t}{\mathsf T}
+% \renewcommand{\t}{t}
+
+\makeatletter
+\DeclareDocumentCommand \derivative{s m o m}{%
+    \def\@der{\IfBooleanTF{#1}{\mathrm{d}}{\partial}}
+    \def\@default{%
+        \mathchoice{%
+                \frac{%
+                    \@der\ifnum\pdfstrcmp{#2}{1}=0\else^{#2}\fi {\IfNoValueTF{#3}{}{#3}}
+                }{%
+                    \@for\@token:={#4}\do{\@der \@token}
+                }
+            } {%
+                \@for\@token:={#4}\do{\@der_\@token} \IfNoValueTF{#3}{}{#3}
+            } {} {}
+    }
+    \IfBooleanTF{#1}{\IfNoValueTF{#3}{\@default}{%
+                #3%
+                \ifnum\pdfstrcmp{#2}{1}=0'\else%
+                \ifnum\pdfstrcmp{#2}{2}=0''\else%
+                \ifnum\pdfstrcmp{#2}{3}=0^{(3)}\else%
+                \ifnum\pdfstrcmp{#2}{4}=0^{(4)}\else%
+                \ifnum\pdfstrcmp{#2}{5}=0^{(5)}\else%
+                ^{(#2)}\fi\fi\fi\fi\fi
+            }
+        }{\@default}
+}
+\makeatother
+
+\definecolor{darkred}{rgb}{.5,0,0}
+\definecolor{darkgreen}{rgb}{0,.5,0}
+\definecolor{darkblue}{rgb}{0,0,.5}
+\newcommand{\red}[1]{\textcolor{darkred}{#1}}
+\newcommand{\green}[1]{\textcolor{darkgreen}{#1}}
+
+\theoremstyle{plain}
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{result}{Result}[section]
+\newtheorem{remark}{Remark}[section]
+\numberwithin{equation}{section}
+
+\newcounter{urbainCounter}
+\newcommand{\urbain}[1]{\stepcounter{urbainCounter}\red{\arabic{urbainCounter}.} \green{#1}}
+\crefname{equation}{}{}
+\crefname{paragraph}{\S\!}{\S}
+% \crefname{figure}{Figure}{Figures}
+% \crefname{section}{Section}{Sections}
+
+\newcommand{\email}[1]{\href{#1}{#1}}
+\newcommand{\orcidcolor}{ORC\textcolor{orcidlogocol}{ID}}
+\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\includegraphics[width=.4cm]{z_orcid.pdf}}}
+
+%---------------- GABRIEL ------------
+\usepackage{enumerate}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\dps}{\displaystyle}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\ri}{\mathrm{i}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+% \usepackage{todonotes}
+\usepackage{mathrsfs}
+
+% BODY {{{1
+\date{\today}
+\title{Langevin dynamics in the underdamped regime: effective diffusion and variance reduction }
+\author{%
+  % G.A. Pavliotis\thanks{Department of Mathematics, Imperial College London (\email{g.pavliotis@imperial.ac.uk})}%
+  % \hspace{2mm}\orcid{0000-0002-3468-9227}%
+  % \and G. Stoltz\thanks{CERMICS, \'Ecole des Ponts, France \& MATHERIALS, Inria Paris (\email{gabriel.stoltz@enpc.fr})}
+  % \hspace{2mm}\orcid{0000-0002-2797-5938}%
+  % \and U. Vaes\thanks{Department of Mathematics, Imperial College London (until October 2020) and MATHERIALS, Inria Paris (since November 2020) (\email{urbain.vaes@inria.fr})}%
+  % \hspace{2mm}\orcid{0000-0002-7629-7184}%
+}
+
+\begin{document}
+\maketitle
+Let us first consider the Langevin dynamics in one dimension:
+\begin{align*}
+    \d q &= p \, \d t, \\
+    \d p &= - \derivative*{1}[V]{q}(q) \, \d t - \gamma p \, \d t + \sqrt{2 \gamma \beta^{-1}} \d W_t.
+\end{align*}
+The generator of the associated Markov semigroup is given by
+\[
+    \mathcal L = p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right).
+\]
+Let $\phi$ denote the solution to
+\[
+    - \mathcal L \phi = p,
+\]
+and suppose that $\psi$ denote an approximation of $\phi$.
+By It\^o's formula, it holds
+\begin{align*}
+    \phi(q_t, p_t) - \phi(q_0, p_0) &= - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\phi]{p}(q_s, p_s) \, \d W_s \\
+    \psi(q_t, p_t) - \psi(q_0, p_0) &= \int_{0}^{t} (\mathcal L \psi) (q_s, p_s) \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s.
+\end{align*}
+Let also $u(t)$ and $v(t)$ denote the random variables
+\[
+    u(t) = \frac{\abs{q_t - q_0}^2}{2t}
+\]
+and
+\begin{align*}
+    v(t) &= \int_{\torus \times \real} \abs{\derivative{1}[\psi]{p}}^2 \, \d \mu + \frac{1}{2t} \left( \abs{q_t - q_0}^2 - \abs{\psi(q_t, p_t) - \psi(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s}^2\right) \\
+         &=: D_{\psi}+ \frac{1}{2t} \left( \abs{q_t - q_0}^2 - \abs{\xi_t}^2\right).
+\end{align*}
+It holds
+\[
+    \lim_{t \to \infty} \expect \left( u(t) \right) = \lim_{t \to \infty} \expect \left( v(t) \right)
+    = \gamma \beta^{-1} \int_{\torus \times \real} \abs{\derivative{1}[\phi]{p}}^2 \, \d \mu
+    = \int_{\torus \times \real} \phi \, p \, \d \mu =: D_{\phi}.
+\]
+so both $u(t)$ and $v(t)$ are asymptotically unbiased estimators of $D_{\phi}$.
+For finite times, using It\^o's isometry and assuming stationary initial conditions, we obtain
+\begin{align*}
+    \expect \left( u(t) \right)
+    &= \frac{1}{2t} \expect \left( \abs{\phi(t) - \phi(0)}^2 \right) + \expect \abs{ \sqrt{\frac{\gamma \beta^{-1}}{t}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s}^2 + \expect \left( \frac{\sqrt{2 \gamma \beta^{-1}}}{t} (\phi(t) - \phi(0))  \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s \right) \\
+    &= \frac{1}{2t} \expect \left( \abs{\phi(t) - \phi(0)}^2\right) + D_{\phi} + R(t),
+\end{align*}
+where the remainder term $R(t)$ satisfies
+\begin{align*}
+    R(t) \leq \varepsilon D_{\phi} + \frac{1}{4 \varepsilon} \frac{1}{2t} \expect \left( \abs{\phi(t) - \phi(0)}^2\right) \qquad \forall \varepsilon > 0.
+\end{align*}
+Taking $\varepsilon = 1/\sqrt{t}$, we deduce
+\[
+    \abs{\expect \left( u(t) \right) - D_{\phi}}
+    \leq \frac{D_{\phi}}{\sqrt{t}} + \left( \frac{1}{2t} + \frac{1}{8\sqrt{t}} \right)\expect \left( \abs{\phi(t) - \phi(0)}^2\right).
+\]
+Applying the same reasoning to $v(t)$, together with the inequality
+\[
+    \abs{x_1 y_1 - x_2 y_2} \leq \frac{y_1^2}{4 \varepsilon_1} + \varepsilon_1 \abs{x_1 - x_2}^2 + \frac{x_2^2}{4 \varepsilon_2} + \varepsilon_2 \abs{y_1 - y_2}^2,
+\]
+we obtain
+\begin{align*}
+    \abs{\expect \left( v(t) \right) - D_{\phi}}
+    &\leq \frac{D_{\phi}}{\sqrt{t}} + \frac{1}{2t} \expect\left( \abs{\phi(t) - \phi(0)}^2 - \abs{\psi(t) - \psi(0)}^2 \right) \\
+    &\quad + \gamma \beta^{-1} \, \frac{\varepsilon_1}{\sqrt{t}}\int \left|\derivative{1}[\psi]{p} - \derivative{1}[\phi]{p} \right|^2 \d \mu
+    + \frac{\varepsilon_2}{\sqrt{t}} \expect |\phi(t) - \phi(0) - \psi(t) + \psi(0)|^2 \\
+    &\quad + \frac{1}{8 \varepsilon_1 \sqrt{t}} \expect \left( |\phi(t) - \phi(0)|^2 \right) + \frac{1}{8 \varepsilon_2 \sqrt{t}} D_{\psi}.
+\end{align*}
+$\rightarrow$ better constant on the right-hand side when $\psi \approx \phi$,
+and when $\psi = 0$ we recover the previous bound.
+
+\end{document}

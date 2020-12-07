@@ -5,12 +5,13 @@ import Polynomials
 import QuadGK
 import DelimitedFiles
 include("galerkin.jl")
-include("lib.jl")
+include("lib_sampling.jl")
+include("lib_underdamped.jl")
 
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1;
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
 β = 1;
 
 # Create directory for data
@@ -21,6 +22,8 @@ run(`mkdir -p "$datadir"`)
 # Potential and its derivative
 V(q) = (1 - cos(q))/2;
 dV(q) = sin(q)/2;
+# V(q) = 0;
+# dV(q) = 0;
 
 # MONTE CARLO METHOD {{{1
 
@@ -52,9 +55,17 @@ times = Δt*(1:niter) |> collect;
 nsave = 1000;
 nslice = niter ÷ nsave;
 
-# Underdamped limit
-Du = diff_underdamped(β);
-φ₀ = solution_underdamped();
+# Control
+control = "galerkin"
+if control == "galerkin"
+    # !!! φ is solution of -Lφ = p (negative sign) !!!
+    Dc, φ, ∂φ = get_controls(V, dV, γ, β, true)
+elseif control == "underdamped"
+    Dc = (1/γ)*diff_underdamped(β);
+    φ₀ = solution_underdamped();
+    φ(q, p) = φ₀(q, p)/γ
+    ∂φ(q, p) = ∂φ₀(q, p)/γ
+end
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
 rt_cov = root_cov(γ, Δt);
@@ -67,7 +78,6 @@ for i = 1:niter
     gaussian_incs = rt_cov*Random.randn(2, np)
     Δw, gs = gaussian_incs[1, :], gaussian_incs[2, :]
 
-    # ξ += (∇p_φ₀.(q, p)/γ) .* (sqrt(2γ/β)*Δw)
     ξ += ∂φ.(q, p) .* (sqrt(2γ/β)*Δw)
     p += - (Δt/2)*dV.(q);
     q += Δt*p;
@@ -86,9 +96,12 @@ for i = 1:niter
         D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
         f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
         D2 = f.coeffs[2] / 2
-        D3 = (1/γ)*Du - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
-        # D4 = (1/γ)*Du - Statistics.mean((ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ).^2)/(2*i*Δt) + D1
-        D4 = (1/γ)*D - Statistics.mean((ξ + φ.(q0, p0) - φ.(q, p)).^2)/(2*i*Δt) + D1
-        println("D₁ = ", D1, " D₄ = ", D4, " D₃ = ", D3)
+        D3 = Dc - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
+        D4 = Dc - Statistics.mean((ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ).^2)/(2*i*Δt) + D1
+        D4 = Dc - Statistics.mean((ξ + φ.(q0, p0) - φ.(q, p)).^2)/(2*i*Δt) + D1
+        println("D₁ = ", D1, " D₄ = ", D4)
+        # println("error", q0 - q + ξ - φ.(q, p) + φ.(q0, p0))
+        # println("q0 - q + ξ ", q0 - q + ξ, " φ - φ₀ ", φ.(q, p) - φ.(q0, p0))
+        # println("q0 - q + ξ ", q0 - q + ξ, " φ - φ₀ ", φ.(q, p) - φ.(q0, p0))
     end
 end

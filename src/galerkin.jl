@@ -12,7 +12,7 @@ function get_controls(V, dV, γ, β, interpolant)
 
     # Friction and inverse temperature
     # γ, β = 1, 1;
-    # γ, β = .001, 1;
+    # γ, β = .01, 1;
 
     # Potential and its derivative
     # V = q -> (1 - cos(q))/2;
@@ -270,9 +270,7 @@ function get_controls(V, dV, γ, β, interpolant)
     # Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
     # Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)
 
-    if return_interpolant == true
+    if interpolant == true
         return (D, φ, ∂φ)
     end
 end
-
-get_controls(1, 1, false)

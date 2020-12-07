@@ -4,12 +4,13 @@ import Statistics
 import Polynomials
 import QuadGK
 import DelimitedFiles
+include("galerkin.jl")
 include("lib.jl")
 
 # PARAMETERS {{{1
 
 # Friction and inverse temperature
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1;
 β = 1;
 
 # Create directory for data
@@ -66,7 +67,8 @@ for i = 1:niter
     gaussian_incs = rt_cov*Random.randn(2, np)
     Δw, gs = gaussian_incs[1, :], gaussian_incs[2, :]
 
-    ξ += (∇p_φ₀.(q, p)/γ) .* (sqrt(2γ/β)*Δw)
+    # ξ += (∇p_φ₀.(q, p)/γ) .* (sqrt(2γ/β)*Δw)
+    ξ += ∂φ.(q, p) .* (sqrt(2γ/β)*Δw)
     p += - (Δt/2)*dV.(q);
     q += Δt*p;
     p += - (Δt/2)*dV.(q);
@@ -85,7 +87,8 @@ for i = 1:niter
         f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
         D2 = f.coeffs[2] / 2
         D3 = (1/γ)*Du - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
-        D4 = (1/γ)*Du - Statistics.mean((ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ).^2)/(2*i*Δt) + D1
+        # D4 = (1/γ)*Du - Statistics.mean((ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ).^2)/(2*i*Δt) + D1
+        D4 = (1/γ)*D - Statistics.mean((ξ + φ.(q0, p0) - φ.(q, p)).^2)/(2*i*Δt) + D1
         println("D₁ = ", D1, " D₄ = ", D4, " D₃ = ", D3)
     end
 end

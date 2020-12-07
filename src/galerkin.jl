@@ -20,7 +20,7 @@ dV = q -> sin.(q)/2;
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
 # Numerical parameters
-p = 20;
+p = 5;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
@@ -116,6 +116,7 @@ lin_indices = zeros(Int, Nq, Np);
 lin_index = 1;
 for k in 1:Nq
     for l in 1:Np
+        global lin_index
         multi_indices[lin_index,:] = [k l];
         lin_indices[k, l] = lin_index;
         lin_index += 1;
@@ -210,7 +211,7 @@ end
 # Assemble the generator
 I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
 L = (1/β)*(tensorize(Q, P') - tensorize(Q', P)) + γ*tensorize(I, N);
-diffp =  tensorize(I, P)
+diffp =  tensorize(I, P);
 
 # Right-hand side
 one_q = real(T*flat_fourier(q -> exp.(-β*V(q)/2)/sqrt(Zν)));
@@ -226,19 +227,16 @@ b = [rhs; 0];
 # Effective diffusion
 # D = (Array(L)\rhs)'rhs
 solution = (A\b)[1:end-1];
-dp_solution = diffp*solution
+dp_solution = diffp*solution;
 D = solution'rhs
 
 # Plot
-nq, np, Lp = 100, 100, 5;
+nq, np, Lp = 10, 10, 9;
 dq, dp = 2π/nq, Lp/np;
 qgrid = -π .+ dq*collect(0:nq);
 pgrid = dp*collect(-np:np);
 solution_fun = eval_series(solution);
 dp_solution_fun = eval_series(dp_solution);
-
-# import Plots
-# Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
 
 q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
 p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
@@ -251,7 +249,6 @@ function bilinear_interpolant(values, q, p)
         println("p is out of interpolation grid!")
     end
     iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
-    println(iq, " ", ip, " ", length(qgrid), " ", length(pgrid))
     x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
     a11 = values[iq, ip];
     a21 = values[iq+1, ip] - values[iq, ip];
@@ -263,4 +260,9 @@ end
 φ(q, p) = bilinear_interpolant(solution_values, q, p)
 ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
 
-Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)
+
+qsamples, psamples = sample_gibbs(V, β, 1000000)
+Statistics.mean(∂φ.(qsamples, psamples) .* ∂φ.(qsamples, psamples))
+# import Plots
+# Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
+# Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)

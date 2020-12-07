@@ -239,23 +239,8 @@ D = solution'rhs
 solution_fun = eval_series(solution);
 dp_solution_fun = eval_series(dp_solution);
 
-nsamples = 10^6
-qsamples, psamples = sample_gibbs(V, β, nsamples)
-# fun = eval_series(fun_series);
-# series = zeros(length(solution))
-# series[3] = 1
-# fun = eval_series(series);
-fun = dp_solution_fun
-for i in 1:nsamples
-    # mean = ((i-1)*mean + dp_solution_fun(qsamples[i], psamples[i])^2)/i
-    mean = ((i-1)*mean + fun(qsamples[i], psamples[i])^2)/i
-    println(mean)
-end
-
-Statistics.mean(∂φ.(qsamples, psamples) .* ∂φ.(qsamples, psamples))
-
 # Plot
-nq, np, Lp = 10, 10, 9;
+nq, np, Lp = 100, 100, 9;
 dq, dp = 2π/nq, Lp/np;
 qgrid = -π .+ dq*collect(0:nq);
 pgrid = dp*collect(-np:np);

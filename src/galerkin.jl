@@ -13,8 +13,12 @@ linalg = LinearAlgebra;
 # γ, β = .001, 1;
 
 # Potential and its derivative
-V = q -> (1 .- cos.(q))/2;
-dV = q -> sin.(q)/2;
+V = q -> (1 - cos(q))/2;
+dV = q -> sin(q)/2;
+
+# V = q -> 0;
+# dV = q -> 0;
+
 
 # Normalization constant
 Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
@@ -24,13 +28,14 @@ p = 5;
 
 # ωmax is the highest frequency of trigonometric functions in q and
 # dmax is the highest degree of Hermite polynomials in p
-ωmax, dmax = p÷4, p*2;
+# ωmax, dmax = p÷4, p*2;
+ωmax, dmax = 2, 4;
 
 # FOURIER TOOLS {{{1
 function flat_fourier(func)
     ngrid = 1 + 2*ωmax;
     qgrid = (2π/ngrid)*collect(0:ngrid-1);
-    result = (1/ngrid) * FFTW.fft(func(qgrid))
+    result = (1/ngrid) * FFTW.fft(func.(qgrid))
     result = [result[ωmax+2:end]; result[1]; result[2:ωmax+1]]
     for i in 1:ngrid
         if abs(real(result[i])) < 1e-16
@@ -176,7 +181,7 @@ function hermite_eval(dmax, p)
     result[1] = 1
     result[2] = p/sqrt(β)
     for i in 2:dmax
-        result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-2)*result[i-1]
+        result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-1)*result[i-1]
     end
     return result
 end
@@ -190,7 +195,7 @@ function fourier_eval(ωmax, q)
         result[2ω] = imag(z)/sqrt(π)
         result[2ω + 1] = real(z)/sqrt(π)
     end
-    return result * sqrt(exp(V(q))*Zν)
+    return result * sqrt(Zν*exp(β*V(q)))
 end
 
 function eval_series(series)
@@ -230,13 +235,30 @@ solution = (A\b)[1:end-1];
 dp_solution = diffp*solution;
 D = solution'rhs
 
+# Turn them into functions
+solution_fun = eval_series(solution);
+dp_solution_fun = eval_series(dp_solution);
+
+nsamples = 10^6
+qsamples, psamples = sample_gibbs(V, β, nsamples)
+# fun = eval_series(fun_series);
+# series = zeros(length(solution))
+# series[3] = 1
+# fun = eval_series(series);
+fun = dp_solution_fun
+for i in 1:nsamples
+    # mean = ((i-1)*mean + dp_solution_fun(qsamples[i], psamples[i])^2)/i
+    mean = ((i-1)*mean + fun(qsamples[i], psamples[i])^2)/i
+    println(mean)
+end
+
+Statistics.mean(∂φ.(qsamples, psamples) .* ∂φ.(qsamples, psamples))
+
 # Plot
 nq, np, Lp = 10, 10, 9;
 dq, dp = 2π/nq, Lp/np;
 qgrid = -π .+ dq*collect(0:nq);
 pgrid = dp*collect(-np:np);
-solution_fun = eval_series(solution);
-dp_solution_fun = eval_series(dp_solution);
 
 q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
 p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];

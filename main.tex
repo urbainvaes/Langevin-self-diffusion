@@ -203,11 +203,12 @@ where the remainder term $R(t)$ satisfies
 \begin{align*}
     R(t) \leq \varepsilon D_{\phi} + \frac{1}{4 \varepsilon} \frac{1}{2t} \expect \left( \abs{\phi(t) - \phi(0)}^2\right) \qquad \forall \varepsilon > 0.
 \end{align*}
-Taking $\varepsilon = 1/\sqrt{t}$, we deduce
+Taking $\varepsilon = 1/\sqrt{\gamma t}$, we deduce
 \[
     \abs{\expect \left( u(t) \right) - D_{\phi}}
-    \leq \frac{D_{\phi}}{\sqrt{t}} + \left( \frac{1}{2t} + \frac{1}{8\sqrt{t}} \right)\expect \left( \abs{\phi(t) - \phi(0)}^2\right).
+    \leq \frac{D_{\phi}}{\sqrt{\gamma t}} + \left( \frac{1}{2t} + \frac{\sqrt{\gamma}}{8\sqrt{t}} \right)\expect \left( \abs{\phi(t) - \phi(0)}^2\right).
 \]
+$\rightarrow$ The relative error scales as \( 1 / \sqrt{\gamma t}\).
 Applying the same reasoning to $v(t)$, together with the inequality
 \[
     \abs{x_1 y_1 - x_2 y_2} \leq \frac{y_1^2}{4 \varepsilon_1} + \varepsilon_1 \abs{x_1 - x_2}^2 + \frac{x_2^2}{4 \varepsilon_2} + \varepsilon_2 \abs{y_1 - y_2}^2,
@@ -222,5 +223,22 @@ we obtain
 \end{align*}
 $\rightarrow$ better constant on the right-hand side when $\psi \approx \phi$,
 and when $\psi = 0$ we recover the previous bound.
-
+For the variance, we can obtain a crude bound using
+\begin{align*}
+    \mathrm{Var} (v(t))
+    &\leq \expect \left( \abs{v(t) - D_{\psi}}^2 \right)
+    = \frac{1}{4 t^2} \expect \big( |q_t - q_0 - \xi_t|^2 |q_t - q_0 + \xi_t|^2 \big) \\
+    &\leq \frac{1}{4 t^2} \sqrt{\expect \left(  |q_t - q_0 - \xi_t|^4 \right)} \sqrt{\expect \left( |q_t - q_0 + \xi_t|^4 \right)}
+\end{align*}
+We now bound \red{signs probably wrong, constants 1}
+\begin{align*}
+    \expect \left( |q_t - q_0 + \xi_t|^4 \right)
+    &= \expect \left( \abs{\phi_t - \phi_0 - \psi_t + \psi_0 + I_{\psi} - I_{\phi}}^4 \right) \\
+    &\leq C \left( \expect \left( \abs{\phi_t - \psi_t}^4 \right) + \expect \left( \abs{\phi_0 - \psi_0}^4 \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \right).
+\end{align*}
+The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}$.
+Using a moment inequality for It\^o integrals, the last term can be bounded as
+\[
+    \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \leq \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s = \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
+\]
 \end{document}

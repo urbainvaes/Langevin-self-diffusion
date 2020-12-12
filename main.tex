@@ -209,20 +209,49 @@ Taking $\varepsilon = 1/\sqrt{\gamma t}$, we deduce
     \leq \frac{D_{\phi}}{\sqrt{\gamma t}} + \left( \frac{1}{2t} + \frac{\sqrt{\gamma}}{8\sqrt{t}} \right)\expect \left( \abs{\phi(t) - \phi(0)}^2\right).
 \]
 $\rightarrow$ The relative error scales as \( 1 / \sqrt{\gamma t}\).
-Applying the same reasoning to $v(t)$, together with the inequality
-\[
-    \abs{x_1 y_1 - x_2 y_2} \leq \frac{y_1^2}{4 \varepsilon_1} + \varepsilon_1 \abs{x_1 - x_2}^2 + \frac{x_2^2}{4 \varepsilon_2} + \varepsilon_2 \abs{y_1 - y_2}^2,
-\]
-we obtain
+
+
+\newpage
+Easier approach? Assuming stationary initial conditions and denoting by $C(\cdot)$ the velocity autocorrelation function:
 \begin{align*}
+    \expect (u(t))
+    &= \frac{1}{2t} \expect \left( \int_{0}^{t} p_s \, \d s \int_{0}^{t} p_u \, \d u \right)
+    = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (p_s p_u) \, \d s \, \d u \right) \\
+    &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} C(\abs{s - u}) \, \d s \, \d u \right)
+    = \left( \int_{0}^{t} C(s) \left(1 - \frac{s}{t}\right) \d s \right) \\
+    &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C(s) \, \d s.
+\end{align*}
+Since $C(s) = \ip{p}{\e^{s \mathcal L} p} \leq c_1 \exp( - c_2 \min(\gamma, \gamma^{-1}) t)$, it holds
+\[
+    \forall t > 0, \quad \gamma > 0, \qquad
+    \abs{\expect(u(t)) - D_{\phi}} \leq  C \, \frac{\max(\gamma^2, \gamma^{-2})}{t}.
+\]
+$\rightarrow$ the relative error scales as $\max(\gamma, \gamma^{-1}) / t$.
+Applying the same reasoning to $v(t)$, we obtain
+\begin{align*}
+    \expect (v(t))
+    &= D_{\psi} + \int_{0}^{t} \left(1 - \frac{s}{t}\right) \left( C_{\phi}(s) - C_{\psi}(s) \right) \, \d s. \\
+    &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) \left( C_{\phi}(s) - C_{\psi}(s) \right) \, \d s,
+\end{align*}
+where $C_{\psi}(s) = \ip{\mathcal L \psi}{\e^{s \mathcal L} \mathcal L \psi}$.
+We have
+\begin{align*}
+    C_{\phi}(s) - C_{\psi}(s)
+    &= \ip{\mathcal L (\phi - \psi)}{\e^{s \mathcal L} \mathcal L \phi + \e^{s \mathcal L^*} \mathcal  L\psi} \\
+    &\leq \norm{\mathcal L(\phi - \psi)}
+    \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \phi} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
+    &\leq c_1 \e^{-c_2 \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right),
+\end{align*}
+which leads to
+\begin{align*}
+    \forall t > 0, \quad \gamma > 0, \qquad
     \abs{\expect \left( v(t) \right) - D_{\phi}}
-    &\leq \frac{D_{\phi}}{\sqrt{t}} + \frac{1}{2t} \expect\left( \abs{\phi(t) - \phi(0)}^2 - \abs{\psi(t) - \psi(0)}^2 \right) \\
-    &\quad + \gamma \beta^{-1} \, \frac{\varepsilon_1}{\sqrt{t}}\int \left|\derivative{1}[\psi]{p} - \derivative{1}[\phi]{p} \right|^2 \d \mu
-    + \frac{\varepsilon_2}{\sqrt{t}} \expect |\phi(t) - \phi(0) - \psi(t) + \psi(0)|^2 \\
-    &\quad + \frac{1}{8 \varepsilon_1 \sqrt{t}} \expect \left( |\phi(t) - \phi(0)|^2 \right) + \frac{1}{8 \varepsilon_2 \sqrt{t}} D_{\psi}.
+    \leq C \, \frac{\max(\gamma^2, \gamma^{-2})}{t} \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right).
 \end{align*}
 $\rightarrow$ better constant on the right-hand side when $\psi \approx \phi$,
 and when $\psi = 0$ we recover the previous bound.
+
+\newpage
 For the variance, we can obtain a crude bound using
 \begin{align*}
     \mathrm{Var} (v(t))

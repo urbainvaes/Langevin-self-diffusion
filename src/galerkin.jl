@@ -8,16 +8,107 @@ import DelimitedFiles
 sparse = SparseArrays;
 linalg = LinearAlgebra;
 
-function get_controls(V, dV, γ, β, interpolant)
+function get_interpolant(solution_fun, dp_solution_fun)
+    nq, np, Lp = 100, 100, 9;
+    dq, dp = 2π/nq, Lp/np;
+    qgrid = -π .+ dq*collect(0:nq);
+    pgrid = dp*collect(-np:np);
+
+    q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
+    p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
+    solution_values = solution_fun.(q, p);
+    dp_solution_values = dp_solution_fun.(q, p);
+
+    # Create directory for data
+    datadir = "data/γ=$γ";
+    run(`mkdir -p "$datadir"`);
+    DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
+    DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
+    DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
+    DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
+
+    function bilinear_interpolant(values, q, p)
+        q = q - 2π*floor(Int, (q+π)/2π);
+        if abs(p) >= Lp
+            println("p is out of interpolation grid!")
+        end
+        iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
+        x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
+        a11 = values[iq, ip];
+        a21 = values[iq+1, ip] - values[iq, ip];
+        a12 = values[iq, ip+1] - values[iq, ip];
+        a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
+        return a11 + a21*x + a12*y + a22*x*y
+    end
+
+    φ(q, p) = bilinear_interpolant(solution_values, q, p)
+    ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
+
+    # import Plots
+    # Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
+    # Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)
+
+    return (φ, ∂φ)
+end
+
+function get_controls(γ, interpolant, recalculate)
+    if !interpolant
+        return galerkin_solve(γ)
+
+    datadir = "data/γ=$γ";
+    if !reculculate && isfile("$datadir/galerkin_q.txt")
+        q = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
+        p = DelimitedFiles.readdlm("$datadir/galerkin_p.txt");
+        solution_values = DelimitedFiles.readdlm("$datadir/galerkin_phi.txt");
+        dp_solution_values = DelimitedFiles.readdlm("$datadir/galerkin_dp_phi.txt");
+        dq, dp = q[2] - q[1], p[2] - p[1]
+    else
+        D, solution_fun, dp_solution_fun = galerkin_solve(γ)
+        nq, np, Lp = 100, 100, 9;
+        dq, dp = 2π/nq, Lp/np;
+        qgrid = -π .+ dq*collect(0:nq);
+        pgrid = dp*collect(-np:np);
+
+        q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
+        p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
+        solution_values = solution_fun.(q, p);
+        dp_solution_values = dp_solution_fun.(q, p);
+
+        run(`mkdir -p "$datadir"`);
+        DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
+        DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
+        DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
+        DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
+
+    function bilinear_interpolant(values, q, p)
+        q = q - 2π*floor(Int, (q+π)/2π);
+        if abs(p) >= Lp
+            println("p is out of interpolation grid!")
+        end
+        iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
+        x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
+        a11 = values[iq, ip];
+        a21 = values[iq+1, ip] - values[iq, ip];
+        a12 = values[iq, ip+1] - values[iq, ip];
+        a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
+        return a11 + a21*x + a12*y + a22*x*y
+    end
+
+    φ(q, p) = bilinear_interpolant(solution_values, q, p)
+    ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
+    return (D, φ, ∂φ)
+end
+
+
+function galerkin_solve(γ)
     # PARAMETERS {{{1
 
-    # Friction and inverse temperature
-    # γ, β = 1, 1;
-    # γ, β = .01, 1;
+    # Inverse temperature
+    β = 1
 
     # Potential and its derivative
-    # V = q -> (1 - cos(q))/2;
-    # dV = q -> sin(q)/2;
+    V = q -> (1 - cos(q))/2;
+    dV = q -> sin(q)/2;
 
     # Normalization constant
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
@@ -234,52 +325,5 @@ function get_controls(V, dV, γ, β, interpolant)
     # Turn them into functions
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
-
-    if interpolant == false
-        return (D, solution_fun, dp_solution_fun)
-    end
-
-    # Plot
-    nq, np, Lp = 100, 100, 9;
-    dq, dp = 2π/nq, Lp/np;
-    qgrid = -π .+ dq*collect(0:nq);
-    pgrid = dp*collect(-np:np);
-
-    q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
-    p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
-    solution_values = solution_fun.(q, p);
-    dp_solution_values = dp_solution_fun.(q, p);
-
-    # Create directory for data
-    datadir = "data/γ=$γ";
-    run(`mkdir -p "$datadir"`);
-    DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
-    DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
-    DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
-    DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
-
-    function bilinear_interpolant(values, q, p)
-        q = q - 2π*floor(Int, (q+π)/2π);
-        if abs(p) >= Lp
-            println("p is out of interpolation grid!")
-        end
-        iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
-        x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
-        a11 = values[iq, ip];
-        a21 = values[iq+1, ip] - values[iq, ip];
-        a12 = values[iq, ip+1] - values[iq, ip];
-        a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
-        return a11 + a21*x + a12*y + a22*x*y
-    end
-
-    φ(q, p) = bilinear_interpolant(solution_values, q, p)
-    ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
-
-    # import Plots
-    # Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
-    # Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)
-
-    if interpolant == true
-        return (D, φ, ∂φ)
-    end
+    return (D, solution_fun, dp_solution_fun)
 end

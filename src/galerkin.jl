@@ -3,6 +3,7 @@ import SparseArrays
 import LinearAlgebra
 import QuadGK
 import Plots
+import DelimitedFiles
 
 sparse = SparseArrays;
 linalg = LinearAlgebra;
@@ -248,6 +249,14 @@ function get_controls(V, dV, γ, β, interpolant)
     p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
     solution_values = solution_fun.(q, p);
     dp_solution_values = dp_solution_fun.(q, p);
+
+    # Create directory for data
+    datadir = "data/γ=$γ";
+    run(`mkdir -p "$datadir"`);
+    DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
+    DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
+    DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
+    DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
 
     function bilinear_interpolant(values, q, p)
         q = q - 2π*floor(Int, (q+π)/2π);

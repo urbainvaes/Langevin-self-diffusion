@@ -8,7 +8,9 @@ import LinearAlgebra
 import DelimitedFiles
 import Printf
 linalg = LinearAlgebra;
-include("lib.jl")
+include("galerkin.jl")
+include("lib_sampling.jl")
+include("lib_underdamped.jl")
 
 # PARAMETERS {{{1
 
@@ -39,9 +41,15 @@ indices = map(index, qfiles);
 q0 = DelimitedFiles.readdlm(string(datadir, q0file));
 p0 = DelimitedFiles.readdlm(string(datadir, p0file));
 
-# Underdamped limit
-Du = diff_underdamped(β);
-φ₀ = solution_underdamped();
+# Control
+control_type = "galerkin"
+if control_type == "galerkin"
+    Dc, φ, _ = get_controls(γ, true, false)
+elseif control_type == "underdamped"
+    Dc = (1/γ)*diff_underdamped(β);
+    φ₀ = solution_underdamped();
+    φ(q, p) = φ₀(q, p)/γ
+end
 
 # Calculate diffusion coefficients
 for i in 1:length(indices)
@@ -50,20 +58,20 @@ for i in 1:length(indices)
     ξ = DelimitedFiles.readdlm(string(datadir, ξfiles[i]));
 
     print("Iteration: ", indices[i], ". ");
+    control = ξ + φ.(q0, p0) - φ.(q, p);
     D1 = Statistics.mean((q - q0).^2) / (2*indices[i]*Δt);
-    control = ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ;
-    D2 = (1/γ)*Du + D1 - Statistics.mean(control.^2)/(2*indices[i]*Δt);
+    D2 = Dc + D1 - Statistics.mean(control.^2)/(2*indices[i]*Δt);
     σ1 = Statistics.std((q - q0).^2/(2*indices[i]*Δt))
     σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*indices[i]*Δt))
     println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
                             D1, D2, σ1, σ2))
 end
 
-qend = DelimitedFiles.readdlm(string(datadir, qfiles[end]));
-pend = DelimitedFiles.readdlm(string(datadir, pfiles[end]));
-ξend = DelimitedFiles.readdlm(string(datadir, ξfiles[end]));
-control_end = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
-tend = indices[end]*Δt
+# qend = DelimitedFiles.readdlm(string(datadir, qfiles[end]));
+# pend = DelimitedFiles.readdlm(string(datadir, pfiles[end]));
+# ξend = DelimitedFiles.readdlm(string(datadir, ξfiles[end]));
+# control_end = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
+# tend = indices[end]*Δt
 
 # import Plots
 # Plots.histogram((qend - q0).^2, bins=20)

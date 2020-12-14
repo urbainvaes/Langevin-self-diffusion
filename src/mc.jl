@@ -4,6 +4,7 @@ import Statistics
 import Polynomials
 import QuadGK
 import DelimitedFiles
+import Printf
 include("galerkin.jl")
 include("lib_sampling.jl")
 include("lib_underdamped.jl")
@@ -56,11 +57,12 @@ nsave = 1000;
 nslice = niter ÷ nsave;
 
 # Control
-control = "galerkin"
-if control == "galerkin"
+control_type = "galerkin"
+if control_type == "galerkin"
     # !!! φ is solution of -Lφ = p (negative sign) !!!
-    Dc, φ, ∂φ = get_controls(V, dV, γ, β, true)
-elseif control == "underdamped"
+    Dc, φ, ∂φ = get_controls(γ, true, true)
+    # Dc, φ, ∂φ = get_controls(γ, true, false)
+elseif control_type == "underdamped"
     Dc = (1/γ)*diff_underdamped(β);
     φ₀ = solution_underdamped();
     φ(q, p) = φ₀(q, p)/γ
@@ -93,13 +95,18 @@ for i = 1:niter
             DelimitedFiles.writedlm(io, mean_q²[i-nslice+1:i])
         end
         print("Pogress: ", (1000*i) ÷ niter, "‰. ")
+        control = ξ + φ.(q0, p0) - φ.(q, p);
         D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
-        f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
-        D2 = f.coeffs[2] / 2
-        D3 = Dc - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
-        D4 = Dc - Statistics.mean((ξ + φ₀.(q0, p0)/γ - φ₀.(q, p)/γ).^2)/(2*i*Δt) + D1
-        D4 = Dc - Statistics.mean((ξ + φ.(q0, p0) - φ.(q, p)).^2)/(2*i*Δt) + D1
-        println("D₁ = ", D1, " D₄ = ", D4)
+        D2 = Dc + D1 - Statistics.mean(control.^2)/(2*i*Δt);
+        σ1 = Statistics.std((q - q0).^2/(2*i*Δt))
+        σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*i*Δt))
+        println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
+                                D1, D2, σ1, σ2))
+        # f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
+        # D2 = f.coeffs[2] / 2
+        # D3 = Dc - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
+        # D4 = Dc - Statistics.mean((ξ + φ.(q0, p0) - φ.(q, p)).^2)/(2*i*Δt) + D1
+        # println("D₁ = ", D1, " D₄ = ", D4)
         # println("error", q0 - q + ξ - φ.(q, p) + φ.(q0, p0))
         # println("q0 - q + ξ ", q0 - q + ξ, " φ - φ₀ ", φ.(q, p) - φ.(q0, p0))
         # println("q0 - q + ξ ", q0 - q + ξ, " φ - φ₀ ", φ.(q, p) - φ.(q0, p0))

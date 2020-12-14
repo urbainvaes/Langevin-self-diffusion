@@ -1,4 +1,4 @@
-import FFTW
+import FFTγW
 import SparseArrays
 import LinearAlgebra
 import QuadGK
@@ -8,60 +8,22 @@ import DelimitedFiles
 sparse = SparseArrays;
 linalg = LinearAlgebra;
 
-function get_interpolant(solution_fun, dp_solution_fun)
-    nq, np, Lp = 100, 100, 9;
-    dq, dp = 2π/nq, Lp/np;
-    qgrid = -π .+ dq*collect(0:nq);
-    pgrid = dp*collect(-np:np);
-
-    q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
-    p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
-    solution_values = solution_fun.(q, p);
-    dp_solution_values = dp_solution_fun.(q, p);
-
-    # Create directory for data
-    datadir = "data/γ=$γ";
-    run(`mkdir -p "$datadir"`);
-    DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
-    DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
-    DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
-    DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
-
-    function bilinear_interpolant(values, q, p)
-        q = q - 2π*floor(Int, (q+π)/2π);
-        if abs(p) >= Lp
-            println("p is out of interpolation grid!")
-        end
-        iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
-        x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
-        a11 = values[iq, ip];
-        a21 = values[iq+1, ip] - values[iq, ip];
-        a12 = values[iq, ip+1] - values[iq, ip];
-        a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
-        return a11 + a21*x + a12*y + a22*x*y
-    end
-
-    φ(q, p) = bilinear_interpolant(solution_values, q, p)
-    ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
-
-    # import Plots
-    # Plots.contourf(qgrid, pgrid, (q, p) -> solution_fun(q, p))
-    # Plots.contourf(qgrid[2:end-1], pgrid[2:end-1], ∂φ)
-
-    return (φ, ∂φ)
-end
-
 function get_controls(γ, interpolant, recalculate)
     if !interpolant
         return galerkin_solve(γ)
+    end
 
-    datadir = "data/γ=$γ";
-    if !reculculate && isfile("$datadir/galerkin_q.txt")
+    datadir = "data/galerkin/γ=$γ";
+    if !recalculate && isfile("$datadir/galerkin_q.txt")
+        println("Using existing Galerkin solution!")
+        D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
         q = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
         p = DelimitedFiles.readdlm("$datadir/galerkin_p.txt");
         solution_values = DelimitedFiles.readdlm("$datadir/galerkin_phi.txt");
         dp_solution_values = DelimitedFiles.readdlm("$datadir/galerkin_dp_phi.txt");
-        dq, dp = q[2] - q[1], p[2] - p[1]
+        dq, dp = q[2, 1] - q[1, 1], p[1, 2] - p[1, 1]
+        qgrid, pgrid = q[:, 1], p[1, :]
+        Lp = pgrid[end]
     else
         D, solution_fun, dp_solution_fun = galerkin_solve(γ)
         nq, np, Lp = 100, 100, 9;
@@ -75,10 +37,12 @@ function get_controls(γ, interpolant, recalculate)
         dp_solution_values = dp_solution_fun.(q, p);
 
         run(`mkdir -p "$datadir"`);
+        DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
         DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
         DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
         DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
         DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
+    end
 
     function bilinear_interpolant(values, q, p)
         q = q - 2π*floor(Int, (q+π)/2π);
@@ -99,7 +63,6 @@ function get_controls(γ, interpolant, recalculate)
     return (D, φ, ∂φ)
 end
 
-
 function galerkin_solve(γ)
     # PARAMETERS {{{1
 
@@ -114,7 +77,7 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 100;
+    p = 300;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p

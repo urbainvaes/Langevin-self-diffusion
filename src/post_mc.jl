@@ -14,12 +14,15 @@ include("lib_underdamped.jl")
 
 # PARAMETERS {{{1
 
-# Friction and inverse temperature
+# Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
+control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
+
+# Inverse temperature
 β = 1  # β always 1!
 
 # Parse the files
-datadir = "data/γ=$γ/"
+datadir = "data/$control_type-γ=$γ"
 listfiles = readdir(datadir);
 index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
 q0file = filter(s -> occursin(r"q0.txt", s), listfiles)[1];
@@ -42,7 +45,6 @@ q0 = DelimitedFiles.readdlm(string(datadir, q0file));
 p0 = DelimitedFiles.readdlm(string(datadir, p0file));
 
 # Control
-control_type = "galerkin"
 if control_type == "galerkin"
     Dc, φ, _ = get_controls(γ, true, false)
 elseif control_type == "underdamped"

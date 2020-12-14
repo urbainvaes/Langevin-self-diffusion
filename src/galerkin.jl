@@ -1,4 +1,4 @@
-import FFTγW
+import FFTW
 import SparseArrays
 import LinearAlgebra
 import QuadGK
@@ -52,9 +52,9 @@ function get_controls(γ, interpolant, recalculate)
         iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
         x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
         a11 = values[iq, ip];
-        a21 = values[iq+1, ip] - values[iq, ip];
-        a12 = values[iq, ip+1] - values[iq, ip];
-        a22 = values[iq+1, ip+1] + values[iq, ip] - values[iq+1, ip] - values[iq, ip+1];
+        a21 = values[iq+1, ip] - a11;
+        a12 = values[iq, ip+1] - a11;
+        a22 = values[iq+1, ip+1] + a11 - values[iq+1, ip] - values[iq, ip+1];
         return a11 + a21*x + a12*y + a22*x*y
     end
 

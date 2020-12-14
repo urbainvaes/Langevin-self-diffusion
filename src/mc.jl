@@ -11,12 +11,15 @@ include("lib_underdamped.jl")
 
 # PARAMETERS {{{1
 
-# Friction and inverse temperature
+# Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
+control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
+
+# Inverse temperature
 β = 1;
 
 # Create directory for data
-datadir = "data/γ=$γ"
+datadir = "data/$control_type-γ=$γ"
 run(`rm -rf "$datadir"`)
 run(`mkdir -p "$datadir"`)
 
@@ -57,17 +60,16 @@ nsave = 1000;
 nslice = niter ÷ nsave;
 
 # Control
-control_type = "galerkin"
 if control_type == "galerkin"
     # !!! φ is solution of -Lφ = p (negative sign) !!!
-    Dc, φ, ∂φ = get_controls(γ, true, true)
-    # Dc, φ, ∂φ = get_controls(γ, true, false)
+    Dc, φ, ∂φ = get_controls(γ, true, false)
 elseif control_type == "underdamped"
     Dc = (1/γ)*diff_underdamped(β);
     φ₀ = solution_underdamped();
     φ(q, p) = φ₀(q, p)/γ
     ∂φ(q, p) = ∂φ₀(q, p)/γ
 end
+println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
 rt_cov = root_cov(γ, Δt);

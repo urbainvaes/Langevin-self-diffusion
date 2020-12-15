@@ -55,10 +55,6 @@ DelimitedFiles.writedlm("$datadir/Δt=$Δt-mean_q2.txt", "");
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
-times = Δt*(1:niter) |> collect;
-nsave = 1000;
-nslice = niter ÷ nsave;
-
 # Control
 if control_type == "galerkin"
     # !!! φ is solution of -Lφ = p (negative sign) !!!
@@ -73,6 +69,10 @@ println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
 rt_cov = root_cov(γ, Δt);
+
+times = Δt*(1:niter) |> collect;
+nsave = 1000;
+nslice = niter ÷ nsave;
 
 # Integrate the evolution
 for i = 1:niter

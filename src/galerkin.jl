@@ -16,7 +16,6 @@ function get_controls(γ, interpolant, recalculate)
     datadir = "data/galerkin/γ=$γ";
     if !recalculate && isfile("$datadir/galerkin_q.txt")
         println("Using existing Galerkin solution!")
-        D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
         q = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
         p = DelimitedFiles.readdlm("$datadir/galerkin_p.txt");
         solution_values = DelimitedFiles.readdlm("$datadir/galerkin_phi.txt");
@@ -25,7 +24,7 @@ function get_controls(γ, interpolant, recalculate)
         qgrid, pgrid = q[:, 1], p[1, :]
         Lp = pgrid[end]
     else
-        D, solution_fun, dp_solution_fun = galerkin_solve(γ)
+        _, solution_fun, dp_solution_fun = galerkin_solve(γ)
         nq, np, Lp = 100, 100, 9;
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
@@ -37,7 +36,6 @@ function get_controls(γ, interpolant, recalculate)
         dp_solution_values = dp_solution_fun.(q, p);
 
         run(`mkdir -p "$datadir"`);
-        DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
         DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
         DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
         DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
@@ -60,6 +58,18 @@ function get_controls(γ, interpolant, recalculate)
 
     φ(q, p) = bilinear_interpolant(solution_values, q, p)
     ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
+
+    # Improve on φ
+    if !recalculate && isfile("$datadir/galerkin_D.txt")
+        println("Using existing approximate diffusion coefficient!")
+        D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
+    else
+        nsamples = 10^7
+        q, p = sample_gibbs(V, β, nsamples)
+        D = γ*Statistics.mean(∂φ.(q, p).^2)
+        DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
+    end
+
     return (D, φ, ∂φ)
 end
 

@@ -22,7 +22,7 @@ control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
 β = 1  # β always 1!
 
 # Parse the files
-datadir = "data/$control_type-γ=$γ"
+datadir = "data/$control_type-γ=$γ/"
 listfiles = readdir(datadir);
 index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
 q0file = filter(s -> occursin(r"q0.txt", s), listfiles)[1];

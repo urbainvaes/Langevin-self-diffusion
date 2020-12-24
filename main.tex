@@ -263,11 +263,16 @@ We now bound \red{signs probably wrong, constants 1}
 \begin{align*}
     \expect \left( |q_t - q_0 + \xi_t|^4 \right)
     &= \expect \left( \abs{\phi_t - \phi_0 - \psi_t + \psi_0 + I_{\psi} - I_{\phi}}^4 \right) \\
-    &\leq C \left( \expect \left( \abs{\phi_t - \psi_t}^4 \right) + \expect \left( \abs{\phi_0 - \psi_0}^4 \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \right).
+    &\leq 3^3 \left( \expect \left( \abs{\phi_t - \psi_t}^4 \right) + \expect \left( \abs{\phi_0 - \psi_0}^4 \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \right).
 \end{align*}
-The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}$.
+The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}^4$.
 Using a moment inequality for It\^o integrals, the last term can be bounded as
 \[
-    \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \leq \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s = \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
+    \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \leq 6 t \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s = 6 t \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
 \]
+Likewise, the other term can be bounded as
+\begin{align*}
+    \expect \left( |q_t - q_0 - \xi_t|^4 \right)
+    &\leq 3^3 \left( \expect \left( 2 \norm{\phi - \psi}[L^4(\mu)]^4 + 6 t \norm{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right).
+\end{align*}
 \end{document}

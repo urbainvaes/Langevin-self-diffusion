@@ -13,7 +13,7 @@ include("lib_sampling.jl")
 include("lib_underdamped.jl")
 
 # Parse arguments
-control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
+control_type = length(ARGS) > 0 ? ARGS[1] : "galerkin"
 
 # Underdamped limit
 β = 1
@@ -135,9 +135,9 @@ for iγ in 1:length(γs)
 end
 
 run(`mkdir -p "data"`)
-DelimitedFiles.writedlm("data/data_D11_wo.txt", D11_wo);
-DelimitedFiles.writedlm("data/data_σ11_wo.txt", σ11_wo);
-DelimitedFiles.writedlm("data/data_D11_wi.txt", D11_wi);
-DelimitedFiles.writedlm("data/data_σ11_wi.txt", σ11_wi);
-DelimitedFiles.writedlm("data/data_γs.txt", γs);
-DelimitedFiles.writedlm("data/data_δs.txt", δs);
+DelimitedFiles.writedlm("data/data-$control_type-D11_wo.txt", D11_wo);
+DelimitedFiles.writedlm("data/data-$control_type-σ11_wo.txt", σ11_wo);
+DelimitedFiles.writedlm("data/data-$control_type-D11_wi.txt", D11_wi);
+DelimitedFiles.writedlm("data/data-$control_type-σ11_wi.txt", σ11_wi);
+DelimitedFiles.writedlm("data/data-$control_type-γs.txt", γs);
+DelimitedFiles.writedlm("data/data-$control_type-δs.txt", δs);

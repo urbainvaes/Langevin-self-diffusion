@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-γs = np.loadtxt("data/data_γs.txt")
-δs = np.loadtxt("data/data_δs.txt")
+γs = np.loadtxt("data/data_underdamped_γs.txt")
+δs = np.loadtxt("data/data_underdamped_δs.txt")
 
-D11_wi = np.loadtxt("data/data_D11_wi.txt")
-σ11_wi = np.loadtxt("data/data_σ11_wi.txt")
-D11_wo = np.loadtxt("data/data_D11_wo.txt")
-σ11_wo = np.loadtxt("data/data_σ11_wo.txt")
+D11_wi = np.loadtxt("data/data_underdamped_D11_wi.txt")
+σ11_wi = np.loadtxt("data/data_underdamped_σ11_wi.txt")
+D11_wo = np.loadtxt("data/data_underdamped_D11_wo.txt")
+σ11_wo = np.loadtxt("data/data_underdamped_σ11_wo.txt")
 
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)

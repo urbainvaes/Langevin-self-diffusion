@@ -65,7 +65,7 @@ function get_controls(γ, interpolant, recalculate)
         D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
     else
         nsamples = 10^7
-        q, p = sample_gibbs(V, β, nsamples)
+        q, p = sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         D = γ*Statistics.mean(∂φ.(q, p).^2)
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end

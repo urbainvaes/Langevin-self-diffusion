@@ -8,7 +8,12 @@ import LinearAlgebra
 import DelimitedFiles
 import Printf
 linalg = LinearAlgebra;
-include("lib.jl");
+include("galerkin.jl")
+include("lib_sampling.jl")
+include("lib_underdamped.jl")
+
+# Parse arguments
+control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
 
 # Underdamped limit
 β = 1
@@ -16,10 +21,23 @@ Du = diff_underdamped(β);
 φ₀ = solution_underdamped();
 
 function get_diffusion(γ, δ)
-    datadir = δ == 0 ? "data/γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
+    println("γ=$γ, δ=$δ")
+    datadir = δ == 0 ? "data/$control_type-γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
     if !isdir(datadir)
         return -1
     end
+
+    # Control
+    if control_type == "galerkin"
+        # !!! φ is solution of -Lφ = p (negative sign) !!!
+        Dc, φ, ∂φ = get_controls(γ, true, false)
+    elseif control_type == "underdamped"
+        Dc = (1/γ)*diff_underdamped(β);
+        φ₀ = solution_underdamped();
+        φ(q, p) = φ₀(q, p)/γ
+        ∂φ(q, p) = ∂φ₀(q, p)/γ
+    end
+    println(@Printf.sprintf("Dc = %.3E", Dc))
 
     listfiles = readdir(datadir);
     index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
@@ -45,18 +63,17 @@ function get_diffusion(γ, δ)
     tend = indices[end]*Δt
 
     if δ == 0
-        # Without control
-        term = (qend - q0).^2 / (2*tend)
-        D = Statistics.mean(term)
-        σ = Statistics.std(term)
-        wout_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+        control = ξend + φ.(q0, p0) - φ.(qend, pend);
+        to_average_1 = (qend - q0).^2 / (2*tend)
+        to_average_2 = Dc .+ (qend - q0).^2 / (2*tend) .- control.^2 / (2*tend)
 
-        # With control
-        control = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
-        term = (1/γ)*Du .- control.^2 / (2*tend) + term
-        D = Statistics.mean(term)
-        σ = Statistics.std(term)
-        with_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+        D1 = Statistics.mean(to_average_1);
+        D2 = Statistics.mean(to_average_2);
+        σ1 = Statistics.std(to_average_1);
+        σ2 = Statistics.std(to_average_2);
+
+        wout_control = Dict("D11" => D1, "D22" => D1, "σ11" => σ1, "σ22" => σ1)
+        with_control = Dict("D11" => D2, "D22" => D2, "σ11" => σ2, "σ22" => σ2)
         return (wout_control, with_control)
     end
 
@@ -89,7 +106,8 @@ end
 # Parameters
 γs = [.0001, .000215, .000464, .001, .00215, .00464,
       .01, .0215, .0464, .1, .215, .464, 1.0];
-δs = [-.64, -.32, -.16, -.08, -.04, .0, .04, .08, .16, .32, .64];
+# δs = [-.64, -.32, -.16, -.08, -.04, .0, .04, .08, .16, .32, .64];
+δs = [0.];
 β = 1;
 
 D11_wo = zeros(length(γs), length(δs));

@@ -13,13 +13,18 @@ include("lib_underdamped.jl")
 
 # Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin"
+control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin";
+
+# Batch number
+batches = length(ARGS) > 2 ? ARGS[3] : "2/1";
+ibatch = parse(Int, match(r"^[^/]*", batches).match);
+nbatches = parse(Int, match(r"[^/]*$", brtches).match);
 
 # Inverse temperature
 β = 1;
 
 # Create directory for data
-datadir = "data/$control_type-γ=$γ"
+datadir = "data/$control_type-γ=$γ/$ibatch"
 run(`rm -rf "$datadir"`)
 run(`mkdir -p "$datadir"`)
 
@@ -32,10 +37,12 @@ dV(q) = sin(q)/2;
 # MONTE CARLO METHOD {{{1
 
 # Fix seed
-Random.seed!(0);
+Random.seed!(ibatch);
+Random.seed!(floor(Int, 1e6*Random.rand()));
 
 # Number of particles
-np = 5000;
+np_total = 5000;
+np = ceil(Int, (np_total / nbatches))
 
 # Time step and final time
 Δt = .01;

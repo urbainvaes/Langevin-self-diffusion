@@ -16,9 +16,9 @@ include("lib_underdamped.jl")
 control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin";
 
 # Batch number
-batches = length(ARGS) > 2 ? ARGS[3] : "2/1";
+batches = length(ARGS) > 2 ? ARGS[3] : "1/1";
 ibatch = parse(Int, match(r"^[^/]*", batches).match);
-nbatches = parse(Int, match(r"[^/]*$", brtches).match);
+nbatches = parse(Int, match(r"[^/]*$", batches).match);
 
 # Inverse temperature
 β = 1;
@@ -56,12 +56,6 @@ tf = niter*Δt;
 q0, p0 = sample_gibbs(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np);
 
-# Track q2 at each iteration
-mean_q² = zeros(niter);
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-mean_q2.txt", "");
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
-
 # Control
 if control_type == "galerkin"
     # !!! φ is solution of -Lφ = p (negative sign) !!!
@@ -77,9 +71,13 @@ println(@Printf.sprintf("Dc = %.3E", Dc))
 # Covariance matrix of (Δw, ∫ e¯... dW)
 rt_cov = root_cov(γ, Δt);
 
-times = Δt*(1:niter) |> collect;
+# Number of saves
 nsave = 1000;
 nslice = niter ÷ nsave;
+
+# Track q2 at each iteration
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
 # Integrate the evolution
 for i = 1:niter
@@ -95,14 +93,10 @@ for i = 1:niter
     p += - (Δt/2)*dV.(q);
     p = exp(-γ*Δt)*p + sqrt(2γ/β)*gs
 
-    mean_q²[i] = Statistics.mean((q-q0).^2)
     if i % nslice == 0
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
-        open("$datadir/Δt=$Δt-mean_q2.txt", "a") do io
-            DelimitedFiles.writedlm(io, mean_q²[i-nslice+1:i])
-        end
         print("Pogress: ", (1000*i) ÷ niter, "‰. ")
         control = ξ + φ.(q0, p0) - φ.(q, p);
         D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)

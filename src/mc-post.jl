@@ -64,7 +64,12 @@ end
 # Extract data from all batches
 listfiles = readdir(datadir);
 batches = filter(s -> occursin(r"^[0-9]*$", s), listfiles);
-batchdirs = length(batches) > 1 ? map(s -> "$datadir/$s", batches) : [datadir];
+if length(batches) > 1
+    batchdirs = map(s -> "$datadir/$s", batches)
+    writefiles = true
+else
+    batchdirs = [datadir];
+    writefiles = false;
 data = map(datafiles, batchdirs)
 
 # Time step
@@ -73,8 +78,11 @@ data = map(datafiles, batchdirs)
 # Extract initial condition
 q0 = vcat((d["q0"] for d in data)...);
 p0 = vcat((d["p0"] for d in data)...);
-writef("$datadir/Δt=$Δt-q0.txt", q);
-writef("$datadir/Δt=$Δt-p0.txt", p);
+
+if writefiles
+    writef("$datadir/Δt=$Δt-q0.txt", q0);
+    writef("$datadir/Δt=$Δt-p0.txt", p0);
+end
 
 # Calculate diffusion coefficients
 for i in 1:minimum(length(d["indices"]) for d in data)
@@ -86,9 +94,11 @@ for i in 1:minimum(length(d["indices"]) for d in data)
     p = vcat(map(d -> readf(d["pfiles"][i]), data)...);
     ξ = vcat(map(d -> readf(d["ξfiles"][i]), data)...);
 
-    writef("$datadir/Δt=$Δt-i=$index-q.txt", q);
-    writef("$datadir/Δt=$Δt-i=$index-p.txt", p);
-    writef("$datadir/Δt=$Δt-i=$index-ξ.txt", ξ);
+    if writefiles
+        writef("$datadir/Δt=$Δt-i=$index-q.txt", q);
+        writef("$datadir/Δt=$Δt-i=$index-p.txt", p);
+        writef("$datadir/Δt=$Δt-i=$index-ξ.txt", ξ);
+    end
 
     print("Iteration: ", index, ". ");
     control = ξ + φ.(q0, p0) - φ.(q, p);

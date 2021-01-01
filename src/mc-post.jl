@@ -68,10 +68,10 @@ batchdirs = length(batches) > 1 ? map(s -> "$datadir/$s", batches) : [datadir];
 data = map(datafiles, batchdirs)
 
 # Extract initial condition
-q0 = vcat((d["q0"] for d in data)...)
-p0 = vcat((d["p0"] for d in data)...)
-writef("$datadir/Δt=$Δt-q0.txt", q)
-writef("$datadir/Δt=$Δt-p0.txt", p)
+q0 = vcat((d["q0"] for d in data)...);
+p0 = vcat((d["p0"] for d in data)...);
+writef("$datadir/Δt=$Δt-q0.txt", q);
+writef("$datadir/Δt=$Δt-p0.txt", p);
 
 # Time step
 Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
@@ -79,51 +79,23 @@ writef("$datadir/Δt=$Δt-p0.txt", p)
 # Calculate diffusion coefficients
 for i in 1:minimum(length(d["indices"]) for d in data)
 
-    index = data[1]["indices"][i]
-    time = index*Δt
+    index = data[1]["indices"][i];
+    time = index*Δt;
 
     q = vcat(map(d -> readf(d["qfiles"][i]), data)...);
     p = vcat(map(d -> readf(d["pfiles"][i]), data)...);
     ξ = vcat(map(d -> readf(d["ξfiles"][i]), data)...);
 
-    writef("$datadir/Δt=$Δt-i=$index-q.txt", q)
-    writef("$datadir/Δt=$Δt-i=$index-p.txt", p)
-    writef("$datadir/Δt=$Δt-i=$index-ξ.txt", ξ)
+    writef("$datadir/Δt=$Δt-i=$index-q.txt", q);
+    writef("$datadir/Δt=$Δt-i=$index-p.txt", p);
+    writef("$datadir/Δt=$Δt-i=$index-ξ.txt", ξ);
 
     print("Iteration: ", index, ". ");
     control = ξ + φ.(q0, p0) - φ.(q, p);
     D1 = Statistics.mean((q - q0).^2) / (2*time);
     D2 = Dc + D1 - Statistics.mean(control.^2)/(2*time);
-    σ1 = Statistics.std((q - q0).^2/(2*time))
-    σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*time))
+    σ1 = Statistics.std((q - q0).^2/(2*time));
+    σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*time));
     println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
-                            D1, D2, σ1, σ2))
+                            D1, D2, σ1, σ2));
 end
-
-# qend = DelimitedFiles.readdlm(string(datadir, qfiles[end]));
-# pend = DelimitedFiles.readdlm(string(datadir, pfiles[end]));
-# ξend = DelimitedFiles.readdlm(string(datadir, ξfiles[end]));
-# control_end = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
-# tend = indices[end]*Δt
-
-# import Plots
-# Plots.histogram((qend - q0).^2, bins=20)
-
-# f = Polynomials.fit(times[i÷10:i], mean_q²[i÷10:i], 1)
-# D2 = f.coeffs[2] / 2
-# D3 = (1/γ)*Du - Statistics.mean(ξ.^2)/(2*i*Δt) + D1
-
-# f = Polynomials.fit(times[niter÷10:end], mean_q²[niter÷10:end], 1)
-# D = f.coeffs[2] / 2
-
-# Plots.plot(times, mean_q²)
-# Plots.plot!(f, times)
-# Plots.plot(times, mean_q²./(2*times))
-
-# Squared position (shorthand for this is q.*q)
-# q2 = broadcast(*, q - q0, q - q0);
-
-# Plots.histogram(q2, bins=20)
-
-# Plots.histogram(q0, bins=-π:(π/10):π)
-# Plots.histogram(p0, bins=20)

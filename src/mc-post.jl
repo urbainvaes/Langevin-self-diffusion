@@ -67,14 +67,14 @@ batches = filter(s -> occursin(r"^[0-9]*$", s), listfiles);
 batchdirs = length(batches) > 1 ? map(s -> "$datadir/$s", batches) : [datadir];
 data = map(datafiles, batchdirs)
 
+# Time step
+Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
+
 # Extract initial condition
 q0 = vcat((d["q0"] for d in data)...);
 p0 = vcat((d["p0"] for d in data)...);
 writef("$datadir/Δt=$Δt-q0.txt", q);
 writef("$datadir/Δt=$Δt-p0.txt", p);
-
-# Time step
-Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
 
 # Calculate diffusion coefficients
 for i in 1:minimum(length(d["indices"]) for d in data)

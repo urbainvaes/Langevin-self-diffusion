@@ -70,6 +70,7 @@ if length(batches) > 1
 else
     batchdirs = [datadir];
     writefiles = false;
+end
 data = map(datafiles, batchdirs)
 
 # Time step

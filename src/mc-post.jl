@@ -70,6 +70,8 @@ data = map(datafiles, batchdirs)
 # Extract initial condition
 q0 = vcat((d["q0"] for d in data)...)
 p0 = vcat((d["p0"] for d in data)...)
+writef("$datadir/Δt=$Δt-q0.txt", q)
+writef("$datadir/Δt=$Δt-p0.txt", p)
 
 # Time step
 Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
@@ -84,9 +86,9 @@ for i in 1:minimum(length(d["indices"]) for d in data)
     p = vcat(map(d -> readf(d["pfiles"][i]), data)...);
     ξ = vcat(map(d -> readf(d["ξfiles"][i]), data)...);
 
-    writef("$datadir/Δt=$Δt-i=$i-q.txt", q)
-    writef("$datadir/Δt=$Δt-i=$i-p.txt", p)
-    writef("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
+    writef("$datadir/Δt=$Δt-i=$index-q.txt", q)
+    writef("$datadir/Δt=$Δt-i=$index-p.txt", p)
+    writef("$datadir/Δt=$Δt-i=$index-ξ.txt", ξ)
 
     print("Iteration: ", index, ". ");
     control = ξ + φ.(q0, p0) - φ.(q, p);

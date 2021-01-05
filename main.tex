@@ -62,6 +62,7 @@
 \newcommand{\correlation}[1]{\left< #1 \right>}
 \newcommand{\dummy}{\,\cdot\,}
 \newcommand{\expect}[0]{\mathbf{E}}
+\newcommand{\var}[0]{\mathbf{V}}
 \newcommand{\iip}[2]{\left(\!\left(#1, #2\right)\!\right)}
 \newcommand{\nat}{\mathbf N}
 \newcommand{\poly}{\mathbf P}
@@ -275,4 +276,36 @@ Likewise, the other term can be bounded as
     \expect \left( |q_t - q_0 - \xi_t|^4 \right)
     &\leq 3^3 \left( \expect \left( 2 \norm{\phi - \psi}[L^4(\mu)]^4 + 6 t \norm{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right).
 \end{align*}
+
+\paragraph{Estimator diffusion coefficient.}%
+\label{par:estimator_diffusion_coefficient}
+
+Let $U_t = \sqrt{2 D} W_t$ and consider the estimator
+\[
+    2 \hat D = \frac{t_1 U_{t_1}^2 + \dotsb + t_N U_{t_N}^2}{t_1^2 + \dotsb + t_N^2},
+\]
+where $t_i = i \Delta_t$.
+This estimator is clearly unbiased: $\expect (\hat D) = D$.
+Let $\xi_i = (U_{t_{i}} - U_{t_{i-1}})/\sqrt{2D \Delta t}$, for $i = 1, \dotsc, N$.
+It holds
+\begin{align*}
+    \frac{\hat D - D}{D}
+    &= 6 \left( \frac{ \sum_{i=1}^{N} \sum_{j=i}^{N} (\xi_i ^2 - 1)  j  + 2 \sum_{i=1}^{N} \sum_{j=i+1}^{N} \sum_{k=i}^{j} \xi_i \xi_j k}
+    {1 + \dotsb + N^2} \right) \\
+    &= 3 \left( \frac{ \sum_{i=1}^{N} (\xi_i ^2 - 1)  (N+1-i)(N+i)  + 2 \sum_{i=1}^{N} \sum_{j=i+1}^{N} \xi_i \xi_j (j+1-i)(j+i)}
+    { N(N+1)(2N+1)} \right).
+\end{align*}
+We calculate
+\begin{align*}
+    \expect \abs{ \frac{\hat D - D}{D} }^2
+    &= 9 \left( \frac{ \sum_{i=1}^{N} \expect (\xi_i ^4 + 1 - 2 \xi_i^2)  (N+1-i)^2 (N+i)^2}
+    { N^2 (N+1)^2 (2N+1)^2} \right) \\
+    &\quad + 36 \left(  \frac{\sum_{i=1}^{N} \sum_{j=i+1}^{N} \expect \left( \abs{\xi_i}^2 \abs{\xi_j}^2 \right) \abs{j+1-i}^2 \abs{j+i}^2}
+    { N^2 (N+1)^2 (2N+1)^2} \right) \\
+    &= 18 \left( \frac{ \sum_{i=1}^{N}  (N+1-i)^2 (N+i)^2}
+    { N^2 (N+1)^2 (2N+1)^2} \right)
+    + 36 \left(  \frac{\sum_{i=1}^{N} \sum_{j=i+1}^{N} \abs{j+1-i}^2 \abs{j+i}^2}
+    { N^2 (N+1)^2 (2N+1)^2} \right).
+\end{align*}
+
 \end{document}

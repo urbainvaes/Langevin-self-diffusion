@@ -28,12 +28,12 @@ function get_diffusion(γ, δ)
     # Control
     if control_type == "galerkin"
         # !!! φ is solution of -Lφ = p (negative sign) !!!
-        Dc, φ, ∂φ = get_controls(γ, true, false)
+        Dc, ψ, ∂ψ = get_controls(γ, true, false)
     elseif control_type == "underdamped"
         Dc = (1/γ)*diff_underdamped(β);
         φ₀ = solution_underdamped();
-        φ(q, p) = φ₀(q, p)/γ
-        ∂φ(q, p) = ∂φ₀(q, p)/γ
+        ψ(q, p) = φ₀(q, p)/γ
+        ∂ψ(q, p) = ∂φ₀(q, p)/γ
     end
     println(@Printf.sprintf("Dc = %.3E", Dc))
 
@@ -61,7 +61,7 @@ function get_diffusion(γ, δ)
     tend = indices[end]*Δt
 
     if δ == 0
-        control = ξend + φ.(q0, p0) - φ.(qend, pend);
+        control = ξend + ψ.(q0, p0) - ψ.(qend, pend);
         to_average_1 = (qend - q0).^2 / (2*tend)
         to_average_2 = Dc .+ (qend - q0).^2 / (2*tend) .- control.^2 / (2*tend)
 
@@ -104,8 +104,8 @@ end
 # Parameters
 γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215,
       .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
-# δs = [-.64, -.32, -.16, -.08, -.04, .0, .04, .08, .16, .32, .64];
-δs = [0.];
+δs = [.0, .04, .08, .16, .32, .64];
+# δs = [0.];
 β = 1;
 
 D11_wo = zeros(length(γs), length(δs));

@@ -2,8 +2,6 @@
 
 import Random
 import Statistics
-import Polynomials
-import QuadGK
 import LinearAlgebra
 import DelimitedFiles
 import Printf
@@ -20,7 +18,7 @@ control_type = length(ARGS) > 0 ? ARGS[1] : "galerkin"
 
 function get_diffusion(γ, δ)
     println("γ=$γ, δ=$δ")
-    datadir = δ == 0 ? "data/$control_type-γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
+    datadir = δ == 0 ? "data/$control_type-γ=$γ/" : "data2d/$control_type-γ=$γ-δ=$δ/"
     if !isdir(datadir)
         return -1
     end
@@ -38,6 +36,9 @@ function get_diffusion(γ, δ)
     println(@Printf.sprintf("Dc = %.3E", Dc))
 
     listfiles = readdir(datadir);
+    if !("q0.txt" in listfiles)
+        return -1;
+    end
     index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
     q0file = filter(s -> occursin(r"q0.txt", s), listfiles)[1];
     p0file = filter(s -> occursin(r"p0.txt", s), listfiles)[1];

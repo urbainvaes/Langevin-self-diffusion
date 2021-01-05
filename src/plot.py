@@ -33,44 +33,35 @@ if δs_underdamped.shape == ():
     D11_wo_underdamped.shape = (len(γs_underdamped), 1)
     σ11_wo_underdamped.shape = (len(γs_underdamped), 1)
 
-# 1D
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)
-for iδ, δ in enumerate(δs_galerkin):
-    # if δ < 0:
-    #     continue
-    ig = np.nonzero(D11_wo_galerkin[:, iδ])[0]
+for iδ, δ in enumerate(δs_underdamped):
     iu = np.nonzero(D11_wo_underdamped[:, iδ])[0]
-
-    γg = γs_galerkin[ig]
     γu = γs_underdamped[iu]
-    yg = D11_wo_galerkin[:, iδ][ig]
     yu = D11_wo_underdamped[:, iδ][iu]
-
-    ifitg, cg = np.where(γg <= 1e-1), [0]
-    if len(ifitg) > 1:
-        cg = np.polyfit(np.log10(γg[ifitg]), np.log10(yg[ifitg, iδ]), deg=1)
-
     ifitu, cu = np.where(γu <= 1e-1), [0]
     if len(ifitu) > 1:
         cu = np.polyfit(np.log10(γu[ifitu]), np.log10(yu[ifitu, iδ]), deg=1)
-
-    ax.loglog(γg, yg, ".-")
     ax.loglog(γu, yu, ".-",
               label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
-
 ax.set_prop_cycle(None)
 for iδ, δ in enumerate(δs_galerkin):
-    # if δ < 0:
-    #     continue
-    ig = np.nonzero(D11_wi_galerkin[:, iδ])[0]
-    iu = np.nonzero(D11_wi_underdamped[:, iδ])[0]
+    ig = np.nonzero(D11_wo_galerkin[:, iδ])[0]
     γg = γs_galerkin[ig]
-    γu = γs_underdamped[iu]
     yg = D11_wo_galerkin[:, iδ][ig]
+    ax.loglog(γg, yg, ".-")
+ax.set_prop_cycle(None)
+for iδ, δ in enumerate(δs_underdamped):
+    iu = np.nonzero(D11_wi_underdamped[:, iδ])[0]
+    γu = γs_underdamped[iu]
     yu = D11_wo_underdamped[:, iδ][iu]
-    ax.loglog(γg, yg, ".--")
     ax.loglog(γu, yu, ".--")
+ax.set_prop_cycle(None)
+for iδ, δ in enumerate(δs_galerkin):
+    ig = np.nonzero(D11_wi_galerkin[:, iδ])[0]
+    γg = γs_galerkin[ig]
+    yg = D11_wo_galerkin[:, iδ][ig]
+    ax.loglog(γg, yg, ".--")
 ax.set_xlabel("$γ$")
 plt.legend()
 plt.show()

@@ -8,7 +8,7 @@ import LinearAlgebra
 import DelimitedFiles
 import Printf
 linalg = LinearAlgebra;
-include("galerkin.jl")
+include("lib_galerkin.jl")
 include("lib_sampling.jl")
 include("lib_underdamped.jl")
 

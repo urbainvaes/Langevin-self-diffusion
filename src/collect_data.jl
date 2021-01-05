@@ -8,18 +8,34 @@ import LinearAlgebra
 import DelimitedFiles
 import Printf
 linalg = LinearAlgebra;
-include("lib.jl");
+include("galerkin.jl")
+include("lib_sampling.jl")
+include("lib_underdamped.jl")
+
+# Parse arguments
+control_type = length(ARGS) > 0 ? ARGS[1] : "galerkin"
 
 # Underdamped limit
 β = 1
-Du = diff_underdamped(β);
-φ₀ = solution_underdamped();
 
 function get_diffusion(γ, δ)
-    datadir = δ == 0 ? "data/γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
+    println("γ=$γ, δ=$δ")
+    datadir = δ == 0 ? "data/$control_type-γ=$γ/" : "data2d/γ=$γ-δ=$δ/"
     if !isdir(datadir)
         return -1
     end
+
+    # Control
+    if control_type == "galerkin"
+        # !!! φ is solution of -Lφ = p (negative sign) !!!
+        Dc, φ, ∂φ = get_controls(γ, true, false)
+    elseif control_type == "underdamped"
+        Dc = (1/γ)*diff_underdamped(β);
+        φ₀ = solution_underdamped();
+        φ(q, p) = φ₀(q, p)/γ
+        ∂φ(q, p) = ∂φ₀(q, p)/γ
+    end
+    println(@Printf.sprintf("Dc = %.3E", Dc))
 
     listfiles = readdir(datadir);
     index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
@@ -45,18 +61,17 @@ function get_diffusion(γ, δ)
     tend = indices[end]*Δt
 
     if δ == 0
-        # Without control
-        term = (qend - q0).^2 / (2*tend)
-        D = Statistics.mean(term)
-        σ = Statistics.std(term)
-        wout_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+        control = ξend + φ.(q0, p0) - φ.(qend, pend);
+        to_average_1 = (qend - q0).^2 / (2*tend)
+        to_average_2 = Dc .+ (qend - q0).^2 / (2*tend) .- control.^2 / (2*tend)
 
-        # With control
-        control = ξend + φ₀.(q0, p0)/γ - φ₀.(qend, pend)/γ;
-        term = (1/γ)*Du .- control.^2 / (2*tend) + term
-        D = Statistics.mean(term)
-        σ = Statistics.std(term)
-        with_control = Dict("D11" => D, "D22" => D, "σ11" => σ, "σ22" => σ)
+        D1 = Statistics.mean(to_average_1);
+        D2 = Statistics.mean(to_average_2);
+        σ1 = Statistics.std(to_average_1);
+        σ2 = Statistics.std(to_average_2);
+
+        wout_control = Dict("D11" => D1, "D22" => D1, "σ11" => σ1, "σ22" => σ1)
+        with_control = Dict("D11" => D2, "D22" => D2, "σ11" => σ2, "σ22" => σ2)
         return (wout_control, with_control)
     end
 
@@ -72,10 +87,10 @@ function get_diffusion(γ, δ)
     wout_control = Dict("D11" => D11, "D22" => D22, "σ11" => σ11, "σ22" => σ22)
 
     # With control
-    control1 = ξend[:, 1] + φ₀.(q0[:, 1], p0[:, 1])/γ - φ₀.(qend[:, 1], pend[:, 1])/γ;
-    control2 = ξend[:, 2] + φ₀.(q0[:, 2], p0[:, 2])/γ - φ₀.(qend[:, 2], pend[:, 2])/γ;
-    term11 = (1/γ)*Du .- control1.^2 / (2*tend) + term11
-    term22 = (1/γ)*Du .- control2.^2 / (2*tend) + term22
+    control1 = ξend[:, 1] + ψ.(q0[:, 1], p0[:, 1]) - ψ.(qend[:, 1], pend[:, 1]);
+    control2 = ξend[:, 2] + ψ.(q0[:, 2], p0[:, 2]) - ψ.(qend[:, 2], pend[:, 2]);
+    term11 = Dc .- control1.^2 / (2*tend) + term11
+    term22 = Dc .- control2.^2 / (2*tend) + term22
     D11 = Statistics.mean(term11)
     D22 = Statistics.mean(term22)
     σ11 = Statistics.std(term11)
@@ -87,9 +102,10 @@ end
 
 
 # Parameters
-γs = [.0001, .000215, .000464, .001, .00215, .00464,
-      .01, .0215, .0464, .1, .215, .464, 1.0];
-δs = [-.64, -.32, -.16, -.08, -.04, .0, .04, .08, .16, .32, .64];
+γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215,
+      .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
+# δs = [-.64, -.32, -.16, -.08, -.04, .0, .04, .08, .16, .32, .64];
+δs = [0.];
 β = 1;
 
 D11_wo = zeros(length(γs), length(δs));
@@ -117,9 +133,9 @@ for iγ in 1:length(γs)
 end
 
 run(`mkdir -p "data"`)
-DelimitedFiles.writedlm("data/data_D11_wo.txt", D11_wo);
-DelimitedFiles.writedlm("data/data_σ11_wo.txt", σ11_wo);
-DelimitedFiles.writedlm("data/data_D11_wi.txt", D11_wi);
-DelimitedFiles.writedlm("data/data_σ11_wi.txt", σ11_wi);
-DelimitedFiles.writedlm("data/data_γs.txt", γs);
-DelimitedFiles.writedlm("data/data_δs.txt", δs);
+DelimitedFiles.writedlm("data/data-$control_type-D11_wo.txt", D11_wo);
+DelimitedFiles.writedlm("data/data-$control_type-σ11_wo.txt", σ11_wo);
+DelimitedFiles.writedlm("data/data-$control_type-D11_wi.txt", D11_wi);
+DelimitedFiles.writedlm("data/data-$control_type-σ11_wi.txt", σ11_wi);
+DelimitedFiles.writedlm("data/data-$control_type-γs.txt", γs);
+DelimitedFiles.writedlm("data/data-$control_type-δs.txt", δs);

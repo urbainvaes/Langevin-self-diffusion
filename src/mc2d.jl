@@ -2,20 +2,29 @@
 import Random
 import Statistics
 import Polynomials
-import QuadGK
 import DelimitedFiles
 import Printf
-include("lib.jl")
+include("lib_galerkin.jl")
+include("lib_sampling.jl")
+include("lib_underdamped.jl")
 
 # PARAMETERS {{{1
 
-# Friction and inverse temperature
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .2;
+# Parse arguments
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1.;
+δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .64;
+control_type = length(ARGS) > 2 ? ARGS[3] : "galerkin"
+
+# Batch number
+batches = length(ARGS) > 3 ? ARGS[4] : "1/1";
+ibatch = parse(Int, match(r"^[^/]*", batches).match);
+nbatches = parse(Int, match(r"[^/]*$", batches).match);
+
+# Inverse temperature
 β = 1;
 
 # Create directory for data
-datadir = "data2d/γ=$γ-δ=$δ"
+datadir = "data2d/$control_type-γ=$γ-δ=$δ/$ibatch"
 run(`rm -rf "$datadir"`)
 run(`mkdir -p "$datadir"`)
 
@@ -43,10 +52,12 @@ d₂V = (q₁, q₂) -> sin(q₂)/2 + δ*cos(q₁)*sin(q₂);
 # MONTE CARLO METHOD {{{1
 
 # Fix seed
-Random.seed!(0);
+Random.seed!(ibatch);
+Random.seed!(floor(Int, 1e6*Random.rand()));
 
 # Number of particles
-np = 5000;
+np_total = 5000;
+np = ceil(Int, (np_total / nbatches))
 
 # Time step and final time
 Δt = .01;
@@ -60,27 +71,33 @@ tf = niter*Δt;
 q0, p0 = sample_gibbs_2d(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np, 2);
 
-# Covariance between Δw and ∫_{0}^{Δt} e^{-γ(Δt-s)} ds
-α = exp(-γ*Δt)
-rt_cov = root_cov(γ, Δt)
+# Control
+if control_type == "galerkin"
+    # !!! φ is solution of -Lφ = p (negative sign) !!!
+    Dc, ψ, ∂ψ = get_controls(γ, true, false)
+elseif control_type == "underdamped"
+    Dc = (1/γ)*diff_underdamped(β);
+    φ₀ = solution_underdamped();
+    ψ(q, p) = φ₀(q, p)/γ
+    ∂ψ(q, p) = ∂φ₀(q, p)/γ
+end
+println(@Printf.sprintf("Dc = %.3E", Dc))
 
-# Track q2 at each iteration
-mean_q² = zeros(niter, 3);
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-mean_q2.txt", "");
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
-DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
+# Covariance matrix of (Δw, ∫ e¯... dW)
+rt_cov = root_cov(γ, Δt);
+α = exp(-γ*Δt);
 
-times = Δt*(1:niter) |> collect;
+# Number of saves
 nsave = 1000;
 nslice = niter ÷ nsave;
 
-# Underdamped limit
-Du = diff_underdamped(β);
-φ₀ = solution_underdamped();
+# Write initial condition to file
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
+DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
 # Integrate the evolution
 for i = 1:niter
-    global p, q
+    global p, q, ξ
 
     # Generate Gaussian increments
     gaussian_increments = rt_cov*Random.randn(2, np)
@@ -88,8 +105,8 @@ for i = 1:niter
     gaussian_increments = rt_cov*Random.randn(2, np)
     Δw₂, gs₂ = gaussian_increments[1, :], gaussian_increments[2, :]
 
-    ξ[:, 1] += (∇p_φ₀.(q[:, 1], p[:, 1])/γ) .* (sqrt(2γ/β)*Δw₁)
-    ξ[:, 2] += (∇p_φ₀.(q[:, 2], p[:, 2])/γ) .* (sqrt(2γ/β)*Δw₂)
+    ξ[:, 1] += (∂ψ.(q[:, 1], p[:, 1])/γ) .* (sqrt(2γ/β)*Δw₁)
+    ξ[:, 2] += (∂ψ.(q[:, 2], p[:, 2])/γ) .* (sqrt(2γ/β)*Δw₂)
     p[:, 1] += - (Δt/2)*d₁V.(q[:, 1], q[:, 2]);
     p[:, 2] += - (Δt/2)*d₂V.(q[:, 1], q[:, 2]);
     q[:, 1] += Δt*p[:, 1];
@@ -99,16 +116,10 @@ for i = 1:niter
     p[:, 1] = α*p[:, 1] + sqrt(2γ/β)*gs₁
     p[:, 2] = α*p[:, 2] + sqrt(2γ/β)*gs₂
 
-    mean_q²[i, 1] = Statistics.mean((q[:, 1]-q0[:, 1]).^2)
-    mean_q²[i, 2] = Statistics.mean((q[:, 1]-q0[:, 1]).*(q[:, 2]-q0[:, 2]))
-    mean_q²[i, 3] = Statistics.mean((q[:, 2]-q0[:, 2]).^2)
     if i % nslice == 0
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
         DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
-        open("$datadir/Δt=$Δt-mean_q2.txt", "a") do io
-            DelimitedFiles.writedlm(io, mean_q²[i-nslice+1:i, :])
-        end
         term11 = (q[:, 1] - q0[:, 1]).^2 / (2*i*Δt)
         term12 = (q[:, 1] - q0[:, 1]).*(q[:, 2] - q0[:, 2]) / (2*i*Δt)
         term22 = (q[:, 2] - q0[:, 2]).^2 / (2*i*Δt)
@@ -120,10 +131,10 @@ for i = 1:niter
         println("Pogress: ", (1000*i) ÷ niter, "‰. ")
         println(@Printf.sprintf("D₁₁ = %.3E, D₁₂ = %.3E, D₂₂ = %.3E, σ₁₁ = %.3E, σ₂₂ = %.3E",
                                 D11, D12, D22, σ11, σ22))
-        control1 = ξ[:, 1] + φ₀.(q0[:, 1], p0[:, 1])/γ - φ₀.(q[:, 1], p[:, 1])/γ;
-        control2 = ξ[:, 2] + φ₀.(q0[:, 2], p0[:, 2])/γ - φ₀.(q[:, 2], p[:, 2])/γ;
-        term11 = (1/γ)*Du .- control1.^2 / (2*i*Δt) + term11
-        term22 = (1/γ)*Du .- control2.^2 / (2*i*Δt) + term22
+        control1 = ξ[:, 1] + ψ.(q0[:, 1], p0[:, 1]) - ψ.(q[:, 1], p[:, 1]);
+        control2 = ξ[:, 2] + ψ.(q0[:, 2], p0[:, 2]) - ψ.(q[:, 2], p[:, 2]);
+        term11 = Dc .- control1.^2 / (2*i*Δt) + term11
+        term22 = Dc .- control2.^2 / (2*i*Δt) + term22
         D11 = Statistics.mean(term11)
         D12 = Statistics.mean(term12)
         D22 = Statistics.mean(term22)

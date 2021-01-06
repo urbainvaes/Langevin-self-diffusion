@@ -14,7 +14,7 @@ include("lib_underdamped.jl")
 
 # Friction and inverse temperature
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1.0;
-δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .64;
+δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .04;
 control_type = length(ARGS) > 2 ? ARGS[3] : "galerkin";
 
 # Inverse temperature
@@ -63,7 +63,7 @@ end
 # Extract data from all batches
 listfiles = readdir(datadir);
 batches = filter(s -> occursin(r"^[0-9]*$", s), listfiles);
-if length(batches) > 1
+if !("Δt=0.01-q0.txt" in listfiles)
     batchdirs = map(s -> "$datadir/$s", batches)
     writefiles = true
 else

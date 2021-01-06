@@ -30,7 +30,7 @@ elseif control_type == "underdamped"
 end;
 
 # Parse the files
-datadir = "data2d/$control_type-γ=$γ-δ=$δ/";
+datadir = "data2d/$control_type-γ=$γ-δ=$δ";
 readf, writef = DelimitedFiles.readdlm, DelimitedFiles.writedlm;
 
 function datafiles(batchdir)

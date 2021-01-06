@@ -14,7 +14,7 @@ include("lib_underdamped.jl")
 control_type = length(ARGS) > 0 ? ARGS[1] : "galerkin"
 
 # Parameters
-β, Δt = 1, .01
+β = 1
 
 function get_diffusion(γ, δ)
     println("γ=$γ, δ=$δ")
@@ -36,7 +36,7 @@ function get_diffusion(γ, δ)
     println(@Printf.sprintf("Dc = %.3E", Dc))
 
     listfiles = readdir(datadir);
-    if !("Δt=$Δt-q0.txt" in listfiles)
+    if !("Δt=0.01-q0.txt" in listfiles)
         return -1;
     end
     index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);

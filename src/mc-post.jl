@@ -62,7 +62,7 @@ end
 # Extract data from all batches
 listfiles = readdir(datadir);
 batches = filter(s -> occursin(r"^[0-9]*$", s), listfiles);
-if length(batches) > 1
+if !("Δt=0.01-q0.txt" in listfiles)
     batchdirs = map(s -> "$datadir/$s", batches)
     writefiles = true
 else

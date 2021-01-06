@@ -106,8 +106,8 @@ for i = 1:niter
     gaussian_increments = rt_cov*Random.randn(2, np)
     Δw₂, gs₂ = gaussian_increments[1, :], gaussian_increments[2, :]
 
-    ξ[:, 1] += (∂ψ.(q[:, 1], p[:, 1])/γ) .* (sqrt(2γ/β)*Δw₁)
-    ξ[:, 2] += (∂ψ.(q[:, 2], p[:, 2])/γ) .* (sqrt(2γ/β)*Δw₂)
+    ξ[:, 1] += ∂ψ.(q[:, 1], p[:, 1]) .* (sqrt(2γ/β)*Δw₁)
+    ξ[:, 2] += ∂ψ.(q[:, 2], p[:, 2]) .* (sqrt(2γ/β)*Δw₂)
     p[:, 1] += - (Δt/2)*d₁V.(q[:, 1], q[:, 2]);
     p[:, 2] += - (Δt/2)*d₂V.(q[:, 1], q[:, 2]);
     q[:, 1] += Δt*p[:, 1];

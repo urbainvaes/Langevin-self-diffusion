@@ -24,7 +24,8 @@ nbatches = parse(Int, match(r"[^/]*$", batches).match);
 β = 1;
 
 # Create directory for data
-datadir = "data2d/$control_type-γ=$γ-δ=$δ/$ibatch"
+appenddir = (nbatches > 1 ? "/$ibatch" : "")
+datadir = "data2d/$control_type-γ=$γ-δ=$δ$appenddir"
 run(`rm -rf "$datadir"`)
 run(`mkdir -p "$datadir"`)
 

@@ -1,7 +1,8 @@
 import numpy as np
 import sympy as sym
 
-N = 20
+# N = 3000
+N = 1
 
 S1, S2 = 0, 0
 

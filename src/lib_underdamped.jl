@@ -1,4 +1,5 @@
 # UNDERDAMPED LIMIT {{{1
+import QuadGK
 import SpecialFunctions
 import Elliptic
 

@@ -1,7 +1,7 @@
 import numpy as np
 import sympy as sym
 
-N = 20
+N = 2
 
 S1, S2 = 0, 0
 

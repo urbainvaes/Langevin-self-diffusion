@@ -1,5 +1,11 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+
+matplotlib.rc('font', size=16)
+matplotlib.rc('font', family='serif')
+matplotlib.rc('text', usetex=True)
+matplotlib.rc('figure', figsize=(12, 6))
 
 γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215, .00464,
       .01, .0215, .0464, .1, .215, .464, 1.]
@@ -62,8 +68,9 @@ ax.set_prop_cycle(None)
 #     γg = γs_galerkin[ig]
 #     yg = D11_wo_galerkin[:, iδ][ig]
 #     ax.loglog(γg, yg, ".--")
-ax.set_xlabel("$γ$")
+ax.set_xlabel("$\gamma$")
 plt.legend()
+plt.savefig("diffusion.pdf")
 plt.show()
 
 for iδ, δ in enumerate(δs_galerkin):
@@ -72,15 +79,17 @@ for iδ, δ in enumerate(δs_galerkin):
     iu = np.nonzero(σ11_wo_underdamped[:, iδ])[0]
     γu = γs_underdamped[iu]
     yu = σ11_wo_underdamped[:, iδ][iu]
-    ax.loglog(γu, σ11_wo_underdamped[:, iδ][iu])
-    ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu], ".--")
+    ax.loglog(γu, σ11_wo_underdamped[:, iδ][iu], label="No variance reduction")
+    ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu], ".--", label="Underdamped control variate")
     ig = np.nonzero(σ11_wo_galerkin[:, iδ])[0]
     γg = γs_galerkin[ig]
     yg = σ11_wo_galerkin[:, iδ][ig]
-    ax.loglog(γg, σ11_wo_galerkin[:, iδ][ig])
-    ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig], ".--")
-    ax.set_xlabel("$γ$")
+    # ax.loglog(γg, σ11_wo_galerkin[:, iδ][ig])
+    ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig], ".--", label="Galerkin control variate")
+    ax.set_xlabel("$\gamma$")
+    ax.set_title("$\delta = {}$".format(δ))
     plt.legend()
+    plt.savefig("var-delta={}.pdf".format(iδ))
     plt.show()
 
 fig, ax = plt.subplots()

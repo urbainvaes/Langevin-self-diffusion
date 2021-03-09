@@ -1,7 +1,12 @@
 import numpy as np
 import sympy as sym
 
+<<<<<<< HEAD
 N = 2
+=======
+# N = 3000
+N = 1
+>>>>>>> 93b75e6626e0b767dcf63bf7541a4a0da20fedba
 
 S1, S2 = 0, 0
 

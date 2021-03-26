@@ -3,22 +3,44 @@ V(q) = (1 - cos(q))/2;
 V¯¹(x) = acos(1 - 2*x)
 Vmin, Vmax = V(0), V(π)
 
-Emax, nE = 10, 50
-nodesE = LinRange(Vmax, Emax, nE + 1)
-nq = 50
-nodesq = LinRange(-pi, pi, nq + 1)
-
 
 # First index = q, second index = E
 # nodes = [(q, E) for q in nodesq, E in nodesE]
 function map2qp(q, E)
-  if E >= Vmax
-    return (q, sqrt(2*(E - V(q))))
-  else
-    q = q/V¯¹(E)
-    return (q, sqrt(2*(E - V(q))))
+  factor = 1
+  if E <= 0
+    E = -E
+    factor = -1
   end
+  epsilon = Vmax/10
+  # epsilon = 0
+  if E >= Vmax + epsilon
+    p = sqrt(2*(E - V(q)))
+  else
+    p = E/(Vmax+epsilon) * sqrt(2*(Vmax + epsilon - V(q)))
+    # p = sqrt(max(0, 2*(E - V(q))))
+  end
+  return (q, factor*p)
 end
+
+
+# function sizeE(e)
+#     if e < Vmax
+#         return Vmax/40
+#     elseif e < 2*Vmax
+#         return Vmax/100
+#     else
+#         return 
+# end
+# Emax = 10
+# fsize(x) = .2*x + Emax*sign(x)*x^10
+
+# nodesE = f.(LinRange(-1, 1, nE + 1))
+Emax, nE = 10, 800
+# nodesE = (x -> x + x^2*sign(x)).(LinRange(-sqrt(Emax), sqrt(Emax), nE + 1))
+nodesE = LinRange(-Emax, Emax, nE + 1)
+nq = 200
+nodesq = LinRange(-pi, pi, nq + 1)
 
 # nodes = [(q, sqrt(2*E - V(q))) for q in nodesq, E in nodesE]
 nodes = [map2qp(q, E) for q in nodesq, E in nodesE];
@@ -52,12 +74,13 @@ end
 # Elements in the volume
 # ======================
 nelem_volume = prod(size(nodes) .- 1)
-elems = zeros(Int, nelem_volume, 4)
+elems = zeros(Int, nelem_volume, 4);
 ielem = 1
 for i in 1:length(nodesE) - 1
   for j in 1:length(nodesq) -1
+    global ielem
     elems[ielem, :] = [ind[j, i], ind[j+1, i],
-                       ind[j+1, i+1], ind[j, i+1]]
+                       ind[j+1, i+1], ind[j, i+1]];
     ielem += 1
   end
 end
@@ -126,10 +149,10 @@ function add_edge_nodes(indices, tag)
 end
 
 # Add nodes on edges
-edge1 = ind[2:end-1, 1]
-edge2 = ind[end, 2:end-1]
-edge3 = reverse(ind[2:end-1, end])
-edge4 = reverse(ind[1, 2:end-1])
+edge1 = ind[2:end-1, 1];
+edge2 = ind[end, 2:end-1];
+edge3 = reverse(ind[2:end-1, end]);
+edge4 = reverse(ind[1, 2:end-1]);
 
 add_edge_nodes(edge1, 1);
 add_edge_nodes(edge2, 2);
@@ -154,7 +177,7 @@ file *= "\n\$EndNodes";
 
 # Add elements
 # ============
-nelems = nelem_points + nelem_edges + nelem_volume
+nelems = nelem_points + nelem_edges + nelem_volume;
 
 file *= """\n\$Elements
 9 $nelems 1 $nelems
@@ -214,7 +237,8 @@ $(ind[end, end]) $(ind[1, end])
 $(size(nodes)[2])";
 
 for i in 1:size(nodes)[2]
-  file *= "\n$(ind[end, i]) $(ind[1, i])";
+   global file
+   file *= "\n$(ind[end, i]) $(ind[1, i])";
 end
 file *= "\n\$EndPeriodic";
 

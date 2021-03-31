@@ -8,22 +8,23 @@ la = LinearAlgebra
 
 # Potential and its derivative
 V(q) = (1 - cos(q))/2;
-γ, β = .00001, 1
+γ, β = 1, 1
 
 # W(x) = 1 + x[2]^2
 
-domain = (-π,π,-10,10)
-partition = (400,400)
-# model = CartesianDiscreteModel(domain, partition, isperiodic=(true,false))
-# model = GmshDiscreteModel("periodic_square.msh")
-model = GmshDiscreteModel("mymesh.msh")
-# model = GmshDiscreteModel("halfmesh.msh")
-
+domain = (-π,π,-6,6)
+partition = (100,200)
 order = 1
 reffe = ReferenceFE(lagrangian, Float64, order)
-V0 = TestFESpace(model,reffe, dirichlet_tags=["top","ptop","bottom","pbottom"])
-# V0 = TestFESpace(model, reffe, conformity=:H1, dirichlet_tags=["top", "ptop", "bottom", "pbottom"])
-# V0 = TestFESpace(model, reffe, conformity=:H1, dirichlet_tags="boundary")
+
+
+model = CartesianDiscreteModel(domain, partition, isperiodic=(true,false))
+V0 = TestFESpace(model, reffe, conformity=:H1, dirichlet_tags="boundary")
+
+# model = GmshDiscreteModel("periodic_square.msh")
+# model = GmshDiscreteModel("mymesh.msh")
+# V0 = TestFESpace(model,reffe, dirichlet_tags=["top","ptop","bottom","pbottom"])
+
 U = TrialFESpace(V0, x -> 0)
 
 degree = 2
@@ -61,7 +62,7 @@ uh = solve(op)
 # znodes = reshape(znodes, size(xnodes))
 # underdamped = φ₀.(xnodes, ynodes) .* exp.(- (β/2) * (V.(xnodes) + ynodes.^2/2))
 # error = γ*znodes - underdamped
-# Plots.contour(xnodes[:, 1], ynodes[1, :], error', 
+# Plots.contour(xnodes[:, 1], ynodes[1, :], error',
 #               fill=(true, :viridis), levels=20, size=(1600,1000))
 # Plots.ylims!((-4, 4))
 

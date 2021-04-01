@@ -23,23 +23,14 @@ function map2qp(q, E)
   return (q, factor*p)
 end
 
-
-# function sizeE(e)
-#     if e < Vmax
-#         return Vmax/40
-#     elseif e < 2*Vmax
-#         return Vmax/100
-#     else
-#         return 
-# end
-# Emax = 10
-# fsize(x) = .2*x + Emax*sign(x)*x^10
-
 # nodesE = f.(LinRange(-1, 1, nE + 1))
-Emax, nE = 10, 800
+Emax, nE = 24, 100
 # nodesE = (x -> x + x^2*sign(x)).(LinRange(-sqrt(Emax), sqrt(Emax), nE + 1))
-nodesE = LinRange(-Emax, Emax, nE + 1)
-nq = 200
+# nodesE = LinRange(-Emax, Emax, nE + 1)
+nodesE = [(LinRange(-6, -sqrt(2*Vmax), 100).^2)./(-2);
+          LinRange(-Vmax, Vmax, 50)[2:end-1];
+          (LinRange(sqrt(2*Vmax), 6, 100).^2)./2];
+nq = 150
 nodesq = LinRange(-pi, pi, nq + 1)
 
 # nodes = [(q, sqrt(2*E - V(q))) for q in nodesq, E in nodesE]

@@ -1,9 +1,10 @@
 #!/usr/bin/env julia
+import Plots
 import Random
 import Statistics
-import Polynomials
 import DelimitedFiles
 import Printf
+include("lib_gridap.jl")
 include("lib_galerkin.jl")
 include("lib_sampling.jl")
 include("lib_underdamped.jl")
@@ -12,7 +13,15 @@ include("lib_underdamped.jl")
 
 # Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin";
+control_type = length(ARGS) > 1 ? ARGS[2] : "underdamped";
+
+if control_type == "underdamped"
+    Control = Underdamped
+elseif control_type == "galerkin"
+    Control = Spectral
+elseif control_type == "gridap"
+    Control = FemGridap
+end
 
 # Batch number
 batches = length(ARGS) > 2 ? ARGS[3] : "1/1";
@@ -57,15 +66,7 @@ q0, p0 = sample_gibbs(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Control
-if control_type == "galerkin"
-    # !!! φ is solution of -Lφ = p (negative sign) !!!
-    Dc, ψ, ∂ψ = get_controls(γ, true, false)
-elseif control_type == "underdamped"
-    Dc = (1/γ)*diff_underdamped(β);
-    φ₀ = solution_underdamped();
-    ψ(q, p) = φ₀(q, p)/γ
-    ∂ψ(q, p) = ∂φ₀(q, p)/γ
-end
+Dc, ψ, ∂ψ = Control.get_controls(γ, false)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
@@ -107,3 +108,9 @@ for i = 1:niter
                                 D1, D2, σ1, σ2))
     end
 end
+
+# control = ξ + ψ.(q0, p0) - ψ.(q, p);
+
+# dx, xmax = .1, 5
+# Plots.histogram(((q - q0).^2 - control.^2)/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf)
+# Plots.histogram((q - q0).^2/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf, size=(2000, 1500))

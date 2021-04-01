@@ -1,3 +1,5 @@
+module Spectral
+
 import FFTW
 import SparseArrays
 import LinearAlgebra
@@ -6,13 +8,10 @@ import Plots
 import DelimitedFiles
 
 sparse = SparseArrays;
-linalg = LinearAlgebra;
+la = LinearAlgebra;
+export get_controls
 
-function get_controls(γ, interpolant, recalculate)
-    if !interpolant
-        return galerkin_solve(γ)
-    end
-
+function get_controls(γ, recalculate)
     datadir = "data/galerkin/γ=$γ";
     if !recalculate && isfile("$datadir/galerkin_q.txt")
         println("Using existing Galerkin solution!")
@@ -25,7 +24,7 @@ function get_controls(γ, interpolant, recalculate)
         Lp = pgrid[end]
     else
         _, solution_fun, dp_solution_fun = galerkin_solve(γ)
-        nq, np, Lp = 100, 100, 9;
+        nq, np, Lp = 200, 400, 9;
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
         pgrid = dp*collect(-np:np);
@@ -80,8 +79,8 @@ function galerkin_solve(γ)
     β = 1
 
     # Potential and its derivative
-    V = q -> (1 - cos(q))/2;
-    dV = q -> sin(q)/2;
+    V(q) = (1 - cos(q))/2;
+    dV(q) = sin(q)/2;
 
     # Normalization constant
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
@@ -275,7 +274,7 @@ function galerkin_solve(γ)
     end
 
     # Assemble the generator
-    I = sparse.sparse(1.0*linalg.I(2*ωmax + 1));
+    I = sparse.sparse(1.0*la.I(2*ωmax + 1));
     minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
     diffp =  tensorize(I, P);
 
@@ -299,4 +298,6 @@ function galerkin_solve(γ)
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
     return (D, solution_fun, dp_solution_fun)
+end
+
 end

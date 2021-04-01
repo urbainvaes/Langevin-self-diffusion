@@ -1,19 +1,22 @@
 using Pkg
 
 dependencies = [
-    "Random",
-    "Statistics",
-    "QuadGK",
-    "Plots",
-    "FFTW",
-    "SparseArrays",
-    "LinearAlgebra",
-    "Polynomials",
-    "SpecialFunctions",
-    "Elliptic",
-    "Plotly",
+    "Arpack",
     "DelimitedFiles",
-    "DifferentialEquations"
+    "DifferentialEquations",
+    "Elliptic",
+    "FFTW",
+    "Gridap",
+    "GridapGmsh",
+    "LinearAlgebra",
+    "Plotly",
+    "Plots",
+    "Polynomials",
+    "QuadGK",
+    "Random",
+    "SparseArrays",
+    "SpecialFunctions",
+    "Statistics",
 ]
 
 Pkg.add(dependencies)

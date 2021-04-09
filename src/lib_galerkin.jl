@@ -14,8 +14,18 @@ sparse = SparseArrays;
 la = LinearAlgebra;
 export get_controls
 
+struct Quadrature
+    nodes::Array{BigFloat}
+    weights::Array{BigFloat}
+end
+
+struct Series
+    sigma::BigFloat
+    coeffs::Array{BigFloat}
+end
+
 function get_controls(γ, recalculate)
-    datadir = "data/galerkin/γ=$γ";
+    datadir = "precom_data/galerkin/γ=$γ";
     if !recalculate && isfile("$datadir/galerkin_q.txt")
         println("Using existing Galerkin solution!")
         q = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
@@ -27,7 +37,7 @@ function get_controls(γ, recalculate)
         Lp = pgrid[end]
     else
         _, solution_fun, dp_solution_fun = galerkin_solve(γ)
-        nq, np, Lp = 200, 400, 9;
+        nq, np, Lp = 300, 500, 9;
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
         pgrid = dp*collect(-np:np);
@@ -79,7 +89,7 @@ function galerkin_solve(γ)
     # PARAMETERS {{{1
 
     # Inverse temperature
-    β, σ = 1, .2
+    β, σ = 1, .1
 
     # Potential and its derivative
     V(q) = (1 - cos(q))/2;
@@ -89,7 +99,8 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 200;
+    # p = 300;
+    p = 30;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
@@ -251,71 +262,15 @@ function galerkin_solve(γ)
         return normalizations .* X
     end
 
-    # function hermite_eval(dmax, p)
-    #     rec_a(d) = 1/sqrt(d+1)
-    #     rec_b(d) = sqrt(d)/sqrt(d+1)
-    #     result = zeros(dmax+1)
-    #     result[1] = 1
-    #     result[2] = p/sqrt(β)
-    #     for i in 2:dmax
-    #         result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-1)*result[i-1]
-    #     end
-    #     return result
-    # end
-
-    function fourier_eval(ωmax, q)
-        result = zeros(2*ωmax + 1)
-        result[1] = 1/sqrt(2π)
-        z, r = 1, exp(q*im)
-        for ω in 1:ωmax
-            z *= r
-            result[2ω] = imag(z)/sqrt(π)
-            result[2ω + 1] = real(z)/sqrt(π)
-        end
-        return result * sqrt(Zν*exp(β*V(q)))
-    end
-
-    function eval_series(series)
-        function result(q, p)
-            Nq, Np = 1 + 2*ωmax, 1 + dmax
-            fevals = fourier_eval(ωmax, q)
-            hevals = hermite_eval(dmax, p)
-            val = 0
-            for i in 1:length(series)
-                iq, ip = multi_indices[i,:]
-                val += series[i]*fevals[iq]*hevals[ip]
-            end
-            return val
-        end
-        return result
-    end
-
     # Assemble the generator
     I = sparse.sparse(1.0*la.I(2*ωmax + 1));
     minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
     diffp = tensorize(I, P);
 
-    struct Quadrature
-        nodes::Array{BigFloat}
-        weights::Array{BigFloat}
-    end
-
-    struct Series
-        sigma::BigFloat
-        coeffs::Array{BigFloat}
-    end
-
     function gauss_hermite(N, σ)
         gq = GaussQuadrature
         nodes, weights = [output for output in gq.hermite(BigFloat, N)]
         return Quadrature(σ*sqrt(big(2))*nodes, weights/sqrt(big(π)))
-    end
-
-    function eval(series, x)
-        d = length(series.coeffs) - 1
-        hermite_evals = hermite_eval(d, x/series.sigma)
-        factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*x.^2/4)
-        return (hermite_evals .* factors')' * series.coeffs
     end
 
     function decompose(f, d, σ)
@@ -343,7 +298,41 @@ function galerkin_solve(γ)
     dp_solution = diffp*solution;
     D = solution'rhs
 
-    # # Turn them into functions
+    function fourier_eval(ωmax, q)
+        result = zeros(2*ωmax + 1)
+        result[1] = 1/sqrt(2π)
+        z, r = 1, exp(qs*im)
+        for ω in 1:ωmax
+            z *= r
+            result[2ω] = imag(z)/sqrt(π)
+            result[2ω + 1] = real(z)/sqrt(π)
+        end
+        return result * sqrt(Zν*exp(β*V(qs)))
+    end
+
+    function gen_hermite_eval(series, ps)
+        d = length(series.coeffs) - 1
+        hermite_evals = hermite_eval(d, ps/series.sigma)
+        factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*ps.^2/4)
+        return (hermite_evals .* factors')' * series.coeffs
+    end
+
+    function eval_series(series)
+        function result(qs, ps)
+            Nq, Np = 1 + 2*ωmax, 1 + dmax
+            fevals = fourier_eval(ωmax, q)
+            hevals = hermite_eval(dmax, ps)
+            val = 0
+            for i in 1:length(series)
+                iq, ip = multi_indices[i,:]
+                val += series[i]*fevals[iq]*hevals[ip]
+            end
+            return val
+        end
+        return result
+    end
+
+    # Turn them into functions
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
     return (D, solution_fun, dp_solution_fun)

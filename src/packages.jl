@@ -5,6 +5,7 @@ dependencies = [
     "DelimitedFiles",
     "DifferentialEquations",
     "Elliptic",
+    "FastGaussQuadrature",
     "FFTW",
     "Gridap",
     "GridapGmsh",

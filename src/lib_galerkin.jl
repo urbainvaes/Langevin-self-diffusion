@@ -1,11 +1,14 @@
 module Spectral
 
+import QuadGK
 import FFTW
 import SparseArrays
 import LinearAlgebra
 import QuadGK
 import Plots
 import DelimitedFiles
+import FastGaussQuadrature
+import GaussQuadrature
 
 sparse = SparseArrays;
 la = LinearAlgebra;
@@ -76,7 +79,7 @@ function galerkin_solve(γ)
     # PARAMETERS {{{1
 
     # Inverse temperature
-    β = 1
+    β, σ = 1, .2
 
     # Potential and its derivative
     V(q) = (1 - cos(q))/2;
@@ -86,11 +89,11 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 400;
+    p = 200;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
-    ωmax, dmax = p÷4, p*2;
+    ωmax, dmax = p, p*2;
 
     # FOURIER TOOLS {{{1
     function flat_fourier(func)
@@ -160,13 +163,14 @@ function galerkin_solve(γ)
     Q = real(T*(prod_operator(β/2*dVf) + diff_operator())*T¯¹);
 
     # HERMITE TOOLS {{{1
-    P = zeros(dmax + 1, dmax + 1);
-    N = zeros(dmax + 1, dmax + 1);
-    for d in 1:dmax
+    P = zeros(dmax + 2, dmax + 2);
+    for d in 1:dmax + 1
         i = d + 1
-        P[i-1, i] = sqrt(β*d)
-        N[i, i] = d
+        P[i-1, i] = sqrt(d)/σ
     end
+    P = P + (β*σ^2 - 1) * (P + P')/2;
+    N = (P'*P)[1:end-1, 1:end-1];
+    P = P[1:end-1, 1:end-1];
 
     # TENSORIZATION {{{1
 
@@ -234,17 +238,30 @@ function galerkin_solve(γ)
         return result
     end
 
-    function hermite_eval(dmax, p)
-        rec_a(d) = 1/sqrt(d+1)
-        rec_b(d) = sqrt(d)/sqrt(d+1)
-        result = zeros(dmax+1)
-        result[1] = 1
-        result[2] = p/sqrt(β)
-        for i in 2:dmax
-            result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-1)*result[i-1]
+    function hermite_eval(dmax, x)
+        X = zeros(BigFloat, dmax + 1, length(x))
+        X[1, :] .+= 1
+        if dmax > 0
+            X[2, :] += x
         end
-        return result
+        for d in 2:dmax
+            X[d+1, :] = x .* X[d, :] - (d-1) * X[d-1, :]
+        end
+        normalizations = 1 ./ sqrt.(factorial.(big.(0:dmax)))
+        return normalizations .* X
     end
+
+    # function hermite_eval(dmax, p)
+    #     rec_a(d) = 1/sqrt(d+1)
+    #     rec_b(d) = sqrt(d)/sqrt(d+1)
+    #     result = zeros(dmax+1)
+    #     result[1] = 1
+    #     result[2] = p/sqrt(β)
+    #     for i in 2:dmax
+    #         result[i+1] = rec_a(i-1)*(p/sqrt(β))*result[i] - rec_b(i-1)*result[i-1]
+    #     end
+    #     return result
+    # end
 
     function fourier_eval(ωmax, q)
         result = zeros(2*ωmax + 1)
@@ -276,12 +293,44 @@ function galerkin_solve(γ)
     # Assemble the generator
     I = sparse.sparse(1.0*la.I(2*ωmax + 1));
     minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
-    diffp =  tensorize(I, P);
+    diffp = tensorize(I, P);
+
+    struct Quadrature
+        nodes::Array{BigFloat}
+        weights::Array{BigFloat}
+    end
+
+    struct Series
+        sigma::BigFloat
+        coeffs::Array{BigFloat}
+    end
+
+    function gauss_hermite(N, σ)
+        gq = GaussQuadrature
+        nodes, weights = [output for output in gq.hermite(BigFloat, N)]
+        return Quadrature(σ*sqrt(big(2))*nodes, weights/sqrt(big(π)))
+    end
+
+    function eval(series, x)
+        d = length(series.coeffs) - 1
+        hermite_evals = hermite_eval(d, x/series.sigma)
+        factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*x.^2/4)
+        return (hermite_evals .* factors')' * series.coeffs
+    end
+
+    function decompose(f, d, σ)
+        σ = big(σ)
+        quad = gauss_hermite(2*d + 1, σ)
+        hermite_evals = hermite_eval(d, quad.nodes/σ)
+        factors = (β*σ^2)^(1/4) * exp.(- (β - 1/σ^2)*quad.nodes.^2/4)
+        coeffs = hermite_evals * (f.(quad.nodes) .* factors .* quad.weights)
+        return Series(σ, coeffs)
+    end
 
     # Right-hand side
     one_q = real(T*flat_fourier(q -> exp(-β*V(q)/2)/sqrt(Zν)));
-    rhs_p = zeros(Np); rhs_p[2] = 1/sqrt(β);
-    one_p = zeros(Np); one_p[1] = 1;
+    one_p = decompose(p -> 1, dmax, σ).coeffs;
+    rhs_p = decompose(p -> p, dmax, σ).coeffs;
     rhs = tensorize_vecs(one_q, rhs_p);
     u = tensorize_vecs(one_q, one_p);
 
@@ -294,7 +343,7 @@ function galerkin_solve(γ)
     dp_solution = diffp*solution;
     D = solution'rhs
 
-    # Turn them into functions
+    # # Turn them into functions
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
     return (D, solution_fun, dp_solution_fun)

@@ -1,5 +1,5 @@
 #!/usr/bin/env julia
-import Plots
+# import Plots
 import Random
 import Statistics
 import DelimitedFiles
@@ -62,7 +62,7 @@ niter = ceil(Int, tf/Δt);
 tf = niter*Δt;
 
 # Position and momentum
-q0, p0 = sample_gibbs(V, β, np);
+q0, p0 = Sampling.sample_gibbs(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Control
@@ -70,7 +70,7 @@ Dc, ψ, ∂ψ = Control.get_controls(γ, false)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
-rt_cov = root_cov(γ, Δt);
+rt_cov = Sampling.root_cov(γ, Δt);
 
 # Number of saves
 nsave = 1000;
@@ -82,6 +82,9 @@ DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
 # Integrate the evolution
 for i = 1:niter
+    if i ÷ 1000 == 0
+        print('.')
+    end
     global p, q, ξ
 
     # Generate Gaussian increments

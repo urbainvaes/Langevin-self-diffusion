@@ -1,14 +1,15 @@
 module Spectral
 
-import QuadGK
-import FFTW
-import SparseArrays
-import LinearAlgebra
-import QuadGK
-import Plots
 import DelimitedFiles
+import FFTW
 import FastGaussQuadrature
 import GaussQuadrature
+import LinearAlgebra
+import QuadGK
+import QuadGK
+import SparseArrays
+import Statistics
+include("lib_sampling.jl")
 
 sparse = SparseArrays;
 la = LinearAlgebra;
@@ -26,30 +27,27 @@ end
 
 function get_controls(γ, recalculate)
     datadir = "precom_data/galerkin/γ=$γ";
+    run(`mkdir -p "$datadir"`);
     if !recalculate && isfile("$datadir/galerkin_q.txt")
         println("Using existing Galerkin solution!")
-        q = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
-        p = DelimitedFiles.readdlm("$datadir/galerkin_p.txt");
+        qgrid = DelimitedFiles.readdlm("$datadir/galerkin_q.txt");
+        pgrid = DelimitedFiles.readdlm("$datadir/galerkin_p.txt");
         solution_values = DelimitedFiles.readdlm("$datadir/galerkin_phi.txt");
         dp_solution_values = DelimitedFiles.readdlm("$datadir/galerkin_dp_phi.txt");
-        dq, dp = q[2, 1] - q[1, 1], p[1, 2] - p[1, 1]
-        qgrid, pgrid = q[:, 1], p[1, :]
+        dq, dp = qgrid[2] - qgrid[1], pgrid[2] - pgrid[1]
         Lp = pgrid[end]
     else
-        _, solution_fun, dp_solution_fun = galerkin_solve(γ)
+        _ignored, solution_fun, dp_solution_fun = galerkin_solve(γ)
         nq, np, Lp = 300, 500, 9;
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
         pgrid = dp*collect(-np:np);
 
-        q = [qgrid[i] for i in 1:(nq+1), j in 1:(2np+1)];
-        p = [pgrid[j] for i in 1:(nq+1), j in 1:(2np+1)];
-        solution_values = solution_fun.(q, p);
-        dp_solution_values = dp_solution_fun.(q, p);
+        solution_values = solution_fun(qgrid, pgrid);
+        dp_solution_values = dp_solution_fun(qgrid, pgrid);
 
-        run(`mkdir -p "$datadir"`);
-        DelimitedFiles.writedlm("$datadir/galerkin_q.txt", q);
-        DelimitedFiles.writedlm("$datadir/galerkin_p.txt", p);
+        DelimitedFiles.writedlm("$datadir/galerkin_q.txt", qgrid);
+        DelimitedFiles.writedlm("$datadir/galerkin_p.txt", pgrid);
         DelimitedFiles.writedlm("$datadir/galerkin_phi.txt", solution_values)
         DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
     end
@@ -77,7 +75,7 @@ function get_controls(γ, recalculate)
         D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
     else
         nsamples = 10^7
-        q, p = sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
+        q, p = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         D = γ*Statistics.mean(∂φ.(q, p).^2)
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end
@@ -99,8 +97,8 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    # p = 300;
-    p = 30;
+    p = 300;
+    # σ, p = 1, 30;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
@@ -262,11 +260,6 @@ function galerkin_solve(γ)
         return normalizations .* X
     end
 
-    # Assemble the generator
-    I = sparse.sparse(1.0*la.I(2*ωmax + 1));
-    minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
-    diffp = tensorize(I, P);
-
     function gauss_hermite(N, σ)
         gq = GaussQuadrature
         nodes, weights = [output for output in gq.hermite(BigFloat, N)]
@@ -281,6 +274,11 @@ function galerkin_solve(γ)
         coeffs = hermite_evals * (f.(quad.nodes) .* factors .* quad.weights)
         return Series(σ, coeffs)
     end
+
+    # Assemble the generator
+    I = sparse.sparse(1.0*la.I(2*ωmax + 1));
+    minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
+    diffp = tensorize(I, P);
 
     # Right-hand side
     one_q = real(T*flat_fourier(q -> exp(-β*V(q)/2)/sqrt(Zν)));
@@ -298,7 +296,7 @@ function galerkin_solve(γ)
     dp_solution = diffp*solution;
     D = solution'rhs
 
-    function fourier_eval(ωmax, q)
+    function fourier_eval(ωmax, qs)
         result = zeros(2*ωmax + 1)
         result[1] = 1/sqrt(2π)
         z, r = 1, exp(qs*im)
@@ -310,24 +308,27 @@ function galerkin_solve(γ)
         return result * sqrt(Zν*exp(β*V(qs)))
     end
 
-    function gen_hermite_eval(series, ps)
-        d = length(series.coeffs) - 1
-        hermite_evals = hermite_eval(d, ps/series.sigma)
-        factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*ps.^2/4)
-        return (hermite_evals .* factors')' * series.coeffs
+    function gen_hermite_eval(dmax, ps, σ)
+        np = length(ps)
+        hermite_evals = hermite_eval(dmax, ps/σ)
+        factors = 1/(β*σ^2)^(1/4) * exp.((β - 1/σ^2)*ps.^2/4)
+        return Float64.(factors .* hermite_evals')
     end
 
     function eval_series(series)
         function result(qs, ps)
-            Nq, Np = 1 + 2*ωmax, 1 + dmax
-            fevals = fourier_eval(ωmax, q)
-            hevals = hermite_eval(dmax, ps)
-            val = 0
+            fevals = hcat(fourier_eval.(ωmax, qs)...)'
+            hevals = gen_hermite_eval(dmax, ps, σ)
+            values = zeros(length(qs), length(ps))
+            step = (length(series) ÷ 100)
             for i in 1:length(series)
-                iq, ip = multi_indices[i,:]
-                val += series[i]*fevals[iq]*hevals[ip]
+                if i ÷ step > (i - 1) ÷ step
+                    print(".")
+                end
+                iq, ip = multi_indices[i, :]
+                values += series[i]*fevals[:, iq]*hevals[:, ip]'
             end
-            return val
+            return values
         end
         return result
     end
@@ -336,6 +337,13 @@ function galerkin_solve(γ)
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
     return (D, solution_fun, dp_solution_fun)
+end
+
+function series_eval(series, ps)
+    d = length(series.coeffs) - 1
+    hermite_evals = hermite_eval(d, ps/series.sigma)
+    factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*ps.^2/4)
+    return (hermite_evals .* factors')' * series.coeffs
 end
 
 end

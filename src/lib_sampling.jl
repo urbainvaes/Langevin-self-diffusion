@@ -1,3 +1,10 @@
+module Sampling
+
+import Statistics
+import LinearAlgebra
+
+linalg = LinearAlgebra
+
 # SAMPLE FROM THE GIBBS DISTRIBUTION {{{1
 function sample_gibbs(V, β, np)
     p = (1/sqrt(β)) * Statistics.randn(np);
@@ -43,4 +50,6 @@ function root_cov(γ, Δt)
         rt_cov = sqrt(Δt)*[1 0; 1 0];
     end
     return rt_cov
+end
+
 end

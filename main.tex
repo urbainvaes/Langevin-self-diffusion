@@ -119,6 +119,7 @@
 \newtheorem{proposition}{Proposition}[section]
 \newtheorem{result}{Result}[section]
 \newtheorem{remark}{Remark}[section]
+\newtheorem{example}{Example}[section]
 \numberwithin{equation}{section}
 
 \newcounter{urbainCounter}
@@ -159,11 +160,17 @@
 
 \begin{document}
 \maketitle
+
+\section{Introduction}%
 Let us first consider the Langevin dynamics in one dimension:
-\begin{align*}
+\begin{subequations}
+\begin{align}
+    \label{eq:Langevin_q}
     \d q &= p \, \d t, \\
+    \label{eq:Langevin_p}
     \d p &= - \derivative*{1}[V]{q}(q) \, \d t - \gamma p \, \d t + \sqrt{2 \gamma \beta^{-1}} \d W_t.
-\end{align*}
+\end{align}
+\end{subequations}
 The generator of the associated Markov semigroup is given by
 \[
     \mathcal L = p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right).
@@ -210,7 +217,7 @@ Using It\^o's isometry, we have
     =  \int_{0}^{t} C_{\phi}(s) \left(1 - \frac{s}{t}\right) \d s  \\
     &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
 \end{align*}
-Since $\abs{C_{\phi}(s)} = \abs{\ip{p}{\e^{s \mathcal L} p}} \leq \norm{\e^{s \mathcal L} p} \leq c_1 \exp\bigl( - c_2 \min(\gamma, \gamma^{-1}) t\bigr)$, it holds
+Since $\abs{C_{\phi}(s)} = \abs{\ip{p}{\e^{s \mathcal L} p}} \leq \norm{p} \, \norm{\e^{s \mathcal L} p} \leq \beta^{-1} c_1 \exp\bigl( - c_2 \min(\gamma, \gamma^{-1}) t\bigr)$, it holds
 \[
     \forall t > 0, \quad \gamma > 0, \qquad
     \abs{\expect\bigl(u(t)\bigr) - D_{\phi}}
@@ -242,6 +249,30 @@ which leads to
 \end{align*}
 The constant on the right-hand side is smaller when $\psi \approx \phi$,
 and when $\psi = 0$ we recover the previous bound.
+
+\begin{example}
+    Consider the case where $V(q) = 0$.
+    In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$ and,
+    applying Itô's formula to this function, we obtain
+    (note that this equation can be derived directly from~\eqref{eq:Langevin_p})
+    \[
+        \gamma^{-1}(p_t - p_0) = - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma^{-1} \beta^{-1}} (W_t - W_0)
+        = q_0 - q_t + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t.
+    \]
+    We deduce, using the explicit solution to the Ornstein--Uhlenbeck equation satisfied by $p$, that
+    \begin{align*}
+        q_t - q_0
+        &= - \gamma^{-1} \left( p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma \beta^{-1}}\int_{0}^{t} \e^{-\gamma (t - s)} \, \d W_s \right)
+        + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t \\
+        &=  - \gamma^{-1} p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma^{-1} \beta^{-1}}\int_{0}^{t} \left(1 - \e^{-\gamma (t - s)}\right) \, \d W_s.
+    \end{align*}
+    Assuming $p_0 \sim \mathcal N(0, \beta^{-1})$,
+    the right-hand side of this equation is a mean-zero Gaussian random variable and,
+    using It\^o's isometry, we calculate that
+    \[
+        \frac{\expect \abs{q_t - q_0}^2}{2t} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{t \gamma} \left(\e^{-\gamma t} - 1\right) \right)
+    \]
+\end{example}
 
 \paragraph{Variance of the estimator.}%
 For the variance, we can obtain a crude bound using

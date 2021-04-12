@@ -18,6 +18,9 @@ D11_wi_galerkin = np.loadtxt("data/data-galerkin-D11_wi.txt")
 D11_wo_galerkin = np.loadtxt("data/data-galerkin-D11_wo.txt")
 σ11_wo_galerkin = np.loadtxt("data/data-galerkin-σ11_wo.txt")
 
+γs_new_galerkin = [.00001, .0001, .001]
+σ11_wi_new_galerkin = [6000,  200, 13]
+
 γs_underdamped = np.loadtxt("data/data-underdamped-γs.txt")
 δs_underdamped = np.loadtxt("data/data-underdamped-δs.txt")
 D11_wi_underdamped = np.loadtxt("data/data-underdamped-D11_wi.txt")
@@ -72,6 +75,27 @@ ax.set_xlabel("$\gamma$")
 plt.legend()
 plt.savefig("diffusion.pdf")
 plt.show()
+
+# δ = 0
+fig, ax = plt.subplots()
+ax.set_prop_cycle(None)
+iu = np.nonzero(σ11_wo_underdamped[:, 0])[0]
+γu = γs_underdamped[iu]
+yu = σ11_wo_underdamped[:, 0][iu]
+ax.loglog(γu, σ11_wo_underdamped[:, 0][iu], label="No variance reduction")
+ax.loglog(γu, σ11_wi_underdamped[:, 0][iu], ".--", label="Underdamped control variate")
+ax.loglog(γs_new_galerkin, σ11_wi_new_galerkin, ".--", label="Spectral Galerkin with more modes")
+ig = np.nonzero(σ11_wo_galerkin[:, 0])[0]
+γg = γs_galerkin[ig]
+yg = σ11_wo_galerkin[:, 0][ig]
+# ax.loglog(γg, σ11_wo_galerkin[:, 0][ig])
+ax.loglog(γg, σ11_wi_galerkin[:, 0][ig], ".--", label="Spectral Galerkin control variate")
+ax.set_xlabel("$\gamma$")
+ax.set_title("$\delta = {}$".format(δ))
+plt.legend()
+plt.savefig("var-delta={}.pdf".format(iδ))
+plt.show()
+
 
 for iδ, δ in enumerate(δs_galerkin):
     fig, ax = plt.subplots()

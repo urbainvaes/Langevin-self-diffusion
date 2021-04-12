@@ -33,7 +33,7 @@ nbatches = parse(Int, match(r"[^/]*$", batches).match);
 
 # Create directory for data
 appenddir = (nbatches > 1 ? "/$ibatch" : "")
-datadir = "data2d/$control_type-γ=$γ$appenddir"
+datadir = "data/$control_type-γ=$γ$appenddir"
 run(`rm -rf "$datadir"`)
 run(`mkdir -p "$datadir"`)
 
@@ -82,8 +82,8 @@ DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
 # Integrate the evolution
 for i = 1:niter
-    if i ÷ 1000 == 0
-        print('.')
+    if i % 1000 == 0
+        print(".")
     end
     global p, q, ξ
 

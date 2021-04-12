@@ -2,7 +2,6 @@ module Spectral
 
 import DelimitedFiles
 import FFTW
-import FastGaussQuadrature
 import GaussQuadrature
 import LinearAlgebra
 import QuadGK
@@ -70,6 +69,7 @@ function get_controls(γ, recalculate)
     ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
 
     # Improve on φ
+    β = 1
     if !recalculate && isfile("$datadir/galerkin_D.txt")
         println("Using existing approximate diffusion coefficient!")
         D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];

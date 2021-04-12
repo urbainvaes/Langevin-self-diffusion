@@ -115,21 +115,21 @@ function fem_solve(γ)
     _get_y(a::VectorValue) = a[2]
 
     # Solution of the Poisson equation
-    p(x) = (1/γ) * x[2];
+    pfun(x) = (1/γ) * x[2];
     ∂qV(x) = (1/γ) * sin(x[1])/2;
     W(x) = β/2 - β^2/4 * x[2]^2
     drift(x) = [-dV(x[1]), x[2]]
-    a(u,v) = ∫( ∂p(u)⋅∂p(v) - W*u*v - p*∂q(u)*v + ∂qV*∂p(u)*v )*dΩ
-    rhs(x) = (1/γ) * x[2] * exp(- (β/2) * (V(x[1]) + x[2]^2/2))
-    b(v) = ∫( v*rhs )*dΩ
-    op = AffineFEOperator(a,b,U,V0)
+    avar(u,v) = ∫( ∂p(u)⋅∂p(v) - W*u*v - pfun*∂q(u)*v + ∂qV*∂p(u)*v )*dΩ
+    rhsfun(x) = (1/γ) * x[2] * exp(- (β/2) * (V(x[1]) + x[2]^2/2))
+    bvar(v) = ∫( v*rhsfun )*dΩ
+    op = AffineFEOperator(avar,bvar,U,V0)
     uh = solve(op)
 
     # (For tests) Normalization
-    # Zβ = sqrt(2π/β) * QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
+    Zβ = sqrt(2π/β) * QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # (For tests) Effective diffusion
-    # D = sum(∫(uh*rhs)*dΩ) * (γ/Zβ)
+    D = sum(∫(uh*rhsfun)*dΩ) * (γ/Zβ)
 
     # Evaluation of the solution at the nodes
     nnodes = length(Ω.node_coords)

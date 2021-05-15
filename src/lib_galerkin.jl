@@ -1,5 +1,6 @@
 module Spectral
 
+import Arpack
 import DelimitedFiles
 import FFTW
 import GaussQuadrature
@@ -9,9 +10,9 @@ import QuadGK
 import SparseArrays
 import Statistics
 include("lib_sampling.jl")
-
 sparse = SparseArrays;
 la = LinearAlgebra;
+
 export get_controls
 
 struct Quadrature
@@ -172,14 +173,14 @@ function galerkin_solve(γ)
     Q = real(T*(prod_operator(β/2*dVf) + diff_operator())*T¯¹);
 
     # HERMITE TOOLS {{{1
-    P = zeros(dmax + 2, dmax + 2);
+    Dp = zeros(dmax + 2, dmax + 2);
     for d in 1:dmax + 1
         i = d + 1
-        P[i-1, i] = sqrt(d)/σ
+        Dp[i-1, i] = sqrt(d)/σ
     end
-    P = P + (β*σ^2 - 1) * (P + P')/2;
-    N = (P'*P)[1:end-1, 1:end-1];
-    P = P[1:end-1, 1:end-1];
+    Dp = Dp + (β*σ^2 - 1) * (Dp + Dp')/2;
+    N = (Dp'*Dp)[1:end-1, 1:end-1];
+    Dp = Dp[1:end-1, 1:end-1];
 
     # TENSORIZATION {{{1
 
@@ -215,22 +216,22 @@ function galerkin_solve(γ)
         return (R, C, V, matCSC.m, matCSC.n)
     end
 
-    function tensorize(qmat, pmat)
-        if (size(qmat)[1], size(pmat)[1]) != size(lin_indices)
+    function tensorize_with_indices(qmat, pmat, indices)
+        if (size(qmat)[1], size(pmat)[1]) != size(indices)
             println("Invalid dimensions!")
         end
         qmat = sparse.sparse(qmat);
         pmat = sparse.sparse(pmat);
-        (Rq, Cq, Vq, np, _) = toCOO(qmat);
-        (Rp, Cp, Vp, nq, _) = toCOO(pmat);
+        (Rq, Cq, Vq, nq, _) = toCOO(qmat);
+        (Rp, Cp, Vp, np, _) = toCOO(pmat);
         R = zeros(Int, length(Vp)*length(Vq));
         C = zeros(Int, length(Vp)*length(Vq));
         local V = zeros(length(Vp)*length(Vq));
         counter = 1;
         for i in 1:length(Rq)
             for j in 1:length(Rp)
-                R[counter] = lin_indices[Rq[i], Rp[j]];
-                C[counter] = lin_indices[Cq[i], Cp[j]];
+                R[counter] = indices[Rq[i], Rp[j]];
+                C[counter] = indices[Cq[i], Cp[j]];
                 V[counter] = Vq[i]*Vp[j];
                 counter += 1
             end
@@ -238,11 +239,14 @@ function galerkin_solve(γ)
         return sparse.sparse(R, C, V, np*nq, np*nq);
     end
 
-    function tensorize_vecs(qvec, pvec)
+    function tensorize_vecs_with_indices(qvec, pvec, indices)
+        Nq, Np = length(qvec), length(pvec)
         result = zeros(Nq*Np)
-        for i in 1:(Nq*Np)
-            iq, ip = multi_indices[i, :]
-            result[i] = qvec[iq]*pvec[ip]
+        for iq in 1:Nq
+            for ip in 1:Np
+                index = indices[iq, ip]
+                result[index] = qvec[iq]*pvec[ip]
+            end
         end
         return result
     end
@@ -277,24 +281,21 @@ function galerkin_solve(γ)
 
     # Assemble the generator
     I = sparse.sparse(1.0*la.I(2*ωmax + 1));
-    minusL = (1/β)*(tensorize(Q', P) - tensorize(Q, P')) + γ*tensorize(I, N);
-    diffp = tensorize(I, P);
+    tensorize(qmat, pmat) = tensorize_with_indices(qmat, pmat, lin_indices);
+    minusL = (1/β)*(tensorize(Q', Dp) - tensorize(Q, Dp')) + γ*tensorize(I, N);
+    diffp = tensorize(I, Dp);
 
     # Right-hand side
     one_q = real(T*flat_fourier(q -> exp(-β*V(q)/2)/sqrt(Zν)));
     one_p = decompose(p -> 1, dmax, σ).coeffs;
     rhs_p = decompose(p -> p, dmax, σ).coeffs;
+    tensorize_vecs(qvec, pvec) = tensorize_vecs_with_indices(qvec, pvec, lin_indices)
     rhs = tensorize_vecs(one_q, rhs_p);
     u = tensorize_vecs(one_q, one_p);
 
     # Matrix
     A = [[minusL u]; [u' 0]];
     b = [rhs; 0];
-
-    # Effective diffusion
-    solution = (A\b)[1:end-1];
-    dp_solution = diffp*solution;
-    D = solution'rhs
 
     function fourier_eval(ωmax, qs)
         result = zeros(2*ωmax + 1)
@@ -332,6 +333,93 @@ function galerkin_solve(γ)
         end
         return result
     end
+
+    datadir = "precom_data/galerkin/γ=$γ";
+    if isfile("$datadir/eigenvals.txt")
+        println("Using existing eigenvalue decomposition!")
+        eigenvals = DelimitedFiles.readdlm("$datadir/eigenvals.txt");
+        eigenvecs = DelimitedFiles.readdlm("$datadir/eigenvecs.txt");
+    else
+        eigenvals, eigenvecs = Arpack.eigs(minusL, which=:SM, nev=100)
+        DelimitedFiles.writedlm("$datadir/eigenvals.txt", real.(eigenvals));
+        DelimitedFiles.writedlm("$datadir/eigenvecs.txt", real.(eigenvecs));
+    end
+
+    # For 2d
+    sin_mul = real(T*prod_operator(flat_fourier(q -> sin(q)))*T¯¹);
+    cos_mul = real(T*prod_operator(flat_fourier(q -> cos(q)))*T¯¹);
+    Ip = sparse.sparse(1.0*la.I(dmax + 1));
+    M1 = tensorize(sin_mul, Dp);
+    M2 = tensorize(cos_mul, Ip);
+
+    # Projection of the rhs
+    inner_products = eigenvecs'eigenvecs
+    decomp_rhs = inner_products\(eigenvecs'rhs)
+    D_approx = decomp_rhs'inner_products*(decomp_rhs./eigenvals)
+
+    new_minusL = inner_products .* eigenvals
+    new_inner_products_rhs = eigenvecs'rhs
+    new_sol = new_minusL\new_inner_products_rhs
+    D_approx = new_inner_products_rhs'new_sol
+    new_M1 = eigenvecs'M1*eigenvecs
+    new_M2 = eigenvecs'M2*eigenvecs
+    new_one = eigenvecs'u
+    new_I = sparse.sparse(1.0*la.I(nev));
+
+    nev = size(eigenvecs)[2]
+    twod_multi_indices = zeros(Int, nev*nev, 2);
+    twod_lin_indices = zeros(Int, nev, nev);
+    lin_index = 1;
+    for k in 1:nev
+        for l in 1:nev
+            twod_multi_indices[lin_index,:] = [k l];
+            twod_lin_indices[k, l] = lin_index;
+            lin_index += 1;
+        end
+    end
+    twod_tensorize(op1, op2) = tensorize_with_indices(op1, op2, twod_lin_indices)
+    twod_tensorize_vecs(vec1, vec2) = tensorize_vecs_with_indices(vec1, vec2, twod_lin_indices)
+
+    δ = .1
+    twod_minusL = (twod_tensorize(new_minusL, new_I) + twod_tensorize(new_I, new_minusL)
+                   + δ*twod_tensorize(new_M1, new_M2) + δ*twod_tensorize(new_M2, new_M1))
+    twod_rhs = twod_tensorize_vecs(new_inner_products_rhs, new_one)
+    sol = twod_minusL \ twod_rhs
+
+    # function new_tensorize(op1, op2)
+    #     op1 = sparse.sparse(op1);
+    #     op2 = sparse.sparse(op2);
+    #     (R1, C1, V1, n1, _) = toCOO(op1);
+    #     (R2, C2, V2, n2, _) = toCOO(op2);
+    #     R = zeros(Int, length(V2)*length(V1));
+    #     C = zeros(Int, length(V2)*length(V1));
+    #     local V = zeros(length(V2)*length(V1));
+    #     counter = 1;
+    #     for i in 1:length(R1)
+    #         for j in 1:length(R2)
+    #             R[counter] = new_lin_indices[R1[i], R2[j]];
+    #             C[counter] = new_lin_indices[C1[i], C2[j]];
+    #             V[counter] = V1[i]*V2[j];
+    #             counter += 1
+    #         end
+    #     end
+    #     return sparse.sparse(R, C, V, n1*n2, n1*n2);
+    # end
+    function new_tensorize_vecs(vec1, vec2)
+        result = zeros(nev*nev)
+        for i in 1:(nev*nev)
+            i1, i2 = new_multi_indices[i, :]
+            result[i] = vec1[iq]*vec2[ip]
+        end
+        return result
+    end
+
+    twod = rhs
+
+    # Effective diffusion
+    solution = (A\b)[1:end-1];
+    dp_solution = diffp*solution;
+    D = solution'rhs
 
     # Turn them into functions
     solution_fun = eval_series(solution);

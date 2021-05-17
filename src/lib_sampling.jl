@@ -1,5 +1,6 @@
 module Sampling
 
+import QuadGK
 import Statistics
 import LinearAlgebra
 
@@ -50,6 +51,23 @@ function root_cov(γ, Δt)
         rt_cov = sqrt(Δt)*[1 0; 1 0];
     end
     return rt_cov
+end
+
+
+# Covariance matrix for GLE
+function gle_params(β, γ, ν, Δt)
+    drift = [0 sqrt(γ)/ν; -sqrt(γ)/ν -1/ν^2]
+    diffusion = [0 0; 0 sqrt(2/β/ν^2)]
+    Q = diffusion*diffusion'
+    mean = exp(drift*Δt)
+    self_var = QuadGK.quadgk(t -> exp(drift*t)*Q*exp(drift'*t), 0, Δt)[1]
+    cov_white = QuadGK.quadgk(t -> exp(drift*t)*diffusion, 0, Δt)[1]
+    var_white = [Δt 0; 0 Δt];
+    cov = [var_white cov_white'; cov_white self_var]
+    cov = cov[2:end, 2:end]
+    evals, evecs = linalg.eigen(cov)
+    sqrt_cov = evecs*linalg.diagm(sqrt.(abs.(evals)))*evecs'
+    return mean, sqrt_cov
 end
 
 end

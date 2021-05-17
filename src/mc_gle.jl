@@ -13,10 +13,10 @@ include("lib_underdamped.jl")
 # Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
 ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 1;
-control = length(ARGS) > 2 ? ARGS[3] : "gle";
+control_type = length(ARGS) > 2 ? ARGS[3] : "gle";
 
 # Batch number
-batches = length(ARGS) > 2 ? ARGS[3] : "1/1";
+batches = length(ARGS) > 3 ? ARGS[4] : "1/1";
 ibatch = parse(Int, match(r"^[^/]*", batches).match);
 nbatches = parse(Int, match(r"[^/]*$", batches).match);
 
@@ -59,7 +59,7 @@ q, p, z, ξ = copy(q0), copy(p0), copy(z0), zeros(np);
 # Control
 ν = .2
 
-if control == "gle"
+if control_type == "gle"
     Dc, dz_ψ = Underdamped.get_controls_gle(γ, ν, false)
     _, ψ, _ = Underdamped.get_controls(γ, false)
 else
@@ -89,7 +89,7 @@ for i = 1:niter
     gauss_inc = rt_cov*Random.randn(3, np)
     Δw, gp, gz = gauss_inc[1, :], gauss_inc[2, :], gauss_inc[3, :]
 
-    if control == "gle"
+    if control_type == "gle"
         ξ += dz_ψ.(q, p) .* (sqrt(2/(β*γ*ν^2))*Δw)
     else
         ξ += ∂ψ.(q, p) .* (sqrt(2γ/β)*Δw)

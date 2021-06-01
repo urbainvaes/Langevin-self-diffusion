@@ -60,6 +60,7 @@ end
 function gle_solve(ν)
     qgrid = LinRange(-π, π, 300)
     egrid = LinRange(1.000001, 25, 700)
+    # egrid = LinRange(1.000001, 25, 10)
 
     function Sν(E)
         println(E)
@@ -168,14 +169,14 @@ function get_controls_gle(γ, ν, recalculate)
     end
 
     # Calculate effective diffusion corresponding to discrete gradient
-    if !recalculate && isfile("$datadir/D.txt")
+    if !recalculate && isfile("$datadir/D_nu=$ν.txt")
         println("Using existing approximate diffusion coefficient!")
-        D = dlm.readdlm("$datadir/D.txt")[1];
+        D = dlm.readdlm("$datadir/D_nu=$ν.txt")[1];
     else
         β, nsamples = 1, 10^7
         qsamples, psamples = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         D = 1/(β*γ*ν^2)*Statistics.mean(dz_φ.(qsamples, psamples).^2)
-        DelimitedFiles.writedlm("$datadir/D.txt", D);
+        DelimitedFiles.writedlm("$datadir/D_nu=$ν.txt", D);
     end
 
     return (D, dz_φ)

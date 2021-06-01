@@ -57,8 +57,6 @@ z0 = (1/sqrt(β)) * Statistics.randn(np);
 q, p, z, ξ = copy(q0), copy(p0), copy(z0), zeros(np);
 
 # Control
-ν = .2
-
 if control_type == "gle"
     Dc, dz_ψ = Underdamped.get_controls_gle(γ, ν, false)
     _, ψ, _ = Underdamped.get_controls(γ, false)

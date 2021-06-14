@@ -210,7 +210,7 @@ so both $u(t)$ and $v(t)$ are asymptotically unbiased estimators of $D_{\phi}$.
 \begin{proposition}
     [Bias of the estimator]
     Assume stationary initial conditions $(q_0, p_0) \sim \mu$.
-    Then 
+    Then
     \begin{align*}
         \forall t > 0, \quad \gamma > 0, \qquad
         \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
@@ -262,8 +262,80 @@ We have
     \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \phi} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
     &\leq c_1 \e^{-c_2 \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right),
 \end{align*}
-which concludes the proof of the statement.
+which concludes the proof.
 \end{proof}
+
+\begin{example}
+    [Case of a quadratic potential]
+    Consider the case of the quadratic confining potential $V(q) = \frac{k q^2}{2}$.
+    In this case, the eigenfunctions of $\mathcal L$ are polynomials,
+    with the linear ones and associated eigenvalues being
+    \[
+        v_{\pm}(q, p) =
+        \left( \frac{\gamma \pm \sqrt{\gamma^2 - 4k}}{2} \right) q + p, \\
+        \qquad
+        \lambda_{\pm} = \frac{- \gamma \pm \sqrt{\gamma^2 - 4k}}{2},
+    \]
+    and the function $(q, p) \mapsto p$ is the following linear combination of these functions:
+    \[
+        p =
+        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_+
+        + \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_-.
+    \]
+    Therefore, given that $\ip{v_+}{p} = \ip{v_-}{p} = \beta^{-1}$,
+    the velocity autocorrelation function is
+    \[
+        \ip{\e^{t \mathcal L}p}{p} =
+        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_+ t} +
+        \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_- t} = T_1(t) + T_2(t).
+    \]
+    Although $\lambda_+ = \bigo {\gamma^{-1}}$ as $\gamma \to \infty$,
+    it holds that $\int_{0}^{\infty} T_1(t) \, \d t = \bigo{\gamma^{-1}}$
+    because the factor multiplying the exponential scales as $\bigo {\gamma^{-2}}$.
+\end{example}
+
+\begin{lemma}
+    Let $\mathcal L_{\rm ov} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\e^{-V}) \cap C^{\infty}(\torus)$.
+    Let also
+    \[
+        \widehat u(t) = \e^{t\mathcal L_{\rm ov}} f(q), \qquad
+        u(t) = \e^{t \gamma\mathcal L} \bigl( (q,p) \mapsto f(q) \bigr).
+    \]
+    Then there exists $C > 0$ such that
+    \[
+        \forall t \geq 0, \qquad
+        \norm{u(t)  - \widehat u(t)} = \mathcal O(\gamma^{-1}).
+    \]
+\end{lemma}
+\begin{proof}
+    Let $\widetilde u(q, p, t) = \widehat u(q, t\gammat) + \gamma^{-1} p \, \partial_q \widehat u(q, t) + \gamma^{-2} (\beta^{-1} - p^2) \partial_q^{2} \widehat u$.
+    This expression was found by requiring that
+    \(
+        (\partial_t - \gamma \mathcal L) \widetilde u = \mathcal O(\gamma^{-1}),
+    \)
+    and indeed an explicit calculation gives
+    \begin{align*}
+        (\partial_t - \gamma \mathcal L) \widetilde u
+        &= \gamma^{-1} p \, \partial_t \partial_q \widehat u(q, t) + \gamma^{-2} (\beta^{-1} - p^2) \partial_t \partial_q^{2} \widehat u
+        + \gamma^{-1} p (\beta^{-1} - p^2) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.
+        % &=
+    \end{align*}
+    The right-hand side $\gamma^{-1} r(t)$ has values in $L^2_0(\mu)$ with norm uniformly bounded in time.
+    It holds, with the notation $e(t) = u(t) - \widetilde u(t)$, that
+    \[
+        \partial_t e = \gamma \mathcal L e - \gamma^{-1} r(t), \qquad
+        e(0) = \gamma^{-1} p \, f'(q) + \gamma^{-2} (\beta^{-1} - p^2) f''(q).
+    \]
+    Using Duhamel's formula,
+    we obtain
+    \[
+        e(t) = \e^{t \gamma \mathcal L} \bigl( e(0) \bigr) + \gamma^{-1} \int_{0}^{t} \e^{(t- s) \gamma \mathcal L} r(s) \, \d s.
+    \]
+    Since $\norm{\e^{t\gamma \mathcal L}}[\mathcal B\left(L^2_0(\mu)\right)] \leq C \e^{- \lambda t}$ for any $\gamma \in (1, \infty)$ by standard results,
+    it follows immediately that $\norm{u(t) - \widetilde u(t)} = \mathcal O(\gamma^{-1})$,
+    after which the result follows easily.
+\end{proof}
+
 which leads to
 \begin{align*}
     \forall t > 0, \quad \gamma > 0, \qquad

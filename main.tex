@@ -388,21 +388,37 @@ Likewise, the other term can be bounded as
 \label{sec:auxiliary_technical_results}
 
 \begin{lemma}
-    There exist constants $C$ and $\lambda$ such that
+    Let $f(q, p) = Q(q) P(p)$ with $P \in L^2_0(\e^{-V})$.
+    Then there exist constants $C$ and $\lambda$ such that
     \[
-        \ip{\e^{t \mathcal L}p}{p} \leq C \gamma^{-2} + \e^{-\gamma t}
+        \forall t \geq 0, \qquad
+        \ip{\e^{t \mathcal L}f}{f} \leq C \left( \gamma^{-2} t \e^{- \frac{t}{\gamma}} + \e^{-\gamma t} \right).
     \]
 \end{lemma}
 \begin{proof}
-    Let $u(t) = \e^{t \mathcal L} p$ and $v(t) = u(t) - p \e^{-\gamma t}$.
+    We consider the following decomposition of the generator:
+    \[
+        \mathcal L
+        = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
+        + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
+        =: \mathcal L_{\rm ham} + \gamma \mathcal L_{\rm FD}.
+    \]
+    Let $v(t) = \e^{t \mathcal L} f(q, p) - Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)$.
     The function $v$ satisfies the equation
     \[
-        \partial_t v = \mathcal L v + V'(q) \, \e^{-\gamma t}, \qquad v(0) = 0.
+        \partial_t v = \mathcal L v +  \mathcal L_{\rm ham} (Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)), \qquad v(0) = 0.
     \]
     Using Duhamel's formula, we have
     \[
-        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr) \e^{-\gamma s} \, \d s
+        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s,
     \]
+    and therefore
+    \begin{equation}
+        \label{eq:intermediate_decay_correlation}
+        \e^{t \mathcal L} f(q,p) = Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p) + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s.
+    \end{equation}
+    For $t$ fixed, the function $(q, p) \mapsto \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr)$ is of the form $Q_1(q) P_1(p)+ Q_2(q) P_2(p)$.
+
     By \cref{lemma:backward_kolmogorov_obs_q},
     we have
     \[
@@ -423,6 +439,37 @@ Likewise, the other term can be bounded as
         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
     \]
 \end{proof}
+
+% \begin{proof}
+%     Let $u(t) = \e^{t \mathcal L} p$ and $v(t) = u(t) - p \e^{-\gamma t}$.
+%     The function $v$ satisfies the equation
+%     \[
+%         \partial_t v = \mathcal L v + V'(q) \, \e^{-\gamma t}, \qquad v(0) = 0.
+%     \]
+%     Using Duhamel's formula, we have
+%     \[
+%         v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr) \e^{-\gamma s} \, \d s
+%     \]
+%     By \cref{lemma:backward_kolmogorov_obs_q},
+%     we have
+%     \[
+%         \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr)
+%         = \e^{- (t-s) \frac{1}{\gamma}\mathcal L_{\rm ov}} V' + R(t),
+%         % \leq C \e^{- \frac{\lambda}{\gamma} (t-s)} + \frac{C}{\gamma},
+%     \]
+%     where the remainder term is bounded as $\norm{R(t)} \leq \frac{C}{\gamma}$.
+%     Taking the inner product with $p$,
+%     and noting that the constant-in-$p$ part of the integrand vanishes,
+%     we obtain
+%     \[
+%         \ip{v(t)}{p} = \int_{0}^{t} R(s) \e^{-\gamma s} \, \d s
+%         \leq \frac{C}{\gamma^2}.
+%     \]
+%     so we deduce
+%     \[
+%         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
+%     \]
+% \end{proof}
 
 \begin{lemma}
     \label{lemma:backward_kolmogorov_obs_q}
@@ -488,7 +535,6 @@ Likewise, the other term can be bounded as
     by \cref{lemma:overdamped_langevin_decay_derivatives}.
 \end{proof}
 
-\newpage
 The following result shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 In order to state the result, we define the weighted Sobolev space $H^i(\mu)$ as the subspace of $L^2(\mu)$
 of functions whose derivatives up to order $i$ are in $L^2(\mu)$.

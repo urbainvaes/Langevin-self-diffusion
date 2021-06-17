@@ -148,7 +148,7 @@
 
 % BODY {{{1
 \date{\today}
-\title{Langevin dynamics in the underdamped regime: effective diffusion and variance reduction }
+\title{Variance reduction for calculating the effective diffusion coefficient of Langevin dynamics}
 \author{%
   % G.A. Pavliotis\thanks{Department of Mathematics, Imperial College London (\email{g.pavliotis@imperial.ac.uk})}%
   % \hspace{2mm}\orcid{0000-0002-3468-9227}%
@@ -440,6 +440,18 @@ Likewise, the other term can be bounded as
     \]
 \end{lemma}
 \begin{proof}
+    Throughout this proof, $C$ denotes a positive constant that can change from occurrence to occurrence but is independent of $\gamma$.
+    We recall that there exists a positive constants $\lambda_{\rm Lang}$ such that~\cite{roussel2018spectral,pavliotis2011applied}
+    \begin{equation}
+        \label{eq:decay_langevin}
+        \forall \gamma > 0, \qquad
+        \norm{\e^{t \gamma \mathcal L_{\rm Lang}}}[L^2_0(\mu)] \leq C \e^{- \lambda_{\rm Lang} \min\{1,\gamma^2\} t}.
+    \end{equation}
+    In addition, \cref{lemma:overdamped_langevin_decay_derivatives} implies the existence of $\lambda_{\rm ovd} > 0$ independent of $i$ such that
+    \begin{equation}
+        \label{eq:decay_ovd}
+        \norm{\e^{t \mathcal L_{\rm ovd}}}[H^i(\mu) \cap L^2(\mu)] \leq C \e^{- \lambda_{\rm ovd} t}.
+    \end{equation}
     Let $\widetilde u(q, p, t) = \widehat u(q, t) + \gamma^{-1} p \, \partial_q \widehat u(q, t) + \gamma^{-2} (\beta^{-1} - p^2) \partial_q^{2} \widehat u$.
     An explicit calculation gives
     \begin{align*}
@@ -449,10 +461,9 @@ Likewise, the other term can be bounded as
         % &=
     \end{align*}
     The right-hand side, which we denote by $\gamma^{-1} r(t)$, has values in $L^2_0(\mu)$,
-    and the norm of $r(t)$ is exponentially decreasing in time as $C \e^{-\lambda t}$,
-    for appropriate constants $C$ and $\lambda$ independent of~$\gamma$.
+    and the $L^2(\mu)$ norm of $r(t)$ is bounded uniformly in time by $C \e^{-\lambda_{\rm ovd} t}$ by \eqref{eq:decay_ovd}.
     Using the notation $e(t) = u(t) - \widetilde u(t)$,
-    we deduce from the above equation that
+    we deduce that $e$ satisfies the equation
     \[
         \partial_t e = \gamma \mathcal L e - \gamma^{-1} r, \qquad
         e(0) = \gamma^{-1} p \, f'(q) + \gamma^{-2} (\beta^{-1} - p^2) f''(q).
@@ -462,9 +473,19 @@ Likewise, the other term can be bounded as
     \[
         e(t) = \e^{t \gamma \mathcal L} \bigl( e(0) \bigr) + \gamma^{-1} \int_{0}^{t} \e^{(t- s) \gamma \mathcal L} r(s) \, \d s.
     \]
-    Since there exist appropriate $C > 0$ and $\lambda > 0$ such that $\norm{\e^{t\gamma \mathcal L}}[\mathcal B\left(L^2_0(\mu)\right)] \leq C \e^{- \lambda t}$ for all $\gamma \in (1, \infty)$ ~\cite{roussel2018spectral,pavliotis2011applied},
-    we deduce immediately that $\norm{u(t) - \widetilde u(t)} = \mathcal O(\gamma^{-1})$.
-    The result then follows by noticing that $\norm{\widetilde u(t) - \widehat u(t)} = \mathcal O(\gamma^{-1})$ in the limit as $\gamma \to \infty$.
+    From~\eqref{eq:decay_langevin} we deduce immediately that
+    \begin{align*}
+        e(t)
+        &\leq C \e^{- \lambda_{\rm Lang} t} \norm{e(0)}
+        + \gamma^{-1} \int_{0}^{t} C_1 C_2 \e^{- \lambda_{\rm Lang} (t-s)} \e^{-\lambda_{\rm ovd} s} \d s \\
+        &\leq C \e^{- \lambda t} \norm{e(0)} + \gamma^{-1} C t \e^{- \lambda t},
+    \end{align*}
+    for $\lambda = \min(\lambda_{\rm ovd}, \lambda_{\rm Lang})$.
+    The result then follows by noticing that
+    \[
+        \norm{\widetilde u(t) - \widehat u(t)} \leq C \gamma^{-1} \e^{- \lambda_{\rm ovd} t},
+    \]
+    by \cref{lemma:overdamped_langevin_decay_derivatives}.
 \end{proof}
 
 \newpage
@@ -547,11 +568,12 @@ The associated norm is given by
     \]
     with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
     This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
-    and it is possible to show for all $\lambda \in (0, 1)$ that there is $\varepsilon$ small enough such that
+    and it is possible to show for all $\lambda \in (0, 1)$ that
     \[
-        \frac{1}{2}\derivative*{1}{t} |||u|||_N^2 \leq - 2 R(1 - \lambda) \, |||u|||_N^2.
+        \frac{1}{2}\derivative*{1}{t} |||u|||_N^2 \leq - 2 R(1 - \lambda) \, |||u|||_N^2
     \]
-    The reason for the suboptimal rate is that part of the term $\norm{\partial_q u}^2$, 
+    for $\varepsilon$ sufficiently small.
+    The reason for the suboptimal rate here is that the term $\norm{\partial_q u}^2$,
     obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
     needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_q u}^2$.
 \end{remark}

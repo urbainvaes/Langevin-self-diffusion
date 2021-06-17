@@ -387,12 +387,19 @@ Likewise, the other term can be bounded as
 \section{Auxiliary technical results}%
 \label{sec:auxiliary_technical_results}
 
+In order to state the results, we define the probability measures
+\[
+    \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
+    \qquad \kappa(\d p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \left( - \beta \frac{\abs{p}^2}{2} \right) \d p.
+\]
+
 \begin{lemma}
-    Let $f(q, p) = Q(q) P(p)$ with $P \in L^2_0(\e^{-V})$.
+    Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^1(\nu)$ and $P \in H^1(\kappa) \cap L^2_0(\kappa)$.
     Then there exist constants $C$ and $\lambda$ such that
     \[
+        \forall \gamma > 1, \qquad
         \forall t \geq 0, \qquad
-        \ip{\e^{t \mathcal L}f}{f} \leq C \left( \gamma^{-2} t \e^{- \frac{t}{\gamma}} + \e^{-\gamma t} \right).
+        \ip{\e^{t \mathcal L}f}{f} \leq C \left( \gamma^{-1} t \e^{- \frac{t}{\gamma}} + \e^{-\gamma t} \right).
     \]
 \end{lemma}
 \begin{proof}
@@ -401,23 +408,90 @@ Likewise, the other term can be bounded as
         \mathcal L
         = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
         + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
-        =: \mathcal L_{\rm ham} + \gamma \mathcal L_{\rm FD}.
+        =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
     \]
     Let $v(t) = \e^{t \mathcal L} f(q, p) - Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)$.
     The function $v$ satisfies the equation
     \[
-        \partial_t v = \mathcal L v +  \mathcal L_{\rm ham} (Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)), \qquad v(0) = 0.
+        \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr), \qquad v(0) = 0.
     \]
     Using Duhamel's formula, we have
     \[
-        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s,
+        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s,
     \]
     and therefore
     \begin{equation}
         \label{eq:intermediate_decay_correlation}
-        \e^{t \mathcal L} f(q,p) = Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p) + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s.
+        \e^{t \mathcal L} f(q,p) = Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)
+        + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s.
     \end{equation}
-    For $t$ fixed, the function $(q, p) \mapsto \mathcal L_{\rm ham} \bigl(Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)\bigr)$ is of the form $Q_1(q) P_1(p)+ Q_2(q) P_2(p)$.
+    We calculate
+    \begin{align*}
+        \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)
+        &= Q'(q) p \e^{t \gamma \mathcal L_{\rm FD}} P(p) - V'(q) Q(q) \partial_p(\e^{t \gamma \mathcal L_{\rm FD}} P) (p) \\
+        &=: Q^t_1(q) P^t_1(p) + Q^t_2(q) P^t_2(p).
+    \end{align*}
+    Using the notation $\partial_p^* = \beta p - \partial_p$,
+    we calculate
+    \begin{align*}
+        \norm{P^t_2}^2
+        &= \ip{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}
+        = - \ip{\partial_p^* \partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
+        &= - \ip{\mathcal L_{\rm FD} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P}
+        = - \ip{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)} \\
+        &= - \norm*{\e^{t \gamma \mathcal L_{\rm FD}} (\mathcal L_{\rm FD}^{1/2}P)}^2 \leq \e^{-2\gamma t} \norm*{\mathcal L_{\rm FD}^{1/2} P}^2
+        = \e^{-2\gamma t} \norm*{P'}^2,
+    \end{align*}
+    where we used the standard estimate $\norm*{\e^{t \mathcal L_{\rm FD}}}[\mathcal B \left( L^2_0(\nu) \right)] \leq \e^{- t}$.
+    Likewise,
+    \begin{align*}
+        \norm{\partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} P}^2
+        &= \ip{\partial_p \partial_p^*\e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P}
+        = \ip{(\beta  +\mathcal L_{\rm FD}) \e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
+        &\leq \e^{-2\gamma t} \left( \beta \norm*{P}^2 + \norm*{P'}^2 \right),
+    \end{align*}
+    so $\norm{P^t_1} = \beta^{-1} \norm{ (\partial_p^* - \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} P(p)} \leq \e^{- \gamma t} (\beta^{-1/2}\norm{P} +  2\beta^{-1}\norm{P'})$.
+    Therefore
+    \[
+        \norm{\mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)}
+        \leq C \e^{-\gamma t} \left( \norm*{Q} +  \norm*{Q'}\right) \left( \norm*{P} + \norm*{P'} \right).
+    \]
+    Going back to~\eqref{eq:intermediate_decay_correlation} and using~\eqref{eq:decay_langevin}, we deduce
+    \begin{align*}
+        \norm*{ \e^{t \mathcal L} f(q,p) }
+        &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+        + C \left( \norm*{Q} +  \norm*{Q'}\right) \left( \norm*{P} + \norm*{P'} \right) \int_{0}^{t} \e^{-\frac{1}{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+        &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+        + C \left( \norm*{Q} +  \norm*{Q'}\right) \left( \norm*{P} + \norm*{P'} \right)
+        \left( \frac{\e^{- \frac{t}{\gamma}} - \e^{- \gamma t}}{\gamma - \frac{1}{\gamma}} \right),
+    \end{align*}
+    for all $\gamma > 1$.
+    In particular, there exists $C > 0$ such that
+    \begin{equation}
+        \label{eq:decay_first_result}
+        \forall \gamma > 2, \qquad
+        \norm*{ \e^{t \mathcal L} f(q,p) }
+        \leq C \left( \norm*{Q} +  \norm*{Q'}\right) \left( \norm*{P} + \norm*{P'} \right)
+        \left(\e^{-\gamma t} + \gamma^{-1} \e^{-\gamma^{-1} t}\right).
+    \end{equation}
+    Now observe that
+    \begin{align*}
+        \norm{ \int_{0}^{t} \e^{- (t-s) \mathcal L}  x_i(s) \, \d s }
+        &\leq \norm{ \int_{0}^{t} \e^{- (t-s) \mathcal L}  \bigl( \Pi_p x_i(s) \bigr) \d s }
+        + \norm{ \int_{0}^{t} \e^{- (t-s) \mathcal L}  \bigl(x_i(s) - \Pi_p x_i(s)\bigr)  \d s},
+        % &\leq \norm{ \int_{0}^{t} \e^{- (t-s) \mathcal L}  \bigl( \Pi_p x_i(s) \bigr) \d s }
+        % + \norm{ \int_{0}^{t} \e^{- (t-s) \mathcal L}  \bigl(x_i(s) - \Pi_p x_i(s)\bigr)  \d s} \\
+    \end{align*}
+    and the integrand of the second-term on the right-hand side can be estimated using~\eqref{eq:decay_first_result},
+    taking into account that
+    \[
+        x_i(t) - \Pi_p x_i(t) = Q^s_i(q) P^s_i(p), \qquad i = 1, 2,
+    \]
+    with
+    is of the 
+    Therefore, employing \eqref{eq:decay_first_result} to the functions $f_1$ and $f_2$,
+    we can refine our bound on $\norm*{ \e^{t \mathcal L} f(q,p) }$
+    with
 
     By \cref{lemma:backward_kolmogorov_obs_q},
     we have
@@ -540,8 +614,25 @@ In order to state the result, we define the weighted Sobolev space $H^i(\mu)$ as
 of functions whose derivatives up to order $i$ are in $L^2(\mu)$.
 The associated norm is given by
 \[
-    \norm{u}_i^2 = \norm{f}^2 + \norm*{f'}} + \dotsb + \norm*{f^{(i)}}.
+    \norm{u}_i^2 = \norm{f}^2 + \norm*{f'} + \dotsb + \norm*{f^{(i)}}.
 \]
+
+\begin{lemma}
+    \label{lemma:overdamped_langevin_decay_derivatives}
+    Assume that $f \in L^2_0(\e^{-V}) \cap C^{\infty}(\real^d)$,
+    and let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
+    For any $\lambda \in (0, 1)$ and every $i \geq 0$,
+    there exists $K = K(\lambda, i)$ such that
+    \[
+        \norm*{u(t)}_i^2 \leq K \e^{- 2 R t} \norm*{u(0)}_i^2,
+    \]
+    where $R$ is the constant in the Poincaré inequality associated with $\e^{-V}$,
+    that is
+    \[
+        \forall f \in H^1(\mu) \cap L^2_0(\mu), \qquad
+        \norm*{f}^2 \leq \frac{1}{2R} \norm{\partial_q f}^2.
+    \]
+\end{lemma}
 
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}

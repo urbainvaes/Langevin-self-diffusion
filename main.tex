@@ -388,10 +388,13 @@ Likewise, the other term can be bounded as
 \label{sec:auxiliary_technical_results}
 
 In order to state the results, we define the probability measures
-\[
+\begin{equation}
+    \label{eq:definition_prob_measures}
     \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
     \qquad \kappa(\d p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \left( - \beta \frac{\abs{p}^2}{2} \right) \d p.
-\]
+\end{equation}
+We also define $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$,
+and note that these operators are formally the $L^2(\mu)$ adjoints of $\partial_q$ and $\partial_p$.
 
 \begin{lemma}
     Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^1(\nu)$ and $P \in H^1(\kappa) \cap L^2_0(\kappa)$.
@@ -547,44 +550,62 @@ In order to state the results, we define the probability measures
 
 \begin{lemma}
     \label{lemma:backward_kolmogorov_obs_q}
-    Let $\mathcal L_{\rm ov} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\e^{-V}) \cap C^{\infty}(\torus)$.
+    Let $\mathcal L_{\rm ovd} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\nu) \cap C^{\infty}(\torus)$,
+    where $\nu$ is given in~\eqref{eq:definition_prob_measures}.
     Let also $\bar f(q, p) = f(q)$ and
     \[
-        \widehat u(t) = \e^{t\mathcal L_{\rm ov}} f, \qquad
+        \widehat u(t) = \e^{t\mathcal L_{\rm ovd}} f, \qquad
         u(t) = \e^{t \gamma\mathcal L} \bar f.
     \]
-    Then there exists $C > 0$ such that
+    Then there exist positive constants $C$ and $\lambda$ independent of $f$ and $\gamma$ such that
     \[
         \forall \gamma \geq 1, \qquad
         \sup_{t \geq \!\!0}
-        \norm{u(t)  - \widehat u(t)} \leq \frac{C}{\gamma}.
+        \norm{u(t)  - \widehat u(t)} \leq 
+        C \norm{f}_4 \gamma^{-1} \e^{-\lambda t}.
     \]
 \end{lemma}
 \begin{proof}
-    Throughout this proof, $C$ denotes a positive constant that can change from occurrence to occurrence but is independent of $\gamma$.
+    Throughout this proof, $C$ denotes a positive constant that can change from occurrence to occurrence but is independent of $\gamma$ and $f$.
     We recall that there exists a positive constants $\lambda_{\rm Lang}$ such that~\cite{roussel2018spectral,pavliotis2011applied}
     \begin{equation}
         \label{eq:decay_langevin}
         \forall \gamma > 0, \qquad
-        \norm{\e^{t \gamma \mathcal L_{\rm Lang}}}[L^2_0(\mu)] \leq C \e^{- \lambda_{\rm Lang} \min\{1,\gamma^2\} t}.
+        \norm{\e^{t \gamma \mathcal L_{\rm Lang}}}[\mathcal B\left(L^2_0(\mu)\right)] \leq C \e^{- \lambda_{\rm Lang} \min\{1,\gamma^2\} t}.
     \end{equation}
     In addition, \cref{lemma:overdamped_langevin_decay_derivatives} implies the existence of $\lambda_{\rm ovd} > 0$ independent of $i$ such that
     \begin{equation}
         \label{eq:decay_ovd}
-        \norm{\e^{t \mathcal L_{\rm ovd}}}[H^i(\mu) \cap L^2(\mu)] \leq C \e^{- \lambda_{\rm ovd} t}.
+        \norm{\e^{t \mathcal L_{\rm ovd}}}[\mathcal B\left(H^i_0(\mu)\right)] \leq C \e^{- \lambda_{\rm ovd} t}.
     \end{equation}
-    Let $\widetilde u(q, p, t) = \widehat u(q, t) + \gamma^{-1} p \, \partial_q \widehat u(q, t) + \gamma^{-2} (\beta^{-1} - p^2) \partial_q^{2} \widehat u$.
+    Let 
+    \(
+        \widetilde u(q, p, t) = 
+        \widehat u(q, t) 
+        + \gamma^{-1} p \, \partial_q \widehat u(q, t) 
+        + \gamma^{-2} (p^2 - \beta^{-1}) \partial_q^{2} \widehat u.
+    \)
     An explicit calculation gives
     \begin{align*}
         (\partial_t - \gamma \mathcal L) \widetilde u
-        &= \gamma^{-1} p \, \partial_t \partial_q \widehat u(q, t) + \gamma^{-2} (\beta^{-1} - p^2) \partial_t \partial_q^{2} \widehat u
-        + \gamma^{-1} p (\beta^{-1} - p^2) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.
-        % &=
+        &= \gamma^{-1} p \, \partial_t \partial_q \widehat u(q, t) + \gamma^{-2} (p^2 - \beta^{-1}) \partial_t \partial_q^{2} \widehat u
+        - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.\\
+        &= - \gamma^{-1} p \, \partial_q \partial_q^* \partial_q \widehat u(q, t) - \gamma^{-2} (p^2 - \beta^{-1})  \partial_q^{2} \partial_q^* \partial_q \widehat u
+        - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.
     \end{align*}
-    The right-hand side, which we denote by $\gamma^{-1} r(t)$, has values in $L^2_0(\mu)$,
-    and the $L^2(\mu)$ norm of $r(t)$ is bounded uniformly in time by $C \e^{-\lambda_{\rm ovd} t}$ by \eqref{eq:decay_ovd}.
+    The right-hand side, which we denote by $\gamma^{-1} r(t)$, has values in $L^2_0(\mu)$.
+    By the general Leibniz rule gives,
+    it is simple to show that
+    \[
+        \commut{\partial_q^N}{\partial_q^*}
+        = \commut{\partial_q^N}{\beta V' - \partial_q}
+        = \beta \commut{\partial_q^N}{V'}
+        = \beta \sum_{k=1}^{N} {N \choose k} V^{(k+1)} \partial_q^{(N-k)},
+    \]
+    which can be employed to show that $\norm{r(t)} \leq C \norm{\widehat u(t)}_4$,
+    and so $\norm{r(t)} \leq C \e^{-\lambda_{\rm ovd} t} \norm{f}_4$ by~\eqref{eq:decay_ovd}.
     Using the notation $e(t) = u(t) - \widetilde u(t)$,
-    we deduce that $e$ satisfies the equation
+    we calculate that $e$ satisfies the equation
     \[
         \partial_t e = \gamma \mathcal L e - \gamma^{-1} r, \qquad
         e(0) = \gamma^{-1} p \, f'(q) + \gamma^{-2} (\beta^{-1} - p^2) f''(q).
@@ -598,15 +619,15 @@ In order to state the results, we define the probability measures
     \begin{align*}
         e(t)
         &\leq C \e^{- \lambda_{\rm Lang} t} \norm{e(0)}
-        + \gamma^{-1} \int_{0}^{t} C_1 C_2 \e^{- \lambda_{\rm Lang} (t-s)} \e^{-\lambda_{\rm ovd} s} \d s \\
-        &\leq C \e^{- \lambda t} \norm{e(0)} + \gamma^{-1} C t \e^{- \lambda t},
+        + C \gamma^{-1} \int_{0}^{t} \e^{- \lambda_{\rm Lang} (t-s)} \e^{-\lambda_{\rm ovd} s} \d s \\
+        &\leq C \e^{- \lambda t} \norm{e(0)} + C \norm{f}_4 \gamma^{-1} t \e^{- \lambda t},
     \end{align*}
     for $\lambda = \min(\lambda_{\rm ovd}, \lambda_{\rm Lang})$.
-    The result then follows by noticing that
+    The result then follows by noticing that $\norm{e_0} \leq C \gamma^{-1} \norm{f}_2$ and
     \[
-        \norm{\widetilde u(t) - \widehat u(t)} \leq C \gamma^{-1} \e^{- \lambda_{\rm ovd} t},
+        \norm{\widetilde u(t) - \widehat u(t)} \leq C \norm{f}_4 \gamma^{-1} \e^{- \lambda_{\rm ovd} t},
     \]
-    by \cref{lemma:overdamped_langevin_decay_derivatives}.
+    by \eqref{eq:decay_ovd}.
 \end{proof}
 
 The following result shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.

@@ -488,7 +488,7 @@ In order to state the results, we define the probability measures
         x_i(t) - \Pi_p x_i(t) = Q^s_i(q) P^s_i(p), \qquad i = 1, 2,
     \]
     with
-    is of the 
+    is of the
     Therefore, employing \eqref{eq:decay_first_result} to the functions $f_1$ and $f_2$,
     we can refine our bound on $\norm*{ \e^{t \mathcal L} f(q,p) }$
     with
@@ -610,63 +610,64 @@ In order to state the results, we define the probability measures
 \end{proof}
 
 The following result shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.
-In order to state the result, we define the weighted Sobolev space $H^i(\mu)$ as the subspace of $L^2(\mu)$
-of functions whose derivatives up to order $i$ are in $L^2(\mu)$.
+In order to state the result, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
+of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
 \[
-    \norm{u}_i^2 = \norm{f}^2 + \norm*{f'} + \dotsb + \norm*{f^{(i)}}.
+    \norm{u}_i^2 = \norm{f}^2 + \norm*{\nabla f}^2 + \dotsb + \norm*{\nabla^i f}^2,
 \]
+where  $\nabla^j f$ is the tensor containing the $j$-th order derivatives of of $f$and$\norm{\dummy}$ is the norm of~$L^2(\pi)$,
+applying to tensors in the usual manner.
+We also define $H^{i}_0(\pi) = H^i(\pi) \cap L^2_0(\pi)$,
+and we recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
+\begin{equation}
+    \label{eq:poincare}
+    \tag{P$_R$}
+    \forall f \in H^1(\pi) \cap L^2_0(\pi), \qquad
+    \norm*{f}^2 \leq \frac{1}{2R} \norm{\partial_x f}^2.
+\end{equation}
 
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
-    Assume that $f \in L^2_0(\e^{-V}) \cap C^{\infty}(\real^d)$,
-    and let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
-    For any $\lambda \in (0, 1)$ and every $i \geq 0$,
-    there exists $K = K(\lambda, i)$ such that
+    Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
+    and let $W: \mathcal X \to \real$ be a smooth potential such that the probability measure
     \[
-        \norm*{u(t)}_i^2 \leq K \e^{- 2 R t} \norm*{u(0)}_i^2,
+        \pi(\d x) = \frac{\e^{- \beta W(x)} \d p}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
     \]
-    where $R$ is the constant in the Poincaré inequality associated with $\e^{-V}$,
-    that is
+    satisfies~\eqref{eq:poincare}. 
+    Let also $\mathcal L_{\rm ovd}^W = - W'(p) \partial_p + \beta^{-1} \partial_p^2$ denote the generator of overdamped Langevin dynamics in potential~$W$.
+    If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
+    then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
     \[
-        \forall f \in H^1(\mu) \cap L^2_0(\mu), \qquad
-        \norm*{f}^2 \leq \frac{1}{2R} \norm{\partial_q f}^2.
-    \]
-\end{lemma}
-
-\begin{lemma}
-    \label{lemma:overdamped_langevin_decay_derivatives}
-    Assume that $f \in L^2_0(\e^{-V}) \cap C^{\infty}(\torus)$,
-    and let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
-    For any $\lambda \in (0, 1)$ and every $i \geq 0$,
-    there exists $K = K(\lambda, i)$ such that
-    \[
-        \norm*{u(t)}_i^2 \leq K \e^{- 2 R t} \norm*{u(0)}_i^2,
-    \]
-    where $R$ is the constant in the Poincaré inequality associated with $\e^{-V}$,
-    that is
-    \[
-        \forall f \in H^1(\mu) \cap L^2_0(\mu), \qquad
-        \norm*{f}^2 \leq \frac{1}{2R} \norm{\partial_q f}^2.
+        \norm*{\e^{t \mathcal L_{\rm ovd}^W} f}_i \leq K \e^{- 2 R t} \norm*{f}_i.
     \]
 \end{lemma}
 \begin{proof}
-    Let $i \geq 0$ and $\seminorm{u}_i = \norm*{(- \mathcal L_{\rm ovd})^{i/2} u}$.
-    Since $\mathcal L_{\rm ovd}$ commutes with $(-\mathcal L_{\rm ovd})^{i/2}$,
+    For simplicity, we consider only the case where $\mathcal X = \torus^d$,
+    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}^W} f \in H^i_0(\torus^d)$ because
+    the state space is compact and $\e^{t \mathcal L_{\rm ovd}^W} f \in C^{\infty}(\torus^d)$ by ellipticity.
+    To lighten notations,
+    we also confine ourselves to the one-dimensional setting $d = 1$,
+    but the proof carries over \emph{mutatis mutandis} to the multi-dimensional case.
+
+    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
+     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
+    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
     it holds that
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_i^2 = \ip{\mathcal L_{\rm ovd} (-\mathcal L_{\rm ovd})^{i/2} u}{(- \mathcal L_{\rm ovd})^{i/2} u}.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
     \]
-    Introducing $\partial_q^* = \beta V' - \partial_q$
-    and noting that $\mathcal L_{\rm ovd} = - \partial_q^* \partial_q$,
+    Introducing $\partial_x^* = \beta V' - \partial_x$
+    and noting that $\mathcal L_{\rm ovd}^W = - \partial_x^* \partial_x$,
     we obtain
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_i^2 = - \norm*{\partial_q (-\mathcal L_{\rm ovd})^{i/2} u}.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\partial_x (-\mathcal L_{\rm ovd}^W)^{j/2} u}.
     \]
-    Since $(-\mathcal L_{\rm ovd})^{i/2} u \in L^2_0(\mu)$,
-    we can apply Poincar\'e's inequality, which gives
+    Since $(-\mathcal L_{\rm ovd}^W)^{j/2} u \in L^2_0(\pi)$,
+    we can apply Poincar\'e's inequality~\eqref{eq:poincare}, 
+    which gives
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_i^2 \leq - 2R \seminorm{u}_i^2,
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 \leq - 2R \seminorm{u}_j^2,
     \]
     implying the exponential convergence estimate
     \begin{equation}
@@ -674,45 +675,47 @@ The associated norm is given by
         \forall t \geq 0, \qquad
         \seminorm{u(t)}_i \leq \e^{- 2 R t} \seminorm{u(0)}_i.
     \end{equation}
-    Applying this estimate with $i = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
-    For~$i = 1$, it holds for sufficiently regular $h$ that
+    Applying this estimate with $j = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
+    For~$j = 1$, it holds for sufficiently regular $h$ that
     \[
-        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd})^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd} h}{h}} = \norm{\partial_q h},
+        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \norm{\partial_x h},
     \]
-    so~\eqref{eq:exponential_convergence} implies the exponential convergence of $\norm{\partial_q u}$.
-    For $i = 2$, we calculate using the commutator relation $\commut{\partial_q}{\partial_q^*} = \beta V''$ that
+    so~\eqref{eq:exponential_convergence} implies the exponential convergence of $\norm{\partial_x u}$.
+    For $j = 2$, we calculate using the commutator relation $\commut{\partial_x}{\partial_x^*} = \beta V''$ that
     \[
-        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}f}^2
-        = \ip{\partial_q^* \partial_q h}{\partial_q^* \partial_q h}
-        = \norm*{\partial_q^2 h}^2 + \ip{V'' \partial_q h}{\partial_q h}.
+        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
+        = \ip{\partial_x^* \partial_x h}{\partial_x^* \partial_x h}
+        = \norm*{\partial_x^2 h}^2 + \ip{V'' \partial_x h}{\partial_x h}.
     \]
     Therefore~\eqref{eq:exponential_convergence} implies that
     \begin{align*}
-        \norm*{\partial_q u}^2
-        &\leq \abs{\ip{V'' \partial_q u}{\partial_q u}} + \e^{-4Rt} \bigl( \norm{\partial_q^2 u(0)}^2 + \ip{V'' \partial_q u(0)}{\partial_q u(0)} \bigr) \\
-        &\leq \norm*{V''}_{\infty} \norm{\partial_q u}^2 + \e^{-4Rt} \bigl( \norm{\partial_q^2 u(0)}^2 + \norm*{V''}_{\infty} \norm*{\partial_q u(0)}^2 \bigr),
+        \norm*{\partial_x^2 u}^2
+        &\leq \abs{\ip{V'' \partial_x u}{\partial_x u}} + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \ip{V'' \partial_x u(0)}{\partial_x u(0)} \bigr) \\
+        &\leq \norm*{V''}_{\infty} \norm{\partial_x u}^2 + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \norm*{V''}_{\infty} \norm*{\partial_x u(0)}^2 \bigr),
     \end{align*}
     and using the exponential convergence of the first term on the right-hand side,
     which was proved in the previous step,
-    allows to conclude that $\norm*{\partial_q^2 u} \leq K \e^{-2 Rt} \norm*{u}^2$ for some an appropriate constant $K \geq 1$.
+    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}^2$ for some appropriate constant $K \geq 1$.
     This procedure can then be repeated in order to deduce the statement.
 \end{proof}
+
+\newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
 \begin{remark}
     An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
     to define an auxiliary norm
     \[
-        ||| u |||_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_q u}^2 + \dotsc + a_N \norm*{\partial_q^N u}^2,
+        \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
     \]
     with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
     This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
     and it is possible to show for all $\lambda \in (0, 1)$ that
     \[
-        \frac{1}{2}\derivative*{1}{t} |||u|||_N^2 \leq - 2 R(1 - \lambda) \, |||u|||_N^2
+        \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
     \]
     for $\varepsilon$ sufficiently small.
-    The reason for the suboptimal rate here is that the term $\norm{\partial_q u}^2$,
+    The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
     obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
-    needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_q u}^2$.
+    needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
 \end{remark}
 
 \bibliographystyle{plain}

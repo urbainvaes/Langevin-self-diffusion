@@ -182,10 +182,12 @@ Let $\phi$ denote the solution to
 \]
 and suppose that $\psi$ denote an approximation of $\phi$.
 By It\^o's formula, it holds
-\begin{align*}
+\begin{align}
+    \notag
     \phi(q_t, p_t) - \phi(q_0, p_0) &= - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\phi]{p}(q_s, p_s) \, \d W_s \\
+    \label{eq:ito_control}
     \psi(q_t, p_t) - \psi(q_0, p_0) &= \int_{0}^{t} (\mathcal L \psi) (q_s, p_s) \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s.
-\end{align*}
+\end{align}
 Let also $u(t)$ and $v(t)$ denote the random variables
 \[
     u(t) = \frac{\abs{q_t - q_0}^2}{2t}
@@ -207,17 +209,161 @@ It holds
 so both $u(t)$ and $v(t)$ are asymptotically unbiased estimators of $D_{\phi}$.
 
 \paragraph{Bias of the estimator.}%
-
+We study in this section the bias of the estimators $u(t)$ and $v(t)$ under stationary initial conditions,
+that is $(q_0, p_0) \sim \mu$.
+In this case, it holds that
+\begin{align*}
+    \expect \bigl(u(t)\bigr)
+    &= \frac{1}{2t} \expect \left( \int_{0}^{t} p_s \, \d s \int_{0}^{t} p_u \, \d u \right)
+    = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (p_s p_u) \, \d s \, \d u \right) \\
+    &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \ip{\e^{\abs{s - u} \mathcal L}p}{p} \, \d s \, \d u \right)
+    =  \int_{0}^{t} \ip{\e^{s \mathcal L}p}{p} \left(1 - \frac{s}{t}\right) \d s  \\
+    &= \int_{0}^{\infty} \ip{\e^{s \mathcal L}p}{p}  \d s + \int_{0}^{t} \ip{\e^{s \mathcal L}p}{p} \min\left(1, \frac{s}{t}\right) \, \d s.
+    % D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
+\end{align*}
+The first term is the effective diffusion coefficient,
+and the second term is the bias.
+In order to obtain a bound on the bias,
+a natural approach is to use a known bound on the Markov semigroup associated with Langevin dynamics~\cite{roussel2018spectral},
+stating that
+\[
+    \forall \gamma > 0, \qquad \forall t \geq 0, \qquad
+    \norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \lambda s \min(\gamma, \gamma^{-1}) \bigr)
+\]
+for appropriate constants $M > 0$ and $\hat \lambda > 0$.
+An application of this bound gives
+\(
+    \ip{\e^{s \mathcal L}p}{p} \leq \norm*{\e^{s \mathcal L}p} \norm*{p} \leq \beta^{-1} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr),
+\)
+which leads to the following estimate on the bias:
+\begin{equation}
+    \label{eq:bias}
+    \abs{\expect_{\mu} u(t) - D}
+    \leq \frac{1}{\beta t}\int_{0}^{\infty} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr) s \, \d s
+    = \frac{\max (\gamma^2, \gamma^{-2})}{\beta \lambda^2 t}.
+\end{equation}
+Since the effective diffusion coefficient scales as $\gamma^1$ in both the underdamped ($\gamma \to 0$) and overdamped limits ($\gamma \to \infty$)~\cite{MR2394704,MR2427108},
+this estimate suggests that the relative bias of the estimator scales as $\max(\gamma^{-1}, \gamma^3) t$ and that,
+consequently, the integration time should scale as $t \propto \max(\gamma^{-1}, \gamma^3)$ in order to meet a given threshold on the relative error.
+It turns out that, in fact, the estimate~\eqref{eq:bias} is not optimal,
+and it is sufficient to choose $t \propto \gamma$ in the overdamped limit.
+We can derive a sharper estimate from the following result:
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
     Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^5(\nu)$ and $P \in H^2_0(\kappa)$.
-    Then there exist constants $C$ and $\lambda$ such that
+    Then there exist constants $C$ and $\lambda$ independent of $\gamma$, $Q$ and $P$ such that
     \[
-        \forall \gamma > 1, \qquad
+        \forall \gamma \geq 1, \qquad
         \forall t \geq 0, \qquad
         \ip{\e^{t \mathcal L}f}{f} \leq C \, \norm{Q}_5  \norm{P}_2 \norm{f}  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right).
     \]
 \end{proposition}
+Applying this result with $f(q, p) = p$, we obtain
+\begin{equation*}
+    \forall \gamma \geq 1, \qquad
+    \abs{\expect_{\mu} u(t) - D}
+    \leq \frac{1}{\beta t}\int_{0}^{\infty} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr) s \, \d s
+    \leq \frac{C}{t}.
+\end{equation*}
+The proof of \cref{proposition:semigroup_meanzero_observable} is postponed to \cref{sec:auxiliary_technical_results}.
+In this section,
+we motivate the result by scrutinizing two examples where
+explicit expressions of the bias or of the velocity auto-correlation can be obtained:
+constant potential and quadratic potential.
+\begin{example}
+    Consider the case where $V(q) = 0$.
+    In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$ and,
+    applying Itô's formula to this function, we obtain
+    (note that this equation can be derived directly from~\eqref{eq:Langevin_p})
+    \[
+        \gamma^{-1}(p_t - p_0) = - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma^{-1} \beta^{-1}} (W_t - W_0)
+        = q_0 - q_t + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t.
+    \]
+    We deduce, using the explicit solution to the Ornstein--Uhlenbeck equation satisfied by $p$, that
+    \begin{align*}
+        q_t - q_0
+        &= - \gamma^{-1} \left( p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma \beta^{-1}}\int_{0}^{t} \e^{-\gamma (t - s)} \, \d W_s \right)
+        + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t \\
+        &=  - \gamma^{-1} p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma^{-1} \beta^{-1}}\int_{0}^{t} \left(1 - \e^{-\gamma (t - s)}\right) \, \d W_s.
+    \end{align*}
+    Assuming $p_0 \sim \mathcal N(0, \beta^{-1})$,
+    the right-hand side of this equation is a mean-zero Gaussian random variable and,
+    using It\^o's isometry, we calculate that
+    \[
+        \frac{\expect \abs{q_t - q_0}^2}{2t} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{t \gamma} \left(\e^{-\gamma t} - 1\right) \right).
+    \]
+    In this example, the relative bias is bounded from by $(t \gamma)^{-1}$.
+\end{example}
+
+\begin{example}
+    [Case of a quadratic potential]
+    \label{example:quadratic}
+    Consider the case of the quadratic confining potential $V(q) = \frac{k q^2}{2}$.
+    In this case, the eigenfunctions of $\mathcal L$ are polynomials,
+    with the linear ones and associated eigenvalues being
+    \[
+        v_{\pm}(q, p) =
+        \left( \frac{\gamma \pm \sqrt{\gamma^2 - 4k}}{2} \right) q + p, \\
+        \qquad
+        \lambda_{\pm} = \frac{- \gamma \pm \sqrt{\gamma^2 - 4k}}{2}.
+    \]
+    The function $(q, p) \mapsto p$ is the following linear combination of these eigenfunctions:
+    \[
+        p =
+        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_+
+        + \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_-.
+    \]
+    Therefore, given that $\ip{v_+}{p} = \ip{v_-}{p} = \beta^{-1}$,
+    the velocity autocorrelation function is
+    \[
+        \ip{\e^{t \mathcal L}p}{p} =
+        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_+ t} +
+        \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_- t} = T_1(t) + T_2(t).
+    \]
+    The velocity autocorrelation function has a similar form that that in \cref{proposition:semigroup_meanzero_observable}.
+    Indeed the factor multiplying the first term scales as $\bigo{\gamma^{-2}}$
+    and $\lambda_+ = \bigo {\gamma^{-1}}$ as $\gamma \to \infty$.
+    Note that, in this non-periodic case, the effective diffusion coefficient is equal to zero.
+    % it holds that $\int_{0}^{\infty} T_1(t) \, \d t = \bigo{\gamma^{-1}}$
+    % because the factor multiplying the exponential scales as $\bigo {\gamma^{-2}}$.
+\end{example}
+
+Let us now calculate the bias of the estimator $v(t)$.
+Using Itô's formula~\eqref{eq:ito_control},
+we obtain
+\begin{align*}
+    \expect_{\mu} v(t)
+    &= D_{\psi} + \left( \frac{1}{2t} \right) \expect_{\mu} \biggl( \abs{q_t - q_0}^2 - \biggl| \int_0^t {\mathcal L \psi}(q_s, p_s) \, \d s \biggr|^2 \biggr) \\
+    &= D_{\psi} +  \frac{1}{2t}  \int_{0}^{t} \Bigl( \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \Bigr) \min\left(1, \frac{s}{t}\right) \d s.
+\end{align*}
+We have
+\begin{align*}
+    \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi}
+    &= \ip{\mathcal L (\phi - \psi)}{\e^{s \mathcal L} \mathcal L \phi + \e^{s \mathcal L^*} \mathcal  L\psi} \\
+    &\leq \norm{\mathcal L(\phi - \psi)}
+    \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \phi} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
+    &\leq c_1 \e^{-c_2 \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right),
+\end{align*}
+
+For an observable $\zeta = \zeta(q, p)$ in $\lp{2}{\mu} \cap \mathcal D(\mathcal L)$,
+we denote $C_{\zeta}(s) := \ip{\mathcal L \zeta}{\e^{s \mathcal L} \mathcal L \zeta}$.
+With this notation, $C_{\phi}$ is the autocorrelation function of the momentum function $(q, p) \mapsto p$.
+It is well known~\cite{roussel2018spectral} that $\norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \hat \lambda s \min(\gamma, \gamma^{-1}) \bigr)$
+for appropriate constants $M > 0$ and $\hat \lambda > 0$,
+so we obtain, using It\^o's isometry,
+\begin{align*}
+    \expect \bigl(v(t)\bigr) - D_{\phi}
+    &= D_{\psi} + \int_{0}^{t} \left(1 - \frac{s}{t}\right) \bigl( C_{\phi}(s) - C_{\psi}(s) \bigr) \, \d s. \\
+    &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) \bigl( C_{\phi}(s) - C_{\psi}(s) \bigr) \, \d s,
+\end{align*}
+
+Then
+\begin{align*}
+    \forall t > 0, \quad \gamma > 0, \qquad
+    \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
+    \leq \frac{c_1}{c_2^2 t} \, \max(\gamma^2, \gamma^{-2}) \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right).
+\end{align*}
+
 
 \begin{proposition}
     [Bias of the estimator]
@@ -242,14 +388,6 @@ so both $u(t)$ and $v(t)$ are asymptotically unbiased estimators of $D_{\phi}$.
         &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) \bigl( C_{\phi}(s) - C_{\psi}(s) \bigr) \, \d s,
     \end{align*}
 
-    \begin{align*}
-        \expect \bigl(u(t)\bigr)
-        &= \frac{1}{2t} \expect \left( \int_{0}^{t} p_s \, \d s \int_{0}^{t} p_u \, \d u \right)
-        = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (p_s p_u) \, \d s \, \d u \right) \\
-        &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} C_{\phi}(\abs{s - u}) \, \d s \, \d u \right)
-        =  \int_{0}^{t} C_{\phi}(s) \left(1 - \frac{s}{t}\right) \d s  \\
-        &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
-    \end{align*}
 Since $\abs{C_{\phi}(s)} = \abs{\ip{p}{\e^{s \mathcal L} p}} \leq \norm{p} \, \norm{\e^{s \mathcal L} p} \leq \beta^{-1} c_1 \exp\bigl( - c_2 \min(\gamma, \gamma^{-1}) t\bigr)$, it holds
 \[
     \forall t > 0, \quad \gamma > 0, \qquad
@@ -277,34 +415,6 @@ We have
 which concludes the proof.
 \end{proof}
 
-\begin{example}
-    [Case of a quadratic potential]
-    Consider the case of the quadratic confining potential $V(q) = \frac{k q^2}{2}$.
-    In this case, the eigenfunctions of $\mathcal L$ are polynomials,
-    with the linear ones and associated eigenvalues being
-    \[
-        v_{\pm}(q, p) =
-        \left( \frac{\gamma \pm \sqrt{\gamma^2 - 4k}}{2} \right) q + p, \\
-        \qquad
-        \lambda_{\pm} = \frac{- \gamma \pm \sqrt{\gamma^2 - 4k}}{2}.
-    \]
-    The function $(q, p) \mapsto p$ is the following linear combination of these eigenfunctions:
-    \[
-        p =
-        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_+
-        + \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \sqrt{\gamma^2 - 4k}} \right) v_-.
-    \]
-    Therefore, given that $\ip{v_+}{p} = \ip{v_-}{p} = \beta^{-1}$,
-    the velocity autocorrelation function is
-    \[
-        \ip{\e^{t \mathcal L}p}{p} =
-        \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_+ t} +
-        \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_- t} = T_1(t) + T_2(t).
-    \]
-    Although $\lambda_+ = \bigo {\gamma^{-1}}$ as $\gamma \to \infty$,
-    it holds that $\int_{0}^{\infty} T_1(t) \, \d t = \bigo{\gamma^{-1}}$
-    because the factor multiplying the exponential scales as $\bigo {\gamma^{-2}}$.
-\end{example}
 
 
 which leads to
@@ -316,29 +426,6 @@ which leads to
 The constant on the right-hand side is smaller when $\psi \approx \phi$,
 and when $\psi = 0$ we recover the previous bound.
 
-\begin{example}
-    Consider the case where $V(q) = 0$.
-    In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$ and,
-    applying Itô's formula to this function, we obtain
-    (note that this equation can be derived directly from~\eqref{eq:Langevin_p})
-    \[
-        \gamma^{-1}(p_t - p_0) = - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma^{-1} \beta^{-1}} (W_t - W_0)
-        = q_0 - q_t + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t.
-    \]
-    We deduce, using the explicit solution to the Ornstein--Uhlenbeck equation satisfied by $p$, that
-    \begin{align*}
-        q_t - q_0
-        &= - \gamma^{-1} \left( p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma \beta^{-1}}\int_{0}^{t} \e^{-\gamma (t - s)} \, \d W_s \right)
-        + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t \\
-        &=  - \gamma^{-1} p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma^{-1} \beta^{-1}}\int_{0}^{t} \left(1 - \e^{-\gamma (t - s)}\right) \, \d W_s.
-    \end{align*}
-    Assuming $p_0 \sim \mathcal N(0, \beta^{-1})$,
-    the right-hand side of this equation is a mean-zero Gaussian random variable and,
-    using It\^o's isometry, we calculate that
-    \[
-        \frac{\expect \abs{q_t - q_0}^2}{2t} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{t \gamma} \left(\e^{-\gamma t} - 1\right) \right)
-    \]
-\end{example}
 
 \paragraph{Variance of the estimator.}%
 For the variance, we can obtain a crude bound using
@@ -407,199 +494,123 @@ In order to state the results, we define the probability measures
     \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
     \qquad \kappa(\d p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \left( - \beta \frac{\abs{p}^2}{2} \right) \d p.
 \end{equation}
-We also define $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$,
-and note that these operators are formally the $L^2(\mu)$ adjoints of $\partial_q$ and $\partial_p$.
+For a measure $\pi$, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
+of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
+The associated norm is given by
+\[
+    \norm{u}_i^2 = \norm{f}^2 + \norm*{\nabla f}^2 + \dotsb + \norm*{\nabla^i f}^2,
+\]
+where  $\nabla^j f$ is the tensor containing the $j$-th order derivatives of $f$ and $\norm{\dummy}$ is the norm of~$L^2(\pi)$,
+generalized to tensors in the usual manner.
+We also define $H^{i}_0(\pi) = H^i(\pi) \cap L^2_0(\pi)$,
+and we recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
+\begin{equation}
+    \label{eq:poincare}
+    \tag{P$_R$}
+    \forall f \in H^1_0(\pi), \qquad
+    \norm*{f}^2 \leq \frac{1}{2R} \norm{\grad f}^2.
+\end{equation}
 
+% In the lemmata below, we focus on the periodic, one-dimensional case.
+We also define $\nabla_q^* = \beta \nabla V(q) - \nabla_q$ and $\nabla_p^* = \beta p - \nabla_p$,
+and note that these operators are formally the $L^2(\mu)$ adjoints of $\nabla_q$ and $\nabla_p$.
+Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$.
+The first lemma shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 \begin{lemma}
-    \label{lemma:initial_lemma}
-    Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^1(\nu)$ and $P \in H^1_0(\kappa)$.
-    Then there exist constants $C$ and $\lambda$ such that
+    \label{lemma:overdamped_langevin_decay_derivatives}
+    Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
+    and let $W: \mathcal X \to \real$ be a smooth potential such that the probability measure
     \[
-        \forall \gamma > 1, \qquad
-        \forall t \geq 0, \qquad
-        \norm*{\e^{t\mathcal L} f}
-        \leq C \norm*{Q}_1 \norm*{P}_1
-        \left( \e^{- \gamma t} + \gamma^{-1} \e^{-\frac{\lambda t}{\gamma}} \right).
+        \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
     \]
-
+    satisfies~\eqref{eq:poincare}.
+    Let also $\mathcal L_{\rm ovd}^W = - W'(p) \partial_p + \beta^{-1} \partial_p^2$ denote the generator of overdamped Langevin dynamics in potential~$W$.
+    If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
+    then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
+    \[
+        \norm*{\e^{t \mathcal L_{\rm ovd}^W} f}_i \leq K \e^{- 2 R t} \norm*{f}_i.
+    \]
 \end{lemma}
-
 \begin{proof}
-    We consider the following decomposition of the generator:
-    \[
-        \mathcal L
-        = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
-        + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
-        =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
-    \]
-    Let $v(t) = \e^{t \mathcal L} f(q, p) - Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)$.
-    The function $v$ satisfies the initial value problem
-    \[
-        \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr), \qquad v(0) = 0.
-    \]
-    Using Duhamel's formula, we have
-    \[
-        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s,
-    \]
-    and therefore
-    \begin{equation}
-        \label{eq:intermediate_decay_correlation}
-        \e^{t \mathcal L} f(q,p) = Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)
-        + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s.
-    \end{equation}
-    We calculate
-    \begin{align*}
-        \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)
-        &= Q'(q) p \e^{t \gamma \mathcal L_{\rm FD}} P(p) - V'(q) Q(q) \partial_p(\e^{t \gamma \mathcal L_{\rm FD}} P) (p) \\
-        &=: Q_1(q) P^t_1(p) + Q_2(q) P^t_2(p).
-    \end{align*}
-    From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
-    we immediately obtain the bound
-    \(
-        \norm{P^t_2} \leq \e^{-2\gamma t} \norm*{P'}.
-    \)
-    Likewise,
-        % &= \ip{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}
-        % = - \ip{\partial_p^* \partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
-        % &= - \ip{\mathcal L_{\rm FD} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P}
-        % = - \ip{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)} \\
-        % &= - \norm*{\e^{t \gamma \mathcal L_{\rm FD}} (\mathcal L_{\rm FD}^{1/2}P)}^2 \leq \e^{-2\gamma t} \norm*{\mathcal L_{\rm FD}^{1/2} P}^2
-        % = \e^{-2\gamma t} \norm*{P'}^2,
-    \begin{align*}
-        \norm{\partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} P}^2
-        &= \ip{\partial_p \partial_p^*\e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P}
-        = \ip{(\beta  + \partial_{p}^* \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
-        &= \beta \norm*{\e^{t \gamma \mathcal L_{\rm FD}} P}^2 + \norm{\partial_p \mathcal L_{\rm FD} \e^{t \gamma \mathcal L_{\rm FD}} P}^2
-        \leq \e^{-2\gamma t} \left( \beta \norm*{P}^2 + \norm*{P'}^2 \right),
-    \end{align*}
-    so $\norm{P^t_1} = \beta^{-1} \norm{ (\partial_p^* - \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} P(p)} \leq \e^{- \gamma t} (\beta^{-1/2}\norm{P} +  2\beta^{-1}\norm{P'})$.
-    In addition, it holds that $\norm{Q_1} + \norm{Q_2} \leq C \norm{Q}_1$,
-    so we deduce
-    \[
-        \norm{\mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)}
-        \leq C \e^{-\gamma t} \norm{Q}_1 \norm{P}_1.
-    \]
-    Going back to~\eqref{eq:intermediate_decay_correlation} and using~\eqref{eq:decay_langevin}, we deduce
-    \begin{align*}
-        \norm*{ \e^{t \mathcal L} f(q,p) }
-        &\leq \norm{Q} \norm{P} \e^{-\gamma t}
-        + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
-        % &\leq \norm{Q} \norm{P} \e^{-\gamma t}
-        % + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\min \left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\} }{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
-        &\leq \norm{Q} \norm{P} \e^{-\gamma t}
-        + C \norm{Q}_1 \norm{P}_1
-        \left( \frac{\e^{- \frac{\min\left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\}}{\gamma}t} - \e^{- \gamma t}}{\gamma - \frac{\min\left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\}}{\gamma}} \right) \qquad \forall \gamma \geq 1,
-    \end{align*}
-    which allows to conclude.
-\end{proof}
+    For simplicity, we consider only the case where $\mathcal X = \torus^d$,
+    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}^W} f \in H^i_0(\torus^d)$ because
+    the state space is compact and $\e^{t \mathcal L_{\rm ovd}^W} f \in C^{\infty}(\torus^d)$ by ellipticity.
+    To lighten notations,
+    we also confine ourselves to the one-dimensional setting $d = 1$,
+    but the proof carries over \emph{mutatis mutandis} to the multi-dimensional case.
 
-\begin{proof}
-    [Proof of \cref{proposition:semigroup_meanzero_observable}]
-    Our starting point is \eqref{eq:intermediate_decay_correlation}.
-    Using the same notation as in the proof of \cref{lemma:initial_lemma},
-    we consider the decomposition
-    \begin{align}
-        \notag
-        Q_1(q) P^t_1(p) + Q_2(q) P^t_2(p)
-        =& \big( Q_1(q) \, \expect_\kappa P^t_1 + Q_2(q) \, \expect_\kappa P^t_2 \big) \\
-        \label{eq:decomposition}
-         &+ \Bigl( Q_1(q) \, \bigl(P^t_1(p) - \expect_\kappa P^t_1\bigr) + Q_2(q) \, \bigl(P^t_2(p) - \expect_\kappa P^t_2\bigr) \Bigr),
-    \end{align}
-    and, correspondingly,
-    \begin{align}
-        \notag
-        \ip{\e^{t \mathcal L} f}{f} 
-        % &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
-        % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
-        &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f} 
-        + \sum_{i\in\{1,2\}} \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Bigl( Q_i(q) \, \expect_\kappa P^s_i \Bigr)}{f} \, \d s\\
-        \label{eq:intermediate_decay_correlation}
-        &\quad + \sum_{i\in\{1,2\}} \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Bigl( Q_i(q) \, \bigl(P^s_i(p) - \expect_\kappa P^s_i \bigr) \Bigr)}{f} \, \d s.
-    \end{align}
-    The first term clearly satisfies $\abs{ \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f} } \leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t}$.
-    In order to bound the second term, we use \cref{lemma:backward_kolmogorov_obs_q},
+    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
+     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
+    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
+    it holds that
+    \[
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
+    \]
+    Introducing $\partial_x^* = \beta W' - \partial_x$
+    and noting that $\mathcal L_{\rm ovd}^W = - \partial_x^* \partial_x$,
+    we obtain
+    \[
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\partial_x (-\mathcal L_{\rm ovd}^W)^{j/2} u}.
+    \]
+    Since $(-\mathcal L_{\rm ovd}^W)^{j/2} u \in L^2_0(\pi)$,
+    we can apply Poincar\'e's inequality~\eqref{eq:poincare},
     which gives
+    \[
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 \leq - 2R \seminorm{u}_j^2,
+    \]
+    implying the exponential convergence estimate
     \begin{equation}
-        \label{eq:semigroup_on_q_part}
-        \e^{u \mathcal L} \big( Q_i(q) \, \expect_\kappa P^t_i \bigr)
-        =  \e^{(u/\gamma) \mathcal L_{\rm ovd}} Q_i(q) \, \expect_\kappa P^t_i + R_t^t(u),
-        \qquad i = 1, 2,
+        \label{eq:exponential_convergence}
+        \forall t \geq 0, \qquad
+        \seminorm{u(t)}_i \leq \e^{- 2 R t} \seminorm{u(0)}_i.
     \end{equation}
-    with a remainder term satisfying
-    \begin{equation}
-        \label{eq:bound_remainder}
-        \norm{R_i^t(u)} \leq C \Bigl( \norm{Q_i}_4 \expect_\kappa P^t_i \Bigr) \gamma^{-1} \e^{-\lambda \gamma^{-1} u}.
-    \end{equation}
-    Employing the definitions of $P^t_1$ and $P^t_2$,
-    we have
+    Applying this estimate with $j = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
+    For~$j = 1$, it holds for sufficiently regular $h$ that
+    \[
+        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \beta^{-1} \norm{\partial_x h},
+    \]
+    so~\eqref{eq:exponential_convergence} implies the exponential convergence of $\norm{\partial_x u}$.
+    For $j = 2$, we calculate using the commutator relation $\commut{\partial_x}{\partial_x^*} = \beta V''$ that
+    \[
+        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
+        = \beta^{-2} \ip{\partial_x^* \partial_x h}{\partial_x^* \partial_x h}
+        = \beta^{-2} \norm*{\partial_x^2 h}^2 + \beta^{-1} \ip{V'' \partial_x h}{\partial_x h}.
+    \]
+    Therefore~\eqref{eq:exponential_convergence} implies that
     \begin{align*}
-        \expect_{\kappa} P^t_1 &= \expect_{\kappa} \left( p \e^{t \gamma \mathcal L_{\rm FD}} P\right)
-        \leq \norm{p} \norm{\e^{t \gamma \mathcal L_{\rm FD}} P} \leq \beta^{-1/2} \e^{- \gamma t} \norm{P}, \\
-        \expect_{\kappa} P^t_2 &= \expect_{\kappa} \left( \partial_p \e^{t \gamma \mathcal L_{\rm FD}} P\right)
-        = \expect_{\kappa} \bigl((\partial_p^*1) \e^{t \gamma \mathcal L_{\rm FD}} P\bigr) \leq \beta^{1/2} \e^{-\gamma t} \norm{P},
+        \norm*{\partial_x^2 u}^2
+        &\leq \beta \abs{\ip{V'' \partial_x u}{\partial_x u}} + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \beta \ip{V'' \partial_x u(0)}{\partial_x u(0)} \bigr) \\
+        &\leq \beta \norm*{V''}_{\infty} \norm{\partial_x u}^2 + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \beta \norm*{V''}_{\infty} \norm*{\partial_x u(0)}^2 \bigr),
     \end{align*}
-    and so $\norm{R_i^t(u)} \leq \norm{Q}_5 \, \norm{P} \,\gamma^{-1} \e^{-\lambda \gamma^{-1} u - \gamma t}$.
-    In order to bound the third term in~\eqref{eq:intermediate_decay_correlation},
-    we use \cref{lemma:initial_lemma},
-    which leads to
-    \begin{align*}
-        \norm{\e^{u \mathcal L} \Bigl( Q_i(q) \, \bigl(P^t_i(p) - \expect_\kappa P^t_i\bigr) \bigr) \Bigr)}
-        &\leq C \norm{Q_i}_1 \norm{P^t_i(p) - \expect_\kappa P^t_i}_1 \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right) \\
-        &\leq C \norm{Q}_2 \norm{P}_2 \e^{-\gamma t}\left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right), 
-        \qquad i = 1, 2.
-    \end{align*}
-    Collecting these results in~\eqref{eq:intermediate_decay_correlation},
-    and noting that the contribution of the first term in~\eqref{eq:semigroup_on_q_part} cancels out because $P$ is mean-zero with respect to $\kappa$,
-    we deduce
-    \begin{align*}
-        \label{eq:intermediate_decay_correlation}
-        \abs{ \ip{\e^{t \mathcal L} f}{f} }
-        % &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
-        % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
-        &\leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t} 
-        + \sum_{i\in\{1,2\}} \int_{0}^t \ip{R^t_i(t-s)}{f} \, \d s\\
-        &\quad + \int_{0}^t C \norm{Q}_2 \norm{P}_2 \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{(t-s)}{\gamma}} \right) \norm{f} \, \d s \\
-        &\leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t} 
-        + C \gamma^{-1} \, \norm{Q}_5  \norm{P} \norm{f} \int_{0}^{t}  \e^{-\lambda \gamma^{-1} (t-s) - \gamma s} \, \d s \\
-        &\quad+ C \norm{Q}_2 \norm{P}_2 \norm{f} \int_{0}^t \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{(t-s)}{\gamma}} \right) \, \d s \\
-        &\leq C \, \norm{Q}_5  \norm{P}_2 \norm{f} 
-        \left( \e^{-\gamma t} +  \gamma^{-2} \e^{-\min\left\{\lambda, \frac{1}{2}\right\} \frac{t}{\gamma}} + t\e^{-\gamma t} \right),
-    \end{align*}
-    which allows to conclude.
+    and using the exponential convergence of the first term on the right-hand side,
+    which was proved in the previous step,
+    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}^2$ for some appropriate constant $K \geq 1$.
+    This procedure can then be repeated in order to deduce the statement.
 \end{proof}
 
+\newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
+\begin{remark}
+    An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
+    to define an auxiliary norm
+    \[
+        \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
+    \]
+    with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
+    This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
+    and it is possible to show for all $\lambda \in (0, 1)$ that
+    \[
+        \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
+    \]
+    for $\varepsilon$ sufficiently small.
+    The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
+    obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
+    needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
+\end{remark}
 
-% \begin{proof}
-%     Let $u(t) = \e^{t \mathcal L} p$ and $v(t) = u(t) - p \e^{-\gamma t}$.
-%     The function $v$ satisfies the equation
-%     \[
-%         \partial_t v = \mathcal L v + V'(q) \, \e^{-\gamma t}, \qquad v(0) = 0.
-%     \]
-%     Using Duhamel's formula, we have
-%     \[
-%         v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr) \e^{-\gamma s} \, \d s
-%     \]
-%     By \cref{lemma:backward_kolmogorov_obs_q},
-%     we have
-%     \[
-%         \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr)
-%         = \e^{- (t-s) \frac{1}{\gamma}\mathcal L_{\rm ov}} V' + R(t),
-%         % \leq C \e^{- \frac{\lambda}{\gamma} (t-s)} + \frac{C}{\gamma},
-%     \]
-%     where the remainder term is bounded as $\norm{R(t)} \leq \frac{C}{\gamma}$.
-%     Taking the inner product with $p$,
-%     and noting that the constant-in-$p$ part of the integrand vanishes,
-%     we obtain
-%     \[
-%         \ip{v(t)}{p} = \int_{0}^{t} R(s) \e^{-\gamma s} \, \d s
-%         \leq \frac{C}{\gamma^2}.
-%     \]
-%     so we deduce
-%     \[
-%         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
-%     \]
-% \end{proof}
 
+The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
+in the overdamped limit $\gamma \to \infty$,
+in the case of an initial condition depending only on $q$.
 \begin{lemma}
     \label{lemma:backward_kolmogorov_obs_q}
     Let $\mathcal L_{\rm ovd} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\nu) \cap C^{\infty}(\torus)$,
@@ -681,114 +692,297 @@ and note that these operators are formally the $L^2(\mu)$ adjoints of $\partial_
     by \eqref{eq:decay_ovd}.
 \end{proof}
 
-The following result shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.
-In order to state the result, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
-of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
-The associated norm is given by
-\[
-    \norm{u}_i^2 = \norm{f}^2 + \norm*{\nabla f}^2 + \dotsb + \norm*{\nabla^i f}^2,
-\]
-where  $\nabla^j f$ is the tensor containing the $j$-th order derivatives of of $f$and$\norm{\dummy}$ is the norm of~$L^2(\pi)$,
-applying to tensors in the usual manner.
-We also define $H^{i}_0(\pi) = H^i(\pi) \cap L^2_0(\pi)$,
-and we recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
-\begin{equation}
-    \label{eq:poincare}
-    \tag{P$_R$}
-    \forall f \in H^1(\pi) \cap L^2_0(\pi), \qquad
-    \norm*{f}^2 \leq \frac{1}{2R} \norm{\partial_x f}^2.
-\end{equation}
-
+The next lemma provides an intermediate result for proving~\cref{proposition:semigroup_meanzero_observable}.
+The result proved here is sharper than what would be obtained from a simple application of~\eqref{eq:decay_langevin},
+but not yet optimal.
 \begin{lemma}
-    \label{lemma:overdamped_langevin_decay_derivatives}
-    Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
-    and let $W: \mathcal X \to \real$ be a smooth potential such that the probability measure
+    \label{lemma:initial_lemma}
+    Assume that $f(q, p)$ is a smooth function such that
+    \begin{equation}
+        \label{eq:assumption_f}
+        \int f(q, p) \, \kappa(\d p) = 0.
+    \end{equation}
+    Then there exist constants $C$ and $\lambda$ independent of $\gamma$ and $f$ such that
     \[
-        \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
-    \]
-    satisfies~\eqref{eq:poincare}.
-    Let also $\mathcal L_{\rm ovd}^W = - W'(p) \partial_p + \beta^{-1} \partial_p^2$ denote the generator of overdamped Langevin dynamics in potential~$W$.
-    If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
-    then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
-    \[
-        \norm*{\e^{t \mathcal L_{\rm ovd}^W} f}_i \leq K \e^{- 2 R t} \norm*{f}_i.
+        \forall \gamma > 1, \qquad
+        \forall t \geq 0, \qquad
+        \norm*{\e^{t\mathcal L} f}
+        \leq C \norm{f}[2]
+        \left( \e^{- \gamma t} + \gamma^{-1} \e^{-\frac{\lambda t}{\gamma}} \right).
     \]
 \end{lemma}
 \begin{proof}
-    For simplicity, we consider only the case where $\mathcal X = \torus^d$,
-    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}^W} f \in H^i_0(\torus^d)$ because
-    the state space is compact and $\e^{t \mathcal L_{\rm ovd}^W} f \in C^{\infty}(\torus^d)$ by ellipticity.
-    To lighten notations,
-    we also confine ourselves to the one-dimensional setting $d = 1$,
-    but the proof carries over \emph{mutatis mutandis} to the multi-dimensional case.
-
-    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
-     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
-    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
-    it holds that
+    We consider the following decomposition of the generator:
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
+        \mathcal L
+        = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
+        + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
+        =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
     \]
-    Introducing $\partial_x^* = \beta V' - \partial_x$
-    and noting that $\mathcal L_{\rm ovd}^W = - \partial_x^* \partial_x$,
-    we obtain
+    Let $v(t) = \e^{t \mathcal L} f(q, p) - \e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$.
+    In the expression $\e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$,
+    the variable $q$ should should be viewed as a parameter.
+    The function $v$ satisfies the initial value problem
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\partial_x (-\mathcal L_{\rm ovd}^W)^{j/2} u}.
+        \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(\e^{t \gamma \mathcal L_{\rm FD}} f\bigr), \qquad v(0) = 0.
     \]
-    Since $(-\mathcal L_{\rm ovd}^W)^{j/2} u \in L^2_0(\pi)$,
-    we can apply Poincar\'e's inequality~\eqref{eq:poincare},
-    which gives
+    Using Duhamel's formula, we have
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 \leq - 2R \seminorm{u}_j^2,
+        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s,
     \]
-    implying the exponential convergence estimate
+    and therefore
     \begin{equation}
-        \label{eq:exponential_convergence}
-        \forall t \geq 0, \qquad
-        \seminorm{u(t)}_i \leq \e^{- 2 R t} \seminorm{u(0)}_i.
+        \label{eq:intermediate_decay_correlation}
+        \e^{t \mathcal L} f =  \e^{t \gamma \mathcal L_{\rm FD}} f
+        + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s.
     \end{equation}
-    Applying this estimate with $j = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
-    For~$j = 1$, it holds for sufficiently regular $h$ that
-    \[
-        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \norm{\partial_x h},
-    \]
-    so~\eqref{eq:exponential_convergence} implies the exponential convergence of $\norm{\partial_x u}$.
-    For $j = 2$, we calculate using the commutator relation $\commut{\partial_x}{\partial_x^*} = \beta V''$ that
-    \[
-        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
-        = \ip{\partial_x^* \partial_x h}{\partial_x^* \partial_x h}
-        = \norm*{\partial_x^2 h}^2 + \ip{V'' \partial_x h}{\partial_x h}.
-    \]
-    Therefore~\eqref{eq:exponential_convergence} implies that
+    By~\eqref{eq:assumption_f} and with the notation $\norm{\dummy}[\kappa]$ for the norm of $L^2(\kappa)$,
+    the first term is bounded as
     \begin{align*}
-        \norm*{\partial_x^2 u}^2
-        &\leq \abs{\ip{V'' \partial_x u}{\partial_x u}} + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \ip{V'' \partial_x u(0)}{\partial_x u(0)} \bigr) \\
-        &\leq \norm*{V''}_{\infty} \norm{\partial_x u}^2 + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \norm*{V''}_{\infty} \norm*{\partial_x u(0)}^2 \bigr),
+        \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)}^2
+        &= \int \int  \abs{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p) }^2 \d \kappa(p) \,\d \nu(q)
+        = \int \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, \cdot) }[\kappa]^2 \, \d \nu(q) \\
+        &\leq \int \e^{-\gamma t} \norm{f(q, \cdot) }[\kappa]^2 \, \d \nu(q) = \e^{-\gamma t} \norm{f}^2.
     \end{align*}
-    and using the exponential convergence of the first term on the right-hand side,
-    which was proved in the previous step,
-    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}^2$ for some appropriate constant $K \geq 1$.
-    This procedure can then be repeated in order to deduce the statement.
+    For the second term, since $\commut{\partial_p}{\partial_p^*} = \beta$ and $\commut{\partial_q}{\partial_q^*} = \beta V''$,
+    we have
+    \begin{align*}
+        \norm{\partial_q \partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} f}
+        &= \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} + \beta \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}, \\
+        \norm{\partial_q^* \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
+        &= \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \beta \ip{V''(q) \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} \\
+        &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \beta \norm{V''}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
+    \end{align*}
+    From these equations we deduce
+    \begin{align*}
+        \norm{\mathcal L_{\rm Ham} \e^{t \gamma \mathcal L_{\rm FD}} f}
+        &= \beta^{-1} (\partial_q \partial_p^* - \partial_q^* \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} f \\
+        &\leq 2 \beta^{-1} \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \norm*{V''}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
+    \end{align*}
+    % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
+    % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
+    From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
+    we immediately obtain the bound
+    \begin{align*}
+        \norm{\mathcal L_{\rm Ham} \e^{t \gamma \mathcal L_{\rm FD}} f}
+        &\leq C \e^{-\gamma t} \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr).
+    \end{align*}
+    Going back to~\eqref{eq:intermediate_decay_correlation}, using~\eqref{eq:decay_langevin},
+    and denoting $\widetilde \lambda_{\rm Lang} = \min \{\frac{1}{2}, \lambda_{\rm Lang} \}$,
+    we obtain
+    \begin{align*}
+        \norm*{ \e^{t \mathcal L} f}
+        &\leq  \e^{-\gamma t} \norm{f}
+        + C  \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr) \int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+        % &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+        % + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\min \left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\} }{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+        &\leq  \e^{-\gamma t} \norm{f}
+        + C \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr)
+        \left( \frac{\e^{- \frac{\widetilde \lambda_{\rm Lang}}{\gamma}t} - \e^{- \gamma t}}{\gamma - \frac{\widetilde \lambda_{\rm Lang}}{\gamma}} \right) \qquad \forall \gamma \geq 1,
+    \end{align*}
+    which allows to conclude.
 \end{proof}
 
-\newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
-\begin{remark}
-    An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
-    to define an auxiliary norm
-    \[
-        \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
-    \]
-    with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
-    This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
-    and it is possible to show for all $\lambda \in (0, 1)$ that
-    \[
-        \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
-    \]
-    for $\varepsilon$ sufficiently small.
-    The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
-    obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
-    needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
-\end{remark}
+% \begin{lemma}
+%     \label{lemma:initial_lemma}
+%     Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^1(\nu)$ and $P \in H^1_0(\kappa)$.
+%     Then there exist constants $C$ and $\lambda$ independent of $\gamma$, $Q$ and $P$ such that
+%     \[
+%         \forall \gamma > 1, \qquad
+%         \forall t \geq 0, \qquad
+%         \norm*{\e^{t\mathcal L} f}
+%         \leq C \norm*{Q}_1 \norm*{P}_1
+%         \left( \e^{- \gamma t} + \gamma^{-1} \e^{-\frac{\lambda t}{\gamma}} \right).
+%     \]
+% \end{lemma}
+% \begin{proof}
+%     We consider the following decomposition of the generator:
+%     \[
+%         \mathcal L
+%         = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
+%         + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
+%         =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
+%     \]
+%     Let $v(t) = \e^{t \mathcal L} f(q, p) - Q(q) \e^{- t \gamma \mathcal L_{\rm FD}} P(p)$.
+%     The function $v$ satisfies the initial value problem
+%     \[
+%         \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr), \qquad v(0) = 0.
+%     \]
+%     Using Duhamel's formula, we have
+%     \[
+%         v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s,
+%     \]
+%     and therefore
+%     \begin{equation}
+%         \label{eq:intermediate_decay_correlation}
+%         \e^{t \mathcal L} f(q,p) = Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)
+%         + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(Q(q) \e^{s \gamma \mathcal L_{\rm FD}} P(p)\bigr) \Bigr) \, \d s.
+%     \end{equation}
+%     We calculate
+%     \begin{align*}
+%         \mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)
+%         &= Q'(q) p \e^{t \gamma \mathcal L_{\rm FD}} P(p) - V'(q) Q(q) \partial_p(\e^{t \gamma \mathcal L_{\rm FD}} P) (p) \\
+%         &=: Q_1(q) P^t_1(p) + Q_2(q) P^t_2(p).
+%     \end{align*}
+%     From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
+%     we immediately obtain the bound
+%     \(
+%         \norm{P^t_2} \leq \e^{-2\gamma t} \norm*{P'}.
+%     \)
+%     Likewise,
+%         % &= \ip{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}
+%         % = - \ip{\partial_p^* \partial_p (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
+%         % &= - \ip{\mathcal L_{\rm FD} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\e^{t \gamma \mathcal L_{\rm FD}} P}
+%         % = - \ip{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)}{\mathcal L_{\rm FD}^{1/2} (\e^{t \gamma \mathcal L_{\rm FD}} P)} \\
+%         % &= - \norm*{\e^{t \gamma \mathcal L_{\rm FD}} (\mathcal L_{\rm FD}^{1/2}P)}^2 \leq \e^{-2\gamma t} \norm*{\mathcal L_{\rm FD}^{1/2} P}^2
+%         % = \e^{-2\gamma t} \norm*{P'}^2,
+%     \begin{align*}
+%         \norm{\partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} P}^2
+%         &= \ip{\partial_p \partial_p^*\e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P}
+%         = \ip{(\beta  + \partial_{p}^* \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} P}{\e^{t \gamma \mathcal L_{\rm FD}} P} \\
+%         &= \beta \norm*{\e^{t \gamma \mathcal L_{\rm FD}} P}^2 + \norm{\partial_p \mathcal L_{\rm FD} \e^{t \gamma \mathcal L_{\rm FD}} P}^2
+%         \leq \e^{-2\gamma t} \left( \beta \norm*{P}^2 + \norm*{P'}^2 \right),
+%     \end{align*}
+%     so $\norm{P^t_1} = \beta^{-1} \norm{ (\partial_p^* - \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} P(p)} \leq \e^{- \gamma t} (\beta^{-1/2}\norm{P} +  2\beta^{-1}\norm{P'})$.
+%     In addition, it holds that $\norm{Q_1} + \norm{Q_2} \leq C \norm{Q}_1$,
+%     so we deduce
+%     \[
+%         \norm{\mathcal L_{\rm Ham} \bigl(Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)\bigr)}
+%         \leq C \e^{-\gamma t} \norm{Q}_1 \norm{P}_1.
+%     \]
+%     Going back to~\eqref{eq:intermediate_decay_correlation} and using~\eqref{eq:decay_langevin},
+%     we obtain
+%     \begin{align*}
+%         \norm*{ \e^{t \mathcal L} f(q,p) }
+%         &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+%         + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+%         % &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+%         % + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\min \left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\} }{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+%         &\leq \norm{Q} \norm{P} \e^{-\gamma t}
+%         + C \norm{Q}_1 \norm{P}_1
+%         \left( \frac{\e^{- \frac{\min\left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\}}{\gamma}t} - \e^{- \gamma t}}{\gamma - \frac{\min\left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\}}{\gamma}} \right) \qquad \forall \gamma \geq 1,
+%     \end{align*}
+%     which allows to conclude.
+% \end{proof}
+
+We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
+\begin{proof}
+    [Proof of \cref{proposition:semigroup_meanzero_observable}]
+    Our starting point is \eqref{eq:intermediate_decay_correlation}.
+    Using the same notation as in the proof of \cref{lemma:initial_lemma},
+    we consider the decomposition
+    \begin{align}
+        \notag
+        Q_1(q) P^t_1(p) + Q_2(q) P^t_2(p)
+        =& \big( Q_1(q) \, \expect_\kappa P^t_1 + Q_2(q) \, \expect_\kappa P^t_2 \big) \\
+        \label{eq:decomposition}
+         &+ \Bigl( Q_1(q) \, \bigl(P^t_1(p) - \expect_\kappa P^t_1\bigr) + Q_2(q) \, \bigl(P^t_2(p) - \expect_\kappa P^t_2\bigr) \Bigr),
+    \end{align}
+    and, correspondingly,
+    \begin{align}
+        \notag
+        \ip{\e^{t \mathcal L} f}{f}
+        % &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
+        % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
+        &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
+        + \sum_{i\in\{1,2\}} \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Bigl( Q_i(q) \, \expect_\kappa P^s_i \Bigr)}{f} \, \d s\\
+        \label{eq:intermediate_decay_correlation_2}
+        &\quad + \sum_{i\in\{1,2\}} \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Bigl( Q_i(q) \, \bigl(P^s_i(p) - \expect_\kappa P^s_i \bigr) \Bigr)}{f} \, \d s.
+    \end{align}
+    The first term clearly satisfies $\abs{ \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f} } \leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t}$.
+    In order to bound the second term, we use \cref{lemma:backward_kolmogorov_obs_q},
+    which gives
+    \begin{equation}
+        \label{eq:semigroup_on_q_part}
+        \e^{u \mathcal L} \big( Q_i(q) \, \expect_\kappa P^t_i \bigr)
+        =  \e^{(u/\gamma) \mathcal L_{\rm ovd}} Q_i(q) \, \expect_\kappa P^t_i + R_t^t(u),
+        \qquad i = 1, 2,
+    \end{equation}
+    with a remainder term satisfying
+    \begin{equation}
+        \label{eq:bound_remainder}
+        \norm{R_i^t(u)} \leq C \Bigl( \norm{Q_i}_4 \expect_\kappa P^t_i \Bigr) \gamma^{-1} \e^{-\lambda \gamma^{-1} u}.
+    \end{equation}
+    Employing the definitions of $P^t_1$ and $P^t_2$,
+    we have
+    \begin{align*}
+        \expect_{\kappa} P^t_1 &= \expect_{\kappa} \left( p \e^{t \gamma \mathcal L_{\rm FD}} P\right)
+        \leq \norm{p} \norm{\e^{t \gamma \mathcal L_{\rm FD}} P} \leq \beta^{-1/2} \e^{- \gamma t} \norm{P}, \\
+        \expect_{\kappa} P^t_2 &= \expect_{\kappa} \left( \partial_p \e^{t \gamma \mathcal L_{\rm FD}} P\right)
+        = \expect_{\kappa} \bigl((\partial_p^*1) \e^{t \gamma \mathcal L_{\rm FD}} P\bigr) \leq \beta^{1/2} \e^{-\gamma t} \norm{P},
+    \end{align*}
+    and so $\norm{R_i^t(u)} \leq \norm{Q}_5 \, \norm{P} \,\gamma^{-1} \e^{-\lambda \gamma^{-1} u - \gamma t}$.
+    In order to bound the third term in~\eqref{eq:intermediate_decay_correlation_2},
+    we use \cref{lemma:initial_lemma},
+    which leads to
+    \begin{align*}
+        \norm{\e^{u \mathcal L} \Bigl( Q_i(q) \, \bigl(P^t_i(p) - \expect_\kappa P^t_i\bigr) \bigr) \Bigr)}
+        &\leq C \norm{Q_i}_1 \norm{P^t_i(p) - \expect_\kappa P^t_i}_1 \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right) \\
+        &\leq C \norm{Q}_2 \norm{P}_2 \e^{-\gamma t}\left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right),
+        \qquad i = 1, 2.
+    \end{align*}
+    Collecting these results in~\eqref{eq:intermediate_decay_correlation_2},
+    and noting that the contribution of the first term in~\eqref{eq:semigroup_on_q_part} cancels out because $P$ is mean-zero with respect to $\kappa$,
+    we deduce
+    \begin{align*}
+        \label{eq:intermediate_decay_correlation_3}
+        \abs{ \ip{\e^{t \mathcal L} f}{f} }
+        % &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
+        % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
+        &\leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t}
+        + \sum_{i\in\{1,2\}} \int_{0}^t \ip{R^t_i(t-s)}{f} \, \d s \\
+        &\quad + \int_{0}^t C \norm{Q}_2 \norm{P}_2 \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{(t-s)}{\gamma}} \right) \norm{f} \, \d s.
+    \end{align*}
+    Using the bound on $R_i^t$ in~\eqref{eq:bound_remainder} and the following equations,
+    we obtain
+    \begin{align*}
+        &\leq C \norm{Q} \norm{P} \norm{f} \e^{-\gamma t}
+        + C \gamma^{-1} \, \norm{Q}_5  \norm{P} \norm{f} \int_{0}^{t}  \e^{-\lambda \gamma^{-1} (t-s) - \gamma s} \, \d s \\
+        &\quad+ C \norm{Q}_2 \norm{P}_2 \norm{f} \int_{0}^t \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{(t-s)}{\gamma}} \right) \, \d s \\
+        &\leq C \, \norm{Q}_5  \norm{P}_2 \norm{f}
+        \left( \e^{-\gamma t} +  \gamma^{-2} \e^{-\min\left\{\lambda, \frac{1}{2}\right\} \frac{t}{\gamma}} + t\e^{-\gamma t} \right),
+    \end{align*}
+    which allows to conclude.
+\end{proof}
+
+
+% \begin{proof}
+%     Let $u(t) = \e^{t \mathcal L} p$ and $v(t) = u(t) - p \e^{-\gamma t}$.
+%     The function $v$ satisfies the equation
+%     \[
+%         \partial_t v = \mathcal L v + V'(q) \, \e^{-\gamma t}, \qquad v(0) = 0.
+%     \]
+%     Using Duhamel's formula, we have
+%     \[
+%         v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr) \e^{-\gamma s} \, \d s
+%     \]
+%     By \cref{lemma:backward_kolmogorov_obs_q},
+%     we have
+%     \[
+%         \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr)
+%         = \e^{- (t-s) \frac{1}{\gamma}\mathcal L_{\rm ov}} V' + R(t),
+%         % \leq C \e^{- \frac{\lambda}{\gamma} (t-s)} + \frac{C}{\gamma},
+%     \]
+%     where the remainder term is bounded as $\norm{R(t)} \leq \frac{C}{\gamma}$.
+%     Taking the inner product with $p$,
+%     and noting that the constant-in-$p$ part of the integrand vanishes,
+%     we obtain
+%     \[
+%         \ip{v(t)}{p} = \int_{0}^{t} R(s) \e^{-\gamma s} \, \d s
+%         \leq \frac{C}{\gamma^2}.
+%     \]
+%     so we deduce
+%     \[
+%         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
+%     \]
+% \end{proof}
+
+
+
 
 \bibliographystyle{plain}
 \bibliography{main}

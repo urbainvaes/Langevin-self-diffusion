@@ -70,7 +70,7 @@
 \newcommand{\real}{\mathbf R}
 \newcommand{\integer}{\mathbf Z}
 \newcommand{\torus}{\mathbf T}
-\newcommand{\grad}{\boldsymbol \nabla}
+\newcommand{\grad}{\nabla}
 \newcommand{\hess}{\nabla^2}
 \newcommand{\vect}[1]{\boldsymbol{\mathbf #1}}
 \newcommand{\mat}[1]{\vect #1}
@@ -149,7 +149,7 @@
 
 % BODY {{{1
 \date{\today}
-\title{Variance reduction for calculating the effective diffusion coefficient of Langevin dynamics}
+\title{Mobility estimation for Langevin dynamics using control variates}
 \author{%
   % G.A. Pavliotis\thanks{Department of Mathematics, Imperial College London (\email{g.pavliotis@imperial.ac.uk})}%
   % \hspace{2mm}\orcid{0000-0002-3468-9227}%
@@ -161,6 +161,19 @@
 
 \begin{document}
 \maketitle
+
+\begin{abstract}
+    The scaling of the mobility of multi-dimensional Langevin dynamics in a periodic potential as the friction vanishes is unknown for non-separable potentials.
+    Calculating the mobility numerically in the underdamped regime is challenging because 
+    the computational cost required to achieve a given relative accuracy is inversely proportional to the friction coefficient.
+    In this note, we propose a new variance-reduction method based on control variates for efficiently estimating the mobility of Langevin-type dynamics.
+    We provide bounds on the bias and variance of the proposed estimator,
+    and we illustrate its efficacy through numerical experiments,
+    first in simple one-dimensional settings
+    and then for two-dimensional Langevin dynamics.
+    Our results corroborate previous numerical evidence that 
+    the mobility scales as~$\gamma^{-\alpha}$ in the low friction regime for a simple non-separable potential.
+\end{abstract}
 
 \section{Introduction}%
 Let us first consider the Langevin dynamics in one dimension:
@@ -257,12 +270,13 @@ We can derive a sharper estimate from the following result:
     \label{proposition:semigroup_meanzero_observable}
     Assume that $f(q, p) = Q(q) P(p)$ for smooth functions $Q \in H^5(\nu)$ and $P \in H^2_0(\kappa)$.
     Then there exist constants $C$ and $\lambda$ independent of $\gamma$, $Q$ and $P$ such that
-    \[
+    \begin{equation}
+        \label{eq:optimal_decay_correlation}
         \forall \gamma \geq 1, \qquad
         \forall t \geq 0, \qquad
-        \abs{\ip{\e^{t \mathcal L}f}{f}}
-        \leq C \, \norm{Q}_5  \norm{P}_2 \norm{f}  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right).
-    \]
+        \abs{\ip{\e^{t \mathcal L}f}{h}}
+        \leq C \, \norm{f}[5] \norm{h}  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right).
+    \end{equation}
 \end{proposition}
 Applying this result with $f(q, p) = p$, we obtain
 \begin{equation*}
@@ -334,7 +348,30 @@ constant potential and quadratic potential.
     % because the factor multiplying the exponential scales as $\bigo {\gamma^{-2}}$.
 \end{example}
 
-Let us now calculate the bias of the estimator $v(t)$.
+Concerning the bias of estimator $v(t)$,
+we have the following result.
+
+\begin{proposition}
+    [Bias of the estimator]
+    Assume stationary initial conditions~$(q_0, p_0) \sim \mu$.
+    Then there exists $C$ independent of $\psi$ and $\gamma$ such that
+    \begin{align}
+        \label{eq:basic_bound_bias}
+        \forall t \geq 0, \quad \gamma > 0, \qquad
+        \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
+        \leq &\frac{C}{t} \, \max(\gamma^2, \gamma^{-2}) \norm{p + \mathcal L\psi}  \left(1 + \norm{\mathcal L \psi} \right).
+    \end{align}
+    If $\mathcal L \psi \in H^5(\mu)$,
+    this estimate can be refined in the overdamped limit to
+    \begin{align*}
+        \forall t \geq 0, \quad \gamma \geq 1, \qquad
+        \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
+        &\leq C t^{-1}
+            \norm{p + (\id - \Pi_p) \mathcal L \psi} \bigl(1 + \norm{\mathcal L \psi}[5] \bigr) \\
+             &\quad + C t^{-1} \gamma^2 \norm{\Pi_p \mathcal L \psi} \norm{\mathcal L \psi}
+    \end{align*}
+\end{proposition}
+\begin{proof}
 Using Itô's formula~\eqref{eq:ito_control} and the same reasoning as in~\eqref{eq:bias_without_control},
 we obtain
 \begin{align*}
@@ -343,21 +380,31 @@ we obtain
     &= D_{\psi} +  \frac{1}{2t}  \int_{0}^{t} \Bigl( \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \Bigr) \min\left(1, \frac{s}{t}\right) \d s \\
     &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) \Bigl( \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \Bigr) \, \d s.
 \end{align*}
-We have
+In order to obtain~\eqref{eq:basic_bound_bias}, we write
 \begin{align*}
-    &\ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \\
-    &\qquad
-    = \ip{\e^{s \mathcal L}p}{p}
-    - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{(\id - \Pi_p) \mathcal L \psi}
-    - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}
-    - \ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi} \\
-    &\qquad
-    = \ip{\e^{s \mathcal L} p}{p + (\id - \Pi_p) \mathcal L \psi}
+     \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi}
+    &= \ip{p + \mathcal L \psi}{\e^{s \mathcal L} p - \e^{s \mathcal L^*} \mathcal  L\psi} \\
+    &\leq \norm{p + \mathcal L \psi}
+    \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{p} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
+    &\leq M \e^{- \lambda \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(\beta^{-1/2} + \norm{\mathcal L \psi} \right).
+\end{align*}
+
+To obtain the refined bound in the overdamped limit,
+we write
+\begin{align*}
+    \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi}
+    % &\qquad
+    % = \ip{\e^{s \mathcal L}p}{p}
+    % - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{(\id - \Pi_p) \mathcal L \psi}
+    % - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}
+    % - \ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi} \\
+    % &\qquad
+      &= \ip{\e^{s \mathcal L} p}{p + (\id - \Pi_p) \mathcal L \psi}
     - \ip{\e^{s \mathcal L} \bigl(p + (\id - \Pi_p) \mathcal L \psi\bigr)}{(\id - \Pi_p) \mathcal L \psi} \\
     &\qquad \quad - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}
     - \ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi}.
 \end{align*}
-The last two terms are bounded using the general inequality~\eqref{eq:decay_semigroup_general}:
+The last two terms are bounded using the general bound on the Langevin semigroup~\eqref{eq:decay_semigroup_general}:
 \[
     \abs{\ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}}
     \vee \abs{\ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi}}
@@ -366,49 +413,17 @@ The last two terms are bounded using the general inequality~\eqref{eq:decay_semi
 and the first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:
 \begin{align*}
     \abs{\ip{\e^{s \mathcal L} p}{p + (\id - \Pi_p) \mathcal L \psi}}
-    &\leq C \norm{p + (\id - \Pi_p) \mathcal L \psi} \left( \gamma^{-2} \e^{- \frac{\lambda}{\gamma}s } + \e^{- \lambda \gamma s} \right) \\
+    &\leq C \norm{p + (\id - \Pi_p) \mathcal L \psi} \zeta(t), \\
     \abs{\ip{\e^{s \mathcal L} \bigl(p + (\id - \Pi_p) \mathcal L \psi\bigr)}{(\id - \Pi_p) \mathcal L \psi}}
-    &\leq C \norm{(\id - \Pi_p) \mathcal L \psi}[5] \norm{p + (\id - \Pi_p) \mathcal L \psi} \left( \gamma^{-2} \e^{- \frac{\lambda}{\gamma}s } + \e^{- \lambda \gamma s} \right).
+    &\leq C \norm{(\id - \Pi_p) \mathcal L \psi}[5] \norm{p + (\id - \Pi_p) \mathcal L \psi} \zeta(t),
 \end{align*}
-
-\begin{align*}
-    &= \ip{\mathcal L (\phi - \psi)}{\e^{s \mathcal L} \mathcal L \phi + \e^{s \mathcal L^*} \mathcal  L\psi} \\
-    &\leq \norm{\mathcal L(\phi - \psi)}
-    \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \phi} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
-    &\leq c_1 \e^{-c_2 \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right),
-\end{align*}
-
-
-
-\begin{proposition}
-    [Bias of the estimator]
-    Assume stationary initial conditions $(q_0, p_0) \sim \mu$.
-    Then
-    \begin{align*}
-        \forall t > 0, \quad \gamma > 0, \qquad
-        \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
-        \leq \frac{c_1}{c_2^2 t} \, \max(\gamma^2, \gamma^{-2}) \norm{\mathcal L\psi + p}  \left(1 + \norm{\mathcal L \psi} \right).
-    \end{align*}
-\end{proposition}
-\begin{proof}
-    For an observable $\zeta = \zeta(q, p)$ in $\lp{2}{\mu} \cap \mathcal D(\mathcal L)$,
-    we denote $C_{\zeta}(s) := \ip{\mathcal L \zeta}{\e^{s \mathcal L} \mathcal L \zeta}$.
-    With this notation, $C_{\phi}$ is the autocorrelation function of the momentum function $(q, p) \mapsto p$.
-    It is well known~\cite{roussel2018spectral} that $\norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \hat \lambda s \min(\gamma, \gamma^{-1}) \bigr)$
-    for appropriate constants $M > 0$ and $\hat \lambda > 0$,
-    so we obtain, using It\^o's isometry,
-
-Since $\abs{C_{\phi}(s)} = \abs{\ip{p}{\e^{s \mathcal L} p}} \leq \norm{p} \, \norm{\e^{s \mathcal L} p} \leq \beta^{-1} c_1 \exp\bigl( - c_2 \min(\gamma, \gamma^{-1}) t\bigr)$, it holds
-\[
-    \forall t > 0, \quad \gamma > 0, \qquad
-    \abs{\expect\bigl(u(t)\bigr) - D_{\phi}}
-    \leq \frac{1}{t}\int_{0}^{\infty} s C_{\phi}(s) \, \d s
-    \leq \frac{c_1}{c_2^2 t} \, \max\bigl(\gamma^{-2}, \gamma^2\bigr).
-\]
-It is well known that $D_{\phi} = \mathcal O(\gamma^{-1})$ in both the limit $\gamma \to 0$ and the limit $\gamma \to \infty$.
-Therefore, the relative bias scales as $\max(\gamma^{-1}, \gamma^3) / t$.
+where $\zeta(t) = \gamma^{-2} \e^{- \frac{\lambda}{\gamma}s } + \e^{- \lambda \gamma s}$.
+For the second inequality,
+we used that the right-hand side of~\eqref{eq:optimal_decay_correlation} in \cref{proposition:semigroup_meanzero_observable} is a bound from above also for $\abs{\ip*{\e^{t \mathcal L^*}\!\! f}{h}} = \abs{\ip{f}{\e^{t \mathcal L}h}}$,
+because the operator $\mathcal L^*$,
+which is the formal $L^2(\mu)$ adjoint of $\mathcal L$,
+coincides with $\mathcal L$ up to the sign of the Hamiltonian part.
 \end{proof}
-
 
 The constant on the right-hand side is smaller when $\psi \approx \phi$,
 and when $\psi = 0$ we recover the previous bound.
@@ -438,6 +453,11 @@ Likewise, the other term can be bounded as
     \expect \left( |q_t - q_0 - \xi_t|^4 \right)
     &\leq 3^3 \left( \expect \left( 2 \norm{\phi + \psi}[L^4(\mu)]^4 + 6 t \norm{\derivative{1}[\phi]{p} + \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right).
 \end{align*}
+
+\section{Toy example: Langevin dynamics in one dimension}%
+\label{sec:toy_example_langevin_dynamics_in_one_dimension}
+
+
 
 % \paragraph{Estimator diffusion coefficient.}%
 % \label{par:estimator_diffusion_coefficient}
@@ -692,7 +712,7 @@ The result proved here is sharper than what would be obtained from a simple appl
 but not yet sufficient for obtaining optimal estimates for the bias of estimator~\eqref{eq:simple_estimator}.
 \begin{lemma}
     \label{lemma:initial_lemma}
-    Assume that $f \in L^2(\mu)$ is a smooth function such that
+    Assume that $f \in H^2(\mu)$ is a smooth function such that
     \begin{equation}
         \label{eq:assumption_f}
         \int f(q, p) \, \kappa(\d p) = 0.
@@ -713,7 +733,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
     \end{equation}
     where $G_i = {\rm Re}(\e^{ix})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
-    The space of functions of this form is dense in $({\rm Id} - \Pi_p) H^2(\mu)$,
+    The space of functions of this form is dense in $(\id - \Pi_p) H^2(\mu)$,
     so the general result follows by density.
 
     We consider the following decomposition of the generator:
@@ -745,7 +765,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     \begin{align}
         \notag
         \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)}^2
-        &= \int \int  \abs{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p) }^2 \d \kappa(p) \,\d \nu(q)
+        &= \int \!\!\!\! \int  \abs{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p) }^2 \d \kappa(p) \,\d \nu(q)
         = \int \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, \cdot) }[\kappa]^2 \, \d \nu(q) \\
         \label{eq:bound_first_term}
         &\leq \int \e^{-\gamma t} \norm{f(q, \cdot) }[\kappa]^2 \, \d \nu(q) = \e^{-\gamma t} \norm{f}^2.
@@ -883,29 +903,14 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
 We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 \begin{proof}
     [Proof of \cref{proposition:semigroup_meanzero_observable}]
-    We show the result for functions of the form
-    \begin{equation}
-        \label{eq:expansion_2}
-        f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p),
-    \end{equation}
-    with the same notations as in the proof of \cref{lemma:initial_lemma}.
-    The result then follows by density of functions of this type in $H^5(\mu)$.
-    % Then by density,
-    % there exists for any function $f \in H^5(\mu)$ a sequence of functions $\{f_n\}$ of the form~\eqref{eq:expansion}
-    % converging to $f$ in $H^5(\mu)$, and so
-    % \begin{align*}
-    %     \abs{\ip{\e^{t \mathcal L}f}{h}}
-    %     &= \lim_{n \to \infty} \abs{\ip{\e^{t \mathcal L}f_n}{h}} \\
-    %     &\leq C \, \lim_{n\to \infty} \norm{f_n}_5  \norm{h}  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right)
-    %     = C \, \norm{f}_5  \norm{h}  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right)
-    % \end{align*}
-
+    We again show the result for functions of the form~\eqref{eq:expansion},
+    noting that the general result follows by density of functions of this type in $(\id - \Pi_p) H^5(\mu)$.
     We consider the decomposition
     \begin{align}
         \label{eq:decomposition}
         \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)
          =& \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)
-         + ({\rm Id} - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr),
+         + (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr),
     \end{align}
     where $\Pi_p h(q, p) = \int h(q, p) \, \d \kappa(p)$.
     Using this decomposition in~\eqref{eq:intermediate_decay_correlation},
@@ -916,7 +921,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
         &= \ip{\e^{t \gamma \mathcal L_{\rm FD}} f}{f}
         + \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{f} \, \d s\\
         \label{eq:intermediate_decay_correlation_2}
-        &\quad + \int_{0}^t \ip{\e^{(t-s) \mathcal L} ({\rm Id} - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{f} \, \d s.
+        &\quad + \int_{0}^t \ip{\e^{(t-s) \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{f} \, \d s.
     \end{align}
     The first term is bounded as in~\eqref{eq:bound_first_term}.
     In order to bound the second term,
@@ -941,7 +946,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
         &= \partial_q^* \ip{f(q, p)}{\beta p}[\kappa] \e^{-\gamma t},
     \end{align*}
     where $\ip{\dummy}{\dummy}[\kappa]$ denotes the inner product of $L^2(\kappa)$.
-    Given the assumption~\eqref{eq:expansion_2},
+    Given the assumption~\eqref{eq:expansion},
     it is clear that the right-hand side is infinitely differentiable.
     In addition, since $\norm{p} = \beta^{-1}$, we have
     \begin{align*}
@@ -968,7 +973,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     leads to
     \begin{align*}
         % \norm{\e^{u \mathcal L} \Bigl( Q_i(q) \, \bigl(P^t_i(p) - \expect_\kappa P^t_i\bigr) \Bigr)}
-        \norm{\e^{u \mathcal L} ({\rm Id} - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}
+        \norm{\e^{u \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}
         &\leq C \norm{ \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) }[2]  \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right) \\
         &\leq C \norm{f}[4] \e^{-\gamma s}\left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right).
     \end{align*}

@@ -17,6 +17,11 @@
 \usepackage[colorlinks=true,citecolor=blue]{hyperref}
 \usepackage[nameinlink,capitalise]{cleveref}
 
+\usepackage[style=trad-abbrv,doi=false,url=false,isbn=false,backend=biber]{biblatex}
+\DeclareFieldFormat{volume}{volume \textbf{#1}}
+\DeclareFieldFormat[article]{volume}{\textbf{#1}}
+\addbibresource{main.bib}
+
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usepackage{pgfplotstable}
@@ -164,14 +169,14 @@
 
 \begin{abstract}
     The scaling of the mobility of multi-dimensional Langevin dynamics in a periodic potential as the friction vanishes is unknown for non-separable potentials.
-    Calculating the mobility numerically in the underdamped regime is challenging because 
+    Calculating the mobility numerically in the underdamped regime is challenging because
     the computational cost required to achieve a given relative accuracy is inversely proportional to the friction coefficient.
     In this note, we propose a new variance-reduction method based on control variates for efficiently estimating the mobility of Langevin-type dynamics.
     We provide bounds on the bias and variance of the proposed estimator,
     and we illustrate its efficacy through numerical experiments,
     first in simple one-dimensional settings
     and then for two-dimensional Langevin dynamics.
-    Our results corroborate previous numerical evidence that 
+    Our results corroborate previous numerical evidence that
     the mobility scales as~$\gamma^{-\alpha}$ in the low friction regime for a simple non-separable potential.
 \end{abstract}
 
@@ -1037,6 +1042,8 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 
 
 
-\bibliographystyle{plain}
-\bibliography{main}
+% \bibliographystyle{abbrv}
+% \bibliography{main}
+% \bibliographystyle{trad-abbrv}
+\printbibliography
 \end{document}

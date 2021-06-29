@@ -168,8 +168,9 @@
 \maketitle
 
 \begin{abstract}
-    The scaling of the mobility of multi-dimensional Langevin dynamics in a periodic potential as the friction vanishes is unknown for non-separable potentials.
-    Calculating the mobility numerically in the underdamped regime is challenging because
+    The scaling of the mobility of multi-dimensional Langevin dynamics in a periodic potential as the friction vanishes is not well understood for non-separable potentials.
+    Theoretical results are lacking,
+    and numerical calculation of the mobility in the underdamped regime is challenging because
     the computational cost required to achieve a given relative accuracy is inversely proportional to the friction coefficient.
     In this note, we propose a new variance-reduction method based on control variates for efficiently estimating the mobility of Langevin-type dynamics.
     We provide bounds on the bias and variance of the proposed estimator,
@@ -181,16 +182,34 @@
 \end{abstract}
 
 \section{Introduction}%
-Let us first consider the Langevin dynamics in one dimension:
+Langevin-type dynamics are Newtonian atomistic models for the evolution of a system of particles interacting with an environment at fixed temperature.
+They are widely used for the calculation of macroscopic properties of matter in molecular simulation.
+The standard Langevin dynamics, sometimes called underdamped Langevin dynamics,
+in a periodic potential $V$ reads
 \begin{subequations}
+\label{eq:langevin}
 \begin{align}
-    \label{eq:Langevin_q}
-    \d q &= p \, \d t, \\
-    \label{eq:Langevin_p}
-    \d p &= - \derivative*{1}[V]{q}(q) \, \d t - \gamma p \, \d t + \sqrt{2 \gamma \beta^{-1}} \d W_t.
+    \label{eq:langevin_q}
+    \d q_t &= M^{-1} p_t \, \d t, \\
+    \label{eq:langevin_p}
+    \d p_t &= - \grad V(q_t) \, \d t - \gamma M^{-1} \, p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \d W_t.
 \end{align}
 \end{subequations}
-The generator of the associated Markov semigroup is given by
+Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and momentum variables,
+with~$\torus^d = \real^d / 2\pi \integer^d$ the $d$-dimensional torus with period $2 \pi$.
+The parameter $\gamma$ is the friction,
+$M$ is the mass matrix,
+and~$W_t$ is a standard $d$-dimensional Brownian motion.
+For simplicity we assume that $M = m I_d$,
+where $I_d \in \real^{d \times d}$ is the identity matrix.
+In this case $(\widetilde q_t, \widetilde p_t) := (q_{\sqrt{m} t}, m^{-1/2} p_{\sqrt{m} t})$
+is a weak solution of~\eqref{eq:langevin} with $m = 1$ and $\gamma$ replaced by $\gamma/\sqrt{m}$,
+so to further simplify we assume $m = 1$;
+see~\cite[Section 2.2.4]{MR2681239} for a more detailed motivation of this simplification.
+% keeping in mind that results obtained in the limit;
+
+
+The generator of the Markov semigroup associated with~\eqref{eq:langevin} is given by
 \[
     \mathcal L = p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right).
 \]
@@ -299,7 +318,7 @@ constant potential and quadratic potential.
     Consider the case where $V(q) = 0$.
     In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$ and,
     applying Itô's formula to this function, we obtain
-    (note that this equation can be derived directly from~\eqref{eq:Langevin_p})
+    (note that this equation can be derived directly from~\eqref{eq:langevin_p})
     \[
         \gamma^{-1}(p_t - p_0) = - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma^{-1} \beta^{-1}} (W_t - W_0)
         = q_0 - q_t + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t.

@@ -59,12 +59,13 @@
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\e}{e}
 \DeclareMathOperator{\id}{id}
-\DeclareMathOperator{\offdiag}{offdiag}
+
 
 \newcommand{\revision}[1]{\textcolor{blue}{#1}}
 \renewcommand{\revision}[1]{#1}
 \newcommand{\gab}[1]{\textcolor{darkgreen}{#1}}
 \newcommand{\commut}[2]{[#1, #2]}
+\newcommand{\laplacian}{\Delta}
 \newcommand{\correlation}[1]{\left< #1 \right>}
 \newcommand{\dummy}{\,\cdot\,}
 \newcommand{\expect}[0]{\mathbf{E}}
@@ -184,35 +185,128 @@
 \section{Introduction}%
 Langevin-type dynamics are Newtonian atomistic models for the evolution of a system of particles interacting with an environment at fixed temperature.
 They are widely used for the calculation of macroscopic properties of matter in molecular simulation.
-The standard Langevin dynamics, sometimes called underdamped Langevin dynamics,
-in a periodic potential $V$ reads
+Assuming a diagonal mass matrix,
+the standard Langevin dynamics, sometimes called underdamped Langevin dynamics,
+reads after non-dimensionalization~\cite[Section 2.2.4]{MR2681239}
 \begin{subequations}
 \label{eq:langevin}
 \begin{align}
     \label{eq:langevin_q}
-    \d q_t &= M^{-1} p_t \, \d t, \\
+    \d q_t &= p_t \, \d t, \\
     \label{eq:langevin_p}
-    \d p_t &= - \grad V(q_t) \, \d t - \gamma M^{-1} \, p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \d W_t.
+    \d p_t &= - \grad V(q_t) \, \d t - \gamma \, p_t \, \d t + \sqrt{2 \gamma} \, \d W_t.
 \end{align}
 \end{subequations}
-Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and momentum variables,
+Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and velocity variables,
 with~$\torus^d = \real^d / 2\pi \integer^d$ the $d$-dimensional torus with period $2 \pi$.
-The parameter $\gamma$ is the friction,
-$M$ is the mass matrix,
+The parameter $\gamma$ is a dimensionless parameter we call the friction,
+$V$ is periodic potential
 and~$W_t$ is a standard $d$-dimensional Brownian motion.
-For simplicity we assume that $M = m I_d$,
-where $I_d \in \real^{d \times d}$ is the identity matrix.
-In this case $(\widetilde q_t, \widetilde p_t) := (q_{\sqrt{m} t}, m^{-1/2} p_{\sqrt{m} t})$
-is a weak solution of~\eqref{eq:langevin} with $m = 1$ and $\gamma$ replaced by $\gamma/\sqrt{m}$,
-so to further simplify we assume $m = 1$;
-see~\cite[Section 2.2.4]{MR2681239} for a more detailed motivation of this simplification.
+% $M$ is the mass matrix,
+% For simplicity we assume that $M = m I_d$,
+% where $I_d \in \real^{d \times d}$ is the identity matrix.
+% In this case $(\widetilde q_t, \widetilde p_t) := (q_{\sqrt{m} t}, m^{-1/2} p_{\sqrt{m} t})$
+% is a weak solution of~\eqref{eq:langevin} with $m = 1$ and $\gamma$ replaced by $\gamma/\sqrt{m}$,
+% so to further simplify we assume $m = 1$,
+% keeping in mind that asymptotic results for the case $m \neq 1$ can be deduced from this transformation;
+% see~\cite[Section 2.2.4]{MR2681239} for a more detailed motivation of this simplification.
 % keeping in mind that results obtained in the limit;
+We recall that the dynamics~\eqref{eq:langevin} is ergodic with respect to the Boltzmann--Gibbs measure
+\begin{equation}
+    \label{eq:invariant_measure}
+    \mu(\d q \, \d p) = \frac{1}{Z} \exp \bigl( - H(q, p)  \bigr) \, \d q \, \d p,
+    \qquad H(q, p) = V(q) + \frac{\abs{p}^2}{2},
+\end{equation}
+with $Z$ the normalization constant.
+It will be convenient to also introduce
+\begin{equation}
+    \label{eq:definition_prob_measures}
+    \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
+    \qquad \kappa(\d p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \biggl( - \beta \frac{\abs*{p}^2}{2} \biggr) \d p.
+\end{equation}
 
-
-The generator of the Markov semigroup associated with~\eqref{eq:langevin} is given by
+The mobility in direction $\vect e$ for dynamics~\eqref{eq:langevin} provides information on the behavior of the system
+in response to an external forcing $\eta \vect e$ with magnitude~$\eta$ on the velocity process.
+By analogy with macroscopic laws,
+it is defined as the proportionality constant,
+in the limit of a small forcing,
+between the induced average velocity and the strength  of the forcing.
+More precisely,
+the mathematical definition of the mobility is
 \[
-    \mathcal L = p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right).
+    D^{\gamma}_{\vect e} = \lim_{\eta \to 0} \frac{1}{\eta}\expect_{\mu_{\eta}} (\vect e^\t p),
 \]
+where $\mu_{\eta}$ is the invariant probability distribution of~\eqref{eq:langevin} when
+an additional drift term $\eta \vect e$ is present on the right-hand side of~\eqref{eq:langevin_p}.
+We note that, except when $\eta = 0$ where we recover~\eqref{eq:invariant_measure},
+the measure $\mu_{\eta}$ is not known explicitly,
+and so $D^{\gamma}_{\vect e}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
+Note that we can define the symmetric mobility matrix $D^{\gamma}$ from the directional mobility
+using the parallelogram identity:
+\[
+    4 \vect e_1^\t D^{\gamma} \vect e_2
+    = (\vect e_1 + \vect e_2) ^\t D^{\gamma} (\vect e_1 + \vect e_2)
+    - (\vect e_1 - \vect e_2) ^\t D^{\gamma} (\vect e_1 - \vect e_2)
+    = D^{\gamma}_{\vect e_1 + \vect e_2} - D^{\gamma}_{\vect e_1 - \vect e_2}.
+\]
+
+It can be shown that the mobility coincides with the so-called effective diffusion coefficient associated with the equilibrium dynamics~\eqref{eq:langevin}:
+the diffusively rescaled position process $\varepsilon q_{t/\varepsilon^2}$ converges as $\varepsilon \to 0$,
+weakly in the space of continuous functions over compact time intervals,
+to a Brownian motion in $\real^d$ with prefactor $\sqrt{2 D^{\gamma}_{\vect e}}$.
+In particular, by the continuous mapping theorem,
+\[
+    D^{\gamma}_{\vect e}
+    =\lim_{\varepsilon \to 0} \frac{\expect\abs{\vect e^\t (\varepsilon q_{t/\varepsilon^2} - \varepsilon q_0)}^2}{2 t}
+    =\lim_{t \to \infty} \frac{\expect \abs{\vect e^\t (q_t - q_0)}^2}{2t}.
+\]
+suggesting that the mobility can be calculated by
+estimating the mean square displacement at a sufficiently large time of the equilibrium dynamics~\eqref{eq:langevin}
+using Monte Carlo simulation,
+which is one of the approaches taken in~\cite{MR2427108}.
+The variance reduction approach we propose in the next section aims at reducing the mean square error of estimators of this type.
+
+The mobility (or effective diffusion coefficient)
+can also be related to the solution of a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
+which is given by
+\begin{equation}
+    \label{eq:decomposition_generator}
+    \mathcal L
+    = p \cdot \grad_q - \grad V \cdot \grad_p + \gamma \left( - p \cdot \grad_p + \laplacian_p \right)
+    = \mathcal L_{\rm Ham} + \gamma \mathcal L_{FD}.
+\end{equation}
+More precisely, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that $D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p}$,
+where $\ip{\dummy}{\dummy}$ denotes the inner product of $L^2(\mu)$ and $\phi_{\vect e}$ denotes the solution in $L^2(\mu)$,
+unique up to an additive constant,
+of the Poisson equation $- \mathcal L \phi_{\vect e} = \vect e^\t p$.
+
+The behavior of Langevin dynamics~\eqref{eq:langevin} depends on the value of the friction parameter~$\gamma$,
+The overdamped limit $\gamma \to \infty$ is well understood;
+in this limit, the rescaled position process $\{q_{\gamma t}\}$
+converges, uniformly for $t$ in compact subintervals of $[0, \infty)$ almost surely~\cite{MR0214150} and weakly~\cite{MR4054345},
+to the solution of the overdamped Langevin equation
+\begin{equation}
+    \label{eq:overdamped_langevin}
+    \d q_t = - \grad V(q_t) + \sqrt{2} \, \d W_t.
+\end{equation}
+It is also possible to prove that $\gamma D^{\gamma} = D^{\rm ovd} + \bigo{\gamma^{-2}}$ as $\gamma \to \infty$,
+where~$D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
+and to derive explicit expression for the correction terms by asymptotic analysis~\cite{MR2394704}.
+The diffusion coefficient in the overdamped limit is given by $D^{\rm ovd}_{\vect e} = \norm{\vect e + \grad \chi_{\vect e}}[\nu]^2$,
+where $\chi$ is the solution in~$L^2(\nu)$ of the Poisson equation $- \mathcal L_{\rm ovd} \chi_{\vect e} = \vect e^\t \grad(q)$
+and $\mathcal L_{\rm ovd} = - \grad V \cdot \grad + \laplacian$ is the generator of the Markov semigroup associated with~\eqref{eq:overdamped_langevin}.
+A reasoning similar to that in~\cite[Proposition 4.1]{MR2394704} shows that,
+in fact, $D^{\rm ovd}_{\vect e}$ is an upper bound for $\gamma D^{\gamma}_{\vect e}$ for all $\gamma > 0$.
+
+The underdamped limit is much more difficult to analyze,
+especially in the multi-dimensional setting.
+In one dimension, it was shown in~\cite{MR2394704} that $\gamma D^{\gamma} \to D^{\rm und}$ as $\gamma \to \infty$ for some limit~$D^{\rm und}$ 
+that is also a lower bound for $\gamma D^{\gamma}$ for all $\gamma > 0$,
+but no such results are known for $d > 1$.
+
+
+
+
 Let $\phi$ denote the solution to
 \[
     - \mathcal L \phi = p,
@@ -518,13 +612,8 @@ Likewise, the other term can be bounded as
 \label{sec:auxiliary_technical_results}
 
 The proof is based on several lemmata.
-In order to state the results, we define the probability measures
+In order to state the results, we introduce some notation.
 
-\begin{equation}
-    \label{eq:definition_prob_measures}
-    \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
-    \qquad \kappa(\d p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \left( - \beta \frac{\abs{p}^2}{2} \right) \d p.
-\end{equation}
 For a measure $\pi$, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
 of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
@@ -642,9 +731,6 @@ The first lemma shows the exponential convergence of the derivatives of the over
 The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
 in the overdamped limit $\gamma \to \infty$,
 in the case of an initial condition depending only on $q$.
-We note that the connection between Langevin and overdamped Langevin dynamics has been widely studied in the literature.
-See, for example, \cite[Theorem 10.1]{MR0214150} for a proof of the convergence of trajectories uniformly over compact time intervals with probability 1,
-and~\cite{MR4054345} for a weak convergence result.
 See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the solution to the Fokker--Planck equation in the overdamped limit.
 
 \begin{lemma}
@@ -760,17 +846,18 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     The space of functions of this form is dense in $(\id - \Pi_p) H^2(\mu)$,
     so the general result follows by density.
 
-    We consider the following decomposition of the generator:
-    \[
-        \mathcal L
-        = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
-        + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
-        =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
-    \]
-    Let $v(t) = \e^{t \mathcal L} f(q, p) - \e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$.
+    % We consider the following decomposition of the generator:
+    % \[
+    %     \mathcal L
+    %     = \left( p \derivative{1}{q} - \derivative*{1}[V]{q}(q) \derivative{1}{p} \right)
+    %     + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
+    %     =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
+    % \]
+    Let $v(t) = \e^{t \mathcal L} f(q, p) - \e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$,
+    where the operator $\mathcal L_{\rm FD}$ is defined in~\eqref{eq:decomposition_generator}.
     In the expression $\e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$,
     the variable $q$ should should be viewed as a parameter.
-    The function $v$ satisfies the initial value problem
+    The function~$v$ satisfies the initial value problem
     \[
         \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(\e^{t \gamma \mathcal L_{\rm FD}} f\bigr), \qquad v(0) = 0.
     \]
@@ -805,9 +892,6 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \beta \norm{V''}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align*}
-    Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
-    Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
-    we can freely change the order of the operators $\partial_q$, $\partial_p$ and $\e^{t \gamma \mathcal L_{\rm FD}}$.
     From these equations we deduce
     \begin{align}
         \notag
@@ -818,6 +902,9 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         + \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \norm*{V''}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align}
+    Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
+    Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
+    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal F_{\rm FD}}$. 
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
     From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
@@ -942,10 +1029,10 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     \begin{align}
         \notag
         \ip{\e^{t \mathcal L} f}{f}
-        &= \ip{\e^{t \gamma \mathcal L_{\rm FD}} f}{f}
-        + \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{f} \, \d s\\
+        &= \ip{\e^{t \gamma \mathcal L_{\rm FD}} f}{h}
+        + \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{h} \, \d s\\
         \label{eq:intermediate_decay_correlation_2}
-        &\quad + \int_{0}^t \ip{\e^{(t-s) \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{f} \, \d s.
+        &\quad + \int_{0}^t \ip{\e^{(t-s) \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{h} \, \d s.
     \end{align}
     The first term is bounded as in~\eqref{eq:bound_first_term}.
     In order to bound the second term,

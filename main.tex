@@ -255,11 +255,12 @@ the diffusively rescaled position process $\varepsilon q_{t/\varepsilon^2}$ conv
 weakly in the space of continuous functions over compact time intervals,
 to a Brownian motion in $\real^d$ with prefactor $\sqrt{2 D^{\gamma}_{\vect e}}$.
 In particular, by the continuous mapping theorem,
-\[
+\begin{equation}
+    \label{eq:einsteins_formula}
     D^{\gamma}_{\vect e}
     =\lim_{\varepsilon \to 0} \frac{\expect\abs{\vect e^\t (\varepsilon q_{t/\varepsilon^2} - \varepsilon q_0)}^2}{2 t}
     =\lim_{t \to \infty} \frac{\expect \abs{\vect e^\t (q_t - q_0)}^2}{2t}.
-\]
+\end{equation}
 suggesting that the mobility can be calculated by
 estimating the mean square displacement at a sufficiently large time of the equilibrium dynamics~\eqref{eq:langevin}
 using Monte Carlo simulation,
@@ -278,7 +279,11 @@ which is given by
 More precisely, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that $D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p}$,
 where $\ip{\dummy}{\dummy}$ denotes the inner product of $L^2(\mu)$ and $\phi_{\vect e}$ denotes the solution in $L^2(\mu)$,
 unique up to an additive constant,
-of the Poisson equation $- \mathcal L \phi_{\vect e} = \vect e^\t p$.
+of the Poisson equation
+\begin{equation}
+    \label{eq:poisson_equation}
+    - \mathcal L \phi_{\vect e} = \vect e^\t p.
+\end{equation}
 
 The behavior of Langevin dynamics~\eqref{eq:langevin} depends on the value of the friction parameter~$\gamma$,
 The overdamped limit $\gamma \to \infty$ is well understood;
@@ -300,12 +305,58 @@ in fact, $D^{\rm ovd}_{\vect e}$ is an upper bound for $\gamma D^{\gamma}_{\vect
 
 The underdamped limit is much more difficult to analyze,
 especially in the multi-dimensional setting.
-In one dimension, it was shown in~\cite{MR2394704} that $\gamma D^{\gamma} \to D^{\rm und}$ as $\gamma \to \infty$ for some limit~$D^{\rm und}$ 
-that is also a lower bound for $\gamma D^{\gamma}$ for all $\gamma > 0$,
-but no such results are known for $d > 1$.
+In spatial dimension one, it was shown in~\cite{MR2394704} that $\gamma D^{\gamma} \to D^{\rm und}$ as $\gamma \to \infty$ for some limit~$D^{\rm und}$
+that is also a lower bound for $\gamma D^{\gamma}$ for all $\gamma > 0$.
+It is also possible~\cite[Lemma 3.4]{MR2394704}, in this case,
+to show that the solution to the Poisson equation,
+multiplied by $\gamma$, converges in $L^2(\mu)$ to a limit as $\gamma \to 0$,
+which can be calculated explicitly in simple settings~\cite{MR2427108}.
 
+These results extend to the multi-dimensional setting only when the potential is separable,
+that is when $V$ can be decomposed as $V(q) = \sum_i V_i(q_i)$,
+but no theoretical results exist in the non-separable case,
+which was explored mostly by means of numerical experiments.
+Early results in~\cite{chen1996surface} show that the effective diffusion coefficient scales as~$\gamma^{-1/2}$ in the underdamped regime for a particular case of a non-separable periodic potential.
+Later, in~\cite{Braun02},
+the authors note that this behavior as~$\gamma^{-1/2}$ is valid only when $\gamma \in [0.01, 0.1]$,
+but not for smaller values of the damping coefficient.
+They conclude from simulation results that the effective diffusion coefficient scales as~$\gamma^{-\sigma}$ with $0 \leq \sigma \leq 1/3$ in the underdamped regime,
+and suggest that $\sigma$ could be zero for all non-separable potentials.
+More recently, in his thesis~\cite{roussel_thesis},
+Roussel calculated the mobility of Langevin dynamics  using a control variates approach for linear response.
+His results demonstrate clearly that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$ and in the particular case of the potential,
+\[
+    V(q) = - \cos(q_1) - \cos(q_2) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
+\]
+the mobility scales as $\gamma^{- \sigma}$,
+with an exponent $\sigma \in [0, 1]$ that depends on the degree $\delta$ of non-separability of the potential.
 
-
+In this note,
+we propose a variance reduction methodology, also based on control variates,
+for calculating the mobility of Langevin-type dynamics using Einstein's formula~\eqref{eq:einsteins_formula}.
+The control variate is constructed from an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}.
+Our contributions are the following.
+\begin{itemize}
+    \item
+        We derive bounds on the bias and variance of the proposed estimator for the simple case of one-dimensional Langevin dynamics,
+        in terms of the error on the solution to the Poisson equation~\eqref{eq:poisson_equation}.
+        Our estimates show, in particular, that the Langevin dynamics should be integrated up to a time scaling as $\max(\gamma, \gamma^{-1})$ in order to control the bias of the estimator.
+    \item
+        We examine the performance of the approach for two different approximate solutions to the Poisson equation:
+        one is obtained through the Fourier/Hermite Galerkin method developed in~\cite{roussel2018spectral},
+        and the other is calculated from the limiting solution of the Poisson equation in the underdamped limit;
+        see~\cite{MR2427108}.
+    \item
+        We apply the proposed variance reduction approach to the estimation of mobility for two-dimensional Langevin dynamics in a non-separable periodic potential.
+        To this end, we construct an approximation to the Poisson equation by tensorization of approximations obtained in one spatial dimension.
+        We study numerically the performance of this approach,
+        and we present numerical results illustrating the asymptotic behavior as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ of the effective diffusion coefficient,
+        as observed in~\cite{roussel_thesis}.
+    \item
+        Using the proposed variance reduction approach
+        for calculating the diffusion coefficient of generalized Langevin dynamics in the underdamped regime,
+        we provide numerical evidence supporting the asymptotic behavior conjectured in~\cite{GPGSUV21} using formal asymptotics.
+\end{itemize}
 
 Let $\phi$ denote the solution to
 \[
@@ -904,7 +955,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     \end{align}
     Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
     Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
-    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal F_{\rm FD}}$. 
+    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal F_{\rm FD}}$.
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
     From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,

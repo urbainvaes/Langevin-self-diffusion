@@ -1117,7 +1117,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     we obtain
     \begin{align}
         \notag
-        \ip{\e^{t \mathcal L} f}{f}
+        \ip{\e^{t \mathcal L} f}{h}
         &= \ip{\e^{t \gamma \mathcal L_{\rm FD}} f}{h}
         + \int_{0}^t \ip{\e^{(t-s) \mathcal L} \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}{h} \, \d s\\
         \label{eq:intermediate_decay_correlation_2}
@@ -1187,8 +1187,8 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
         % &= \ip{Q(q) \e^{t \gamma \mathcal L_{\rm FD}} P(p)}{f}
         % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
         &\leq C \e^{-\gamma t} \norm{f} \norm{h}
-        + \int_{0}^t \ip{R_s(t-s)}{f} \, \d s \\
-        &\quad + \int_{0}^t C \left( \sum_{i=0}^{2} \norm{\partial_q^i f} \right) \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \norm{f} \, \d s \\
+        + \int_{0}^t \ip{R_s(t-s)}{h} \, \d s \\
+        &\quad + \int_{0}^t C \left( \sum_{i=0}^{2} \norm{\partial_q^i f} \right) \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \norm{h} \, \d s \\
         &\leq C \e^{-\gamma t} \norm{f} \norm{h}
         + C \gamma^{-1} \, \left( \sum_{i=0}^{4} \norm{\partial_q^i f} \right)  \norm{h} \int_{0}^{t}  \e^{-\lambda \gamma^{-1} (t-s) - \gamma s} \, \d s \\
         &\quad+ C \left( \sum_{i=0}^{2} \norm{\partial_q^i f} \right) \norm{h} \int_{0}^t \frac{\e^{-\gamma s}}{\sqrt{1 \wedge \gamma s}} \left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \, \d s.
@@ -1196,7 +1196,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     Bounding the integral, this finally leads to
     \begin{align*}
         \abs{ \ip{\e^{t \mathcal L} f}{h}}
-        \leq C \, \left( \sum_{i=0}^{4} \norm{\partial_q^i f }\right)
+        \leq C \, \left( \sum_{i=0}^{4} \norm{\partial_q^i f }\right) \norm{h}
         \left( \e^{-\gamma t} +  \gamma^{-2} \e^{-\min\left\{\lambda, \frac{1}{2}\right\} \frac{t}{\gamma}} + t\e^{-\gamma t} \right),
     \end{align*}
     which allows to conclude.

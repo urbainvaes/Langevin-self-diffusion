@@ -778,6 +778,37 @@ The first lemma shows the exponential convergence of the derivatives of the over
     needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
 \end{remark}
 
+For large times,
+the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial conditions.
+\begin{lemma}
+    [Elliptic regularization]
+    \label{lemma:elliptic_reg}
+    Let $(i,j) \in \nat^2$ with $j \leq i$.
+    There exists a constant~$C_{ij}$ such that
+    \[
+        \forall t \in (0, 1], \qquad
+        \norm*{\partial_x^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C_{ij}}{t^{\frac{i-j}{2}}} \norm*{f}[j]
+    \]
+\end{lemma}
+\begin{proof}
+    Let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
+    We will show the existence of constants $C_i$ such that
+    \[
+        \forall t \in (0, 1], \qquad
+        \ip{(-\mathcal L)^i u(t)}{u(t)}
+        \leq \frac{C_i}{t^{i/2}} \ip{(-\mathcal L)^j f}{f},
+    \]
+    after which the statement follows easily from the expression $\mathcal L = - \partial_x^* \partial_x$ and using commutations.
+    Defining the Lyapunov functional
+    \[
+        N(t) = \sum_{n=j}^{i} \frac{t^{n-j}}{(n-j)!} \, \ip{(-\mathcal L)^n u(t)}{u(t)} ,
+    \]
+    we calculate
+    \[
+        N'(t) =  - \frac{t^{i-j}}{(i-j)!} \ip{(- \mathcal L)^{i+1} u(t)}{u(t)} \leq 0,
+    \]
+    which gives the statement since $N(0) = \norm{f}$.
+\end{proof}
 
 The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
 in the overdamped limit $\gamma \to \infty$,
@@ -798,7 +829,7 @@ See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the soluti
         \forall \gamma \geq 1, \qquad
         \forall t \geq 0, \qquad
         \norm{u(t)  - \widehat u(t)} \leq
-        C \norm{f}_4 \gamma^{-1} \e^{-\lambda t}.
+        C \norm{f}_3 \gamma^{-1} \e^{-\lambda t}.
     \]
 \end{lemma}
 \begin{proof}
@@ -840,8 +871,14 @@ See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the soluti
         = \beta \commut{\partial_q^N}{V'}
         = \beta \sum_{k=1}^{N} {N \choose k} V^{(k+1)} \partial_q^{(N-k)},
     \end{equation}
-    which can be employed to show that $\norm{r(t)} \leq C \norm{\widehat u(t)}_4$,
-    and so $\norm{r(t)} \leq C \e^{-\lambda_{\rm ovd} t} \norm{f}_4$ by~\eqref{eq:decay_ovd}.
+    which can be employed to show that $\norm{r(t)} \leq C \norm{\widehat u(t)}_4$.
+    Using~\cref{lemma:overdamped_langevin_decay_derivatives,lemma:elliptic_reg},
+    we deduce that
+    \begin{align}
+        \label{eq:bound_remainder}
+        \norm{r(t)} \leq \frac{C}{\sqrt{\min(t, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(t-1, 0)} \norm{f}[3]
+    \end{align}
+    % and so $\norm{r(t)} \leq C \e^{-\lambda_{\rm ovd} t} \norm{f}_4$ by~\eqref{eq:decay_ovd}.
     Using the notation $e(t) = u(t) - \widetilde u(t)$,
     we calculate that $e$ satisfies the equation
     \[
@@ -853,12 +890,12 @@ See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the soluti
     \[
         e(t) = \e^{t \gamma \mathcal L} \bigl( e(0) \bigr) + \gamma^{-1} \int_{0}^{t} \e^{(t- s) \gamma \mathcal L} r(s) \, \d s.
     \]
-    From~\eqref{eq:decay_langevin} we deduce immediately that
+    From~\eqref{eq:decay_langevin} and~\eqref{eq:bound_remainder} we deduce immediately that
     \begin{align*}
         e(t)
         &\leq C \e^{- \lambda_{\rm Lang} t} \norm{e(0)}
-        + C \gamma^{-1} \int_{0}^{t} \e^{- \lambda_{\rm Lang} (t-s)} \e^{-\lambda_{\rm ovd} s} \d s \\
-        &\leq C \e^{- \lambda t} \norm{e(0)} + C \norm{f}_4 \gamma^{-1} t \e^{- \lambda t},
+        + C \gamma^{-1} \norm{f}[3] \int_{0}^{t} \e^{- \lambda_{\rm Lang} (t-s)} \frac{1}{\sqrt{\min(s, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(s-1, 0)} \d s \\
+        &\leq C \e^{- \lambda t} \norm{e(0)} + C \norm{f}_3 \gamma^{-1} \e^{- \lambda t},
     \end{align*}
     for $\lambda = \min(\lambda_{\rm ovd}, \lambda_{\rm Lang})$.
     The result then follows after noticing that $\norm{e(0)} \leq C \gamma^{-1} \norm{f}_2$ and
@@ -883,7 +920,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         \forall \gamma > 1, \qquad
         \forall t \geq 0, \qquad
         \norm*{\e^{t\mathcal L} f}
-        \leq C \norm{f}[2]
+        \leq C \bigl( \norm{f} + \norm{\partial_q f} \bigr)
         \left( \e^{- \gamma t} + \gamma^{-1} \e^{-\frac{\lambda t}{\gamma}} \right).
     \]
 \end{lemma}
@@ -958,11 +995,12 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal F_{\rm FD}}$.
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
-    From \cref{lemma:overdamped_langevin_decay_derivatives} and the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
-    we immediately obtain
+    From \cref{lemma:overdamped_langevin_decay_derivatives}, the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
+    and \cref{lemma:elliptic_reg},
+    we obtain
     \begin{align*}
         \norm{\mathcal L_{\rm Ham} \e^{t \gamma \mathcal L_{\rm FD}} f}
-        &\leq C \e^{-\gamma t} \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr).
+        &\leq C \left( \frac{\e^{-\gamma t}}{\sqrt{1 \wedge \gamma t}} \right) \bigl( \norm{f} + \norm{\partial_q f} \bigr).
     \end{align*}
     Going back to~\eqref{eq:intermediate_decay_correlation}, using~\eqref{eq:decay_langevin},
     and denoting $\widetilde \lambda_{\rm Lang} = \min \{\frac{1}{2}, \lambda_{\rm Lang} \}$,
@@ -970,12 +1008,12 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     \begin{align*}
         \norm*{ \e^{t \mathcal L} f}
         &\leq  \e^{-\gamma t} \norm{f}
-        + C  \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr) \int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
+        + C  \bigl( \norm{f} + \norm{\partial_q f}\bigr) \int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \frac{\e^{-\gamma s}}{\sqrt{1 \wedge \gamma s}} \, \d s \\
         % &\leq \norm{Q} \norm{P} \e^{-\gamma t}
         % + C \norm{Q}_1 \norm{P}_1 \int_{0}^{t} \e^{-\frac{\min \left\{ \lambda_{\rm Lang}, \frac{1}{2} \right\} }{\gamma}(t-s)}  \, \e^{-\gamma s} \, \d s \\
         &\leq  \e^{-\gamma t} \norm{f}
-        + C \bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_p \partial_q f}\bigr)
-        \left( \frac{\e^{- \frac{\widetilde \lambda_{\rm Lang}}{\gamma}t} - \e^{- \gamma t}}{\gamma - \frac{\widetilde \lambda_{\rm Lang}}{\gamma}} \right) \qquad \forall \gamma \geq 1,
+        + C \bigl( \norm{f} + \norm{\partial_q f} \bigr)
+        \left( \frac{1}{\gamma} \e^{-\frac{\lambda_{\rm Lang}}{\gamma} t} + \frac{\e^{- \frac{\widetilde \lambda_{\rm Lang}}{\gamma}t} - \e^{- \gamma t}}{\gamma - \frac{\widetilde \lambda_{\rm Lang}}{\gamma}} \right) \qquad \forall \gamma \geq 1,
     \end{align*}
     which allows to conclude.
 \end{proof}
@@ -1097,47 +1135,47 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     with a remainder term satisfying
     \begin{equation}
         \label{eq:bound_remainder}
-        \norm{R_s(u)} \leq C \norm{\Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}[4] \gamma^{-1} \e^{-\lambda \gamma^{-1} u}.
+        \norm{R_s(u)} \leq C \norm{\Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}[3] \gamma^{-1} \e^{-\lambda \gamma^{-1} u}.
     \end{equation}
     Since $\Pi_p \mathcal L_{\rm Ham} = \Pi_p \partial_q^*\partial_p$ and $\e^{s \gamma \mathcal L_{\rm FD}} p = \e^{-\gamma t}p$,
     we have
     \begin{align*}
-        \pi(q) := \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)
+        \pi_s(q) := \Pi_p \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)
         &= \int \partial_q^* \partial_p \e^{s \gamma \mathcal L_{\rm FD}} f \, \d \kappa(p)
         = \int \partial_q^* \e^{s \gamma \mathcal L_{\rm FD}} f \left(\partial_p^* 1 \right) \, \d \kappa(p) \\
-        &= \partial_q^* \ip{f(q, p)}{\beta p}[\kappa] \e^{-\gamma t},
+        &= \partial_q^* \ip{f(q, p)}{\beta p}[\kappa] \e^{-\gamma s},
     \end{align*}
     where $\ip{\dummy}{\dummy}[\kappa]$ denotes the inner product of $L^2(\kappa)$.
     Given the assumption~\eqref{eq:expansion},
     it is clear that the right-hand side is infinitely differentiable.
     In addition, since $\norm{p} = \beta^{-1}$, we have
     \begin{align*}
-        \norm*{\partial_q^i \pi}[\nu]^2
-        = \beta \e^{-2 \gamma t} \int \left| \int \partial_q^i \partial_q^* f(q, p) \, p \, \d \kappa(p) \right|^2 \d \nu(q)
-        \leq \e^{-2 \gamma t} \norm{\partial_q^i \partial_q^* f(q, p)}^2.
+        \norm*{\partial_q^i \pi_s}[\nu]^2
+        = \beta \e^{-2 \gamma s} \int \left| \int \partial_q^i \partial_q^* f(q, p) \, p \, \d \kappa(p) \right|^2 \d \nu(q)
+        \leq \e^{-2 \gamma s} \norm{\partial_q^i \partial_q^* f(q, p)}^2.
     \end{align*}
     Using the commutator relations~\eqref{eq:commutators_derivatives} and the fact that $V(q)$ is smooth and periodic,
     we obtain the bound
     \(
-        \norm{\pi}[4] \leq \e^{-\gamma t} \sum_{i=1}^{5} \norm{\partial_q^i f} \leq \e^{-\gamma t} \norm{f}[5].
+    \norm{\pi_s}[3] \leq \e^{-\gamma s} \sum_{i=0}^{4} \norm{\partial_q^i f}.
     \)
-    We emphasize that the latter bound is rather crude,
-    in that the right-hand side includes derivatives with respect to both $p$ and $q$,
-    but we employ it for simplicity.
+    % We emphasize that the latter bound is rather crude,
+    % in that the right-hand side includes derivatives with respect to both $p$ and $q$,
+    % but we employ it for simplicity.
     Going back to~\eqref{eq:bound_remainder}, we deduce
     \[
-        \norm{R_s(u)} \leq \norm{f}[5] \,\gamma^{-1} \e^{-\lambda \gamma^{-1} u - \gamma s}.
+        \norm{R_s(u)} \leq \sum_{i=0}^{4} \norm{\partial_q^i f} \,\gamma^{-1} \e^{-\lambda \gamma^{-1} u - \gamma s}.
     \]
 
     In order to bound the third and final term in~\eqref{eq:intermediate_decay_correlation_2},
     we use \cref{lemma:initial_lemma} which,
-    combined to manipulations similar to those in~\eqref{eq:reasoning_action_lham},
+    together with manipulations similar to those in~\eqref{eq:reasoning_action_lham},
     leads to
     \begin{align*}
-        % \norm{\e^{u \mathcal L} \Bigl( Q_i(q) \, \bigl(P^t_i(p) - \expect_\kappa P^t_i\bigr) \Bigr)}
-        \norm{\e^{u \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)}
-        &\leq C \norm{ \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) }[2]  \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right) \\
-        &\leq C \norm{f}[4] \e^{-\gamma s}\left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right).
+        &\norm{\e^{u \mathcal L} (\id - \Pi_p) \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr)} \\
+        &\qquad \leq C \Bigl( \norm{\mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr)} + \norm{\partial_q \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr)} \Bigr)
+        \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right) \\
+        &\qquad \leq C \left( \frac{\e^{-\gamma s}}{\sqrt{1 \wedge \gamma s}}  \Bigl( \norm{f} + \norm{\partial_q f} + \norm{\partial_q^2 f} \Bigr) \right) \left(\e^{-\gamma u} + \gamma^{-1} \e^{-\frac{\lambda u}{\gamma}} \right).
     \end{align*}
 
     Collecting these bounds in~\eqref{eq:intermediate_decay_correlation_2},
@@ -1150,15 +1188,15 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
         % + \int_{0}^{t} \ip{\e^{- (t-s) \mathcal L}  \Bigl( Q_1(q) P^s_1(p) + Q_2(q) P^s_2(p)\Bigr)}{f} \, \d s \\
         &\leq C \e^{-\gamma t} \norm{f} \norm{h}
         + \int_{0}^t \ip{R_s(t-s)}{f} \, \d s \\
-        &\quad + \int_{0}^t C \norm{f}[4] \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \norm{f} \, \d s \\
+        &\quad + \int_{0}^t C \left( \sum_{i=0}^{2} \norm{\partial_q^i f} \right) \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \norm{f} \, \d s \\
         &\leq C \e^{-\gamma t} \norm{f} \norm{h}
-        + C \gamma^{-1} \, \norm{f}_5  \norm{h} \int_{0}^{t}  \e^{-\lambda \gamma^{-1} (t-s) - \gamma s} \, \d s \\
-        &\quad+ C \norm{f}[4] \norm{h} \int_{0}^t \e^{-\gamma s}\left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{(t-s)}{\gamma}} \right) \, \d s.
+        + C \gamma^{-1} \, \left( \sum_{i=0}^{4} \norm{\partial_q^i f} \right)  \norm{h} \int_{0}^{t}  \e^{-\lambda \gamma^{-1} (t-s) - \gamma s} \, \d s \\
+        &\quad+ C \left( \sum_{i=0}^{2} \norm{\partial_q^i f} \right) \norm{h} \int_{0}^t \frac{\e^{-\gamma s}}{\sqrt{1 \wedge \gamma s}} \left(\e^{-\gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda(t-s)}{\gamma}} \right) \, \d s.
     \end{align*}
-    Calculating the integrals, this finally leads to
+    Bounding the integral, this finally leads to
     \begin{align*}
         \abs{ \ip{\e^{t \mathcal L} f}{h}}
-        \leq C \, \norm{f}_5
+        \leq C \, \left( \sum_{i=0}^{4} \norm{\partial_q^i f }\right)
         \left( \e^{-\gamma t} +  \gamma^{-2} \e^{-\min\left\{\lambda, \frac{1}{2}\right\} \frac{t}{\gamma}} + t\e^{-\gamma t} \right),
     \end{align*}
     which allows to conclude.

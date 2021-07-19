@@ -607,7 +607,8 @@ and when $\psi = 0$ we recover the previous bound.
     \[
         \widetilde \psi(q,p)
         % = \psi(q,p) - p \left(  \psi_1(q) - \e^{\beta V(q)} \int \psi_1(\widetilde q) \, \e^{-\beta V(\widetilde q)} \, \d \nu(\widetilde q)  \right)
-        = \psi(q,p) - p \left(  \psi_1(q) - \e^{\beta V(q)}  \int \e^{- \beta V(\widetilde q)} \, \psi_1(\widetilde q) \, \d \nu(\widetilde q) \right),
+        = \psi(q,p) - p \left(  \psi_1(q) + k \e^{\beta V(q)}   \right),
+        \qquad k = \, \int \e^{- \beta V(\widetilde q)} \, \psi_1(\widetilde q) \, \d \nu(\widetilde q).
     \]
     for a constant $k$ to be determined.
     We verify
@@ -623,34 +624,137 @@ and when $\psi = 0$ we recover the previous bound.
 
 
 \paragraph{Variance of the estimator.}%
-For the variance, we can obtain a crude bound using
-\begin{align*}
-    \mathrm{Var} (v(t))
-    &\leq \expect \left( \abs{v(t) - D_{\psi}}^2 \right)
-    = \frac{1}{4 t^2} \expect \big( |q_t - q_0 - \xi_t|^2 |q_t - q_0 + \xi_t|^2 \big) \\
-    &\leq \frac{1}{4 t^2} \sqrt{\expect \left(  |q_t - q_0 - \xi_t|^4 \right)} \sqrt{\expect \left( |q_t - q_0 + \xi_t|^4 \right)}.
-\end{align*}
-We now bound
-\begin{align*}
-    \expect \left( |q_t - q_0 + \xi_t|^4 \right)
+
+\begin{proposition}
+    The variance of the estimator satisfies
+    \begin{equation}
+        \label{eq:variance_estimator}
+        \mathrm{Var} \bigl(v(t)\bigr)
+        \leq
+        C \left( t^{-1} \norm{\phi - \psi}[4]^2  + \norm{\grad_p \phi - \grad_p \psi}[4]^2 \right)
+        \left( t^{-1} \norm{\phi + \psi}[4]^2  + \norm{\grad_p \phi + \grad_p \psi}[4]^2 \right)
+    \end{equation}
+\end{proposition}
+\begin{remark}
+    Note that the variance does not converge to zero in the limit as $t \to \infty$.
+    This is apparent when $\psi = 0$,
+    i.e.\ without a control variate.
+    In this case,
+    since $\frac{1}{\sqrt{2 t}}(q_t - q_0)$ is approximately distributed according to $\mathcal N(0, D)$ for $t$ sufficiently large,
+    it holds that $\frac{1}{2D t} \abs{q_t - q_0}^2$ is approximately distributed according to $\chi^2(1)$,
+    with variance 2.
+    Consequently, the variance of the estimator $u(t)$ given in~\eqref{eq:simple_estimator} is $2D^2$ asymptotically as $t \to \infty$.
+\end{remark}
+
+\begin{remark}
+    Note also that,
+\end{remark}
+
+\begin{proof}
+    We can obtain a crude bound using
+    \begin{align}
+        \notag
+        \mathrm{Var} \bigl(v(t)\bigr)
+        &\leq \expect \left( \abs{v(t) - D_{\psi}}^2 \right)
+        = \frac{1}{4 t^2} \expect \big( |q_t - q_0 - \xi_t|^2 |q_t - q_0 + \xi_t|^2 \big) \\
+        \label{eq:bound_variance_two_factors}
+        &\leq \frac{1}{4 t^2} \sqrt{\expect \left(  |q_t - q_0 - \xi_t|^4 \right)} \sqrt{\expect \left( |q_t - q_0 + \xi_t|^4 \right)}.
+    \end{align}
+    Denoting the It\^o integrals in~\eqref{eq:ito_control} by $I_{\phi}$ and $I_{\psi}$,
+    respectively, we now bound
+    \begin{align*}
+        \expect \left( |q_t - q_0 + \xi_t|^4 \right)
     &= \expect \left( \abs{\phi_t - \phi_0 - \psi_t + \psi_0 + I_{\psi} - I_{\phi}}^4 \right) \\
     &\leq 3^3 \left( \expect \left( \abs{\phi_t - \psi_t}^4 \right) + \expect \left( \abs{\phi_0 - \psi_0}^4 \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \right).
-\end{align*}
-The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}^4$.
-Using a moment inequality for It\^o integrals, the last term can be bounded as
-\[
-    \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \leq 6 t \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s = 6 t \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
-\]
-Likewise, the other term can be bounded as
-\begin{align*}
-    \expect \left( |q_t - q_0 - \xi_t|^4 \right)
-    &\leq 3^3 \left( \expect \left( 2 \norm{\phi + \psi}[L^4(\mu)]^4 + 6 t \norm{\derivative{1}[\phi]{p} + \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right).
-\end{align*}
+    \end{align*}
+    The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}^4$.
+    Using a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366}
+    and the assumption of stationary initial conditions,
+    we bound the last term as
+    \[
+        \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right)
+        \leq 6^2 t \, \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s
+        = 6^2 t^2 \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
+    \]
+    Likewise, the second factor in~\eqref{eq:bound_variance_two_factors} can be bounded as
+    \begin{align*}
+        \expect \left( |q_t - q_0 - \xi_t|^4 \right)
+    &\leq 3^3 \left( \expect \left( 2 \norm{\phi + \psi}[L^4(\mu)]^4 + 6^2 t \norm{\derivative{1}[\phi]{p} + \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right),
+    \end{align*}
+    which concludes the proof.
+\end{proof}
 
 \section{Toy example: Langevin dynamics in one dimension}%
 \label{sec:toy_example_langevin_dynamics_in_one_dimension}
 
+As mentioned in the introduction,
+we consider in this section two methods of constructing a control variate:
+through a Fourier/Hermite Galerkin method and,
+in the underdamped regime,
+through formal asymptotic expansions.
 
+\paragraph{Fourier/Hermite spectral method.}%
+We employ the non-conformal Galerkin method developed and analyzed in~\cite{roussel2018spectral}.
+Specifically, we calculate an approximate solution to~\eqref{eq:poisson_equation} through the saddle point formulation:
+\begin{align}
+  \label{eq:saddle_point_formutation}
+  \left\{
+    \begin{aligned}
+       & - \Pi_N \, \mathcal L \, \Pi_N \Phi_N + \alpha_N u_N = \Pi_N p, \\
+       & \Phi_N^\t u_N = 0,
+    \end{aligned}
+  \right.
+\end{align}
+where $V_N$ is a finite-dimensional approximation space,
+$\Pi_N$ is the $\lp{2}{\mu}$ projection operator on~$V_N$,
+% satisfying $\ip{\Pi_N u - u}{v_N} = 0$ for all functions $v_N \in V_N$,
+$u_N = \Pi_N 1 / \norm{\Pi_N 1} \in V_N$
+and $\alpha_N$ is a Lagrange multiplier.
+As above,
+$\ip{\cdot}{\cdot}$ and $\norm{\cdot}$ denote respectively the standard scalar product and norm of $\lp{2}{\mu}$.
+As in~\cite{roussel2018spectral},
+we choose $V_N$ to be the subspace of $\lp{2}{\mu}$ spanned by the basis functions
+\begin{equation*}
+  \label{eq:basis_functions}
+  e_{i,j} = Z^{1/2} \, \e^{\frac{\beta}{2} \left( H(q,p) + \frac{z^2}{2} \right)}
+  \, G_i(q) \, H_j(p), \qquad 0 \leq i,j \leq N,
+\end{equation*}
+where $G_i$ are trigonometric functions,
+\begin{equation}
+  \label{eq:definition_trigonometric_functions}
+  G_i(q) =
+  \left\{ \begin{aligned}
+    (2 \pi)^{-1/2}, \quad & \text{if}~i = 0, \\
+    \pi^{-1/2} \sin\left(\frac{i + 1}{2}q\right), \quad & \text{if}~i~\text{is odd}, \\
+    \pi^{-1/2} \cos\left(\frac{i}{2}q\right), \quad & \text{if}~i~\text{is even}, i > 0. \\
+  \end{aligned} \right.
+\end{equation}
+and $H_j$ are rescaled normalized Hermite functions,
+\begin{equation}
+  \label{eq:definition_hermite_functions}
+  H_j(p) = \frac{1}{\sqrt{\sigma}} \, \psi_j \left( \frac{p}{\sigma} \right),
+  \qquad \psi_j (p) := (2 \pi)^{-\frac{1}{4}} \frac{(-1)^j}{\sqrt{j!}} \e^{\frac{p^2}{4}} \, \derivative*{j}{p^j} \, \Bigl( \e^{- \frac{p^2}{2}} \Bigr).
+\end{equation}
+The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
+and $\sigma$ is a scaling parameter that can be adjusted to better resolve $\Phi_N$.
+
+In practice, since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally costly,
+the approximate solution $\Phi_N$ is pre-calculated over a Cartesian grid with vertices
+\[
+    (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
+\]
+From the values of $\Phi_N$,
+a bilinear interpolant $\widehat \Phi_N$ is defined over the domain $[-\pi, \pi] \times [-L_p, L_p]$.
+That is, given $(q, p)$, $\Phi_N(q, p)$ is approximated in the method by
+\begin{align*}
+    \widehat \Phi_N(q, p)
+    &= \Phi_N(q_i,p_j) + \frac{\Phi_N(q_{i+1}, p_j) - \Phi_N(q_i, p_j)}{q_{i+1} - q_i} (q - q_i)
+    +\frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
+    &\quad + \frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j}) - \Phi_N(q_{i+1}, p_{j+1}) + \Phi_N(q_{i+1}, p_{j})}{(q_{j+1} - q_j)(p_{j+1} - p_j)}  (q-q_i)(p-p_j).
+\end{align*}
+The domain size $L_p$ in the $p$ direction is chosen in such a way that escaping the domain is extremely unlikely during the simulation.
+The coefficient $D_\psi$ is calculated based on this interpolant,
+by sampling 
 
 % \paragraph{Estimator diffusion coefficient.}%
 % \label{par:estimator_diffusion_coefficient}
@@ -834,100 +938,100 @@ the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ nor
     which gives the statement since $N(0) = \norm{f}$.
 \end{proof}
 
-The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
-in the overdamped limit $\gamma \to \infty$,
-in the case of an initial condition depending only on $q$.
-See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the solution to the Fokker--Planck equation in the overdamped limit.
-
-\begin{lemma}
-    \label{lemma:backward_kolmogorov_obs_q}
-    Let $\mathcal L_{\rm ovd} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\nu) \cap C^{\infty}(\torus)$,
-    where $\nu$ is given in~\eqref{eq:definition_prob_measures}.
-    Let also $\bar f(q, p) = f(q)$ and
-    \[
-        \widehat u(t) = \e^{t\mathcal L_{\rm ovd}} f, \qquad
-        u(t) = \e^{t \gamma\mathcal L} \bar f.
-    \]
-    Then there exist positive constants $C$ and $\lambda$ independent of $f$ and $\gamma$ such that
-    \[
-        \forall \gamma \geq 1, \qquad
-        \forall t \geq 0, \qquad
-        \norm{u(t)  - \widehat u(t)} \leq
-        C \norm{f}_3 \gamma^{-1} \e^{-\lambda t}.
-    \]
-\end{lemma}
-\begin{proof}
-    Throughout this proof, $C$ denotes a positive constant that can change from occurrence to occurrence but is independent of $\gamma$ and $f$.
-    We recall that there exists a positive constant $\lambda_{\rm Lang}$ such that~\cite{roussel2018spectral,pavliotis2011applied}
-    \begin{equation}
-        \label{eq:decay_langevin}
-        \forall \gamma > 0, \qquad
-        \norm{\e^{t \gamma \mathcal L_{\rm Lang}}}[\mathcal B\left(L^2_0(\mu)\right)] \leq C \e^{- \lambda_{\rm Lang} \min\{1,\gamma^2\} t}.
-    \end{equation}
-    In addition, \cref{lemma:overdamped_langevin_decay_derivatives} implies the existence of $\lambda_{\rm ovd} > 0$ independent of $i$ such that
-    \begin{equation}
-        \label{eq:decay_ovd}
-        \norm{\e^{t \mathcal L_{\rm ovd}}}[\mathcal B\left(H^i_0(\mu)\right)] \leq C \e^{- \lambda_{\rm ovd} t}.
-    \end{equation}
-    Based on formal asymptotics expansions similar to those in~\cite[Chapter 6]{pavliotis2011applied},
-    we define the function
-    \(
-        \widetilde u(q, p, t) =
-        \widehat u(q, t)
-        + \gamma^{-1} p \, \partial_q \widehat u(q, t)
-        + \gamma^{-2} (p^2 - \beta^{-1}) \partial_q^{2} \widehat u.
-    \)
-    An explicit calculation gives
-    \begin{align*}
-        (\partial_t - \gamma \mathcal L) \widetilde u
-        &= \gamma^{-1} p \, \partial_t \partial_q \widehat u(q, t) + \gamma^{-2} (p^2 - \beta^{-1}) \partial_t \partial_q^{2} \widehat u
-        - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u \\
-        &= - \gamma^{-1} p \, \partial_q \partial_q^* \partial_q \widehat u(q, t) - \gamma^{-2} (p^2 - \beta^{-1})  \partial_q^{2} \partial_q^* \partial_q \widehat u \\
-        &\qquad - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.
-    \end{align*}
-    The right-hand side, which we denote by $\gamma^{-1} r(t)$, has values in $L^2_0(\mu)$.
-    By the general Leibniz rule gives,
-    it is simple to show that
-    \begin{equation}
-        \label{eq:commutators_derivatives}
-        \commut{\partial_q^N}{\partial_q^*}
-        = \commut{\partial_q^N}{\beta V' - \partial_q}
-        = \beta \commut{\partial_q^N}{V'}
-        = \beta \sum_{k=1}^{N} {N \choose k} V^{(k+1)} \partial_q^{(N-k)},
-    \end{equation}
-    which can be employed to show that $\norm{r(t)} \leq C \norm{\widehat u(t)}_4$.
-    Using~\cref{lemma:overdamped_langevin_decay_derivatives,lemma:elliptic_reg},
-    we deduce that
-    \begin{align}
-        \label{eq:bound_remainder}
-        \norm{r(t)} \leq \frac{C}{\sqrt{\min(t, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(t-1, 0)} \norm{f}[3]
-    \end{align}
-    % and so $\norm{r(t)} \leq C \e^{-\lambda_{\rm ovd} t} \norm{f}_4$ by~\eqref{eq:decay_ovd}.
-    Using the notation $e(t) = u(t) - \widetilde u(t)$,
-    we calculate that $e$ satisfies the equation
-    \[
-        \partial_t e = \gamma \mathcal L e - \gamma^{-1} r, \qquad
-        e(0) = \gamma^{-1} p \, f'(q) + \gamma^{-2} (\beta^{-1} - p^2) f''(q).
-    \]
-    By Duhamel's formula,
-    this implies
-    \[
-        e(t) = \e^{t \gamma \mathcal L} \bigl( e(0) \bigr) + \gamma^{-1} \int_{0}^{t} \e^{(t- s) \gamma \mathcal L} r(s) \, \d s.
-    \]
-    From~\eqref{eq:decay_langevin} and~\eqref{eq:bound_remainder} we deduce immediately that
-    \begin{align*}
-        e(t)
-        &\leq C \e^{- \lambda_{\rm Lang} t} \norm{e(0)}
-        + C \gamma^{-1} \norm{f}[3] \int_{0}^{t} \e^{- \lambda_{\rm Lang} (t-s)} \frac{1}{\sqrt{\min(s, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(s-1, 0)} \d s \\
-        &\leq C \e^{- \lambda t} \norm{e(0)} + C \norm{f}_3 \gamma^{-1} \e^{- \lambda t},
-    \end{align*}
-    for $\lambda = \min(\lambda_{\rm ovd}, \lambda_{\rm Lang})$.
-    The result then follows after noticing that $\norm{e(0)} \leq C \gamma^{-1} \norm{f}_2$ and
-    \[
-        \norm{\widetilde u(t) - \widehat u(t)} \leq C \norm{f}_2 \gamma^{-1} \e^{- \lambda_{\rm ovd} t},
-    \]
-    by \eqref{eq:decay_ovd}.
-\end{proof}
+% The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
+% in the overdamped limit $\gamma \to \infty$,
+% in the case of an initial condition depending only on $q$.
+% See also~\cite{MR496218,MR918689} for formal asymptotic expansions of the solution to the Fokker--Planck equation in the overdamped limit.
+%
+% \begin{lemma}
+%     \label{lemma:backward_kolmogorov_obs_q}
+%     Let $\mathcal L_{\rm ovd} = - V'(q) \partial_q + \beta^{-1} \partial_q^2$ and $f \in L^2_0(\nu) \cap C^{\infty}(\torus)$,
+%     where $\nu$ is given in~\eqref{eq:definition_prob_measures}.
+%     Let also $\bar f(q, p) = f(q)$ and
+%     \[
+%         \widehat u(t) = \e^{t\mathcal L_{\rm ovd}} f, \qquad
+%         u(t) = \e^{t \gamma\mathcal L} \bar f.
+%     \]
+%     Then there exist positive constants $C$ and $\lambda$ independent of $f$ and $\gamma$ such that
+%     \[
+%         \forall \gamma \geq 1, \qquad
+%         \forall t \geq 0, \qquad
+%         \norm{u(t)  - \widehat u(t)} \leq
+%         C \norm{f}_3 \gamma^{-1} \e^{-\lambda t}.
+%     \]
+% \end{lemma}
+% \begin{proof}
+%     Throughout this proof, $C$ denotes a positive constant that can change from occurrence to occurrence but is independent of $\gamma$ and $f$.
+%     We recall that there exists a positive constant $\lambda_{\rm Lang}$ such that~\cite{roussel2018spectral,pavliotis2011applied}
+%     \begin{equation}
+%         \label{eq:decay_langevin}
+%         \forall \gamma > 0, \qquad
+%         \norm{\e^{t \gamma \mathcal L_{\rm Lang}}}[\mathcal B\left(L^2_0(\mu)\right)] \leq C \e^{- \lambda_{\rm Lang} \min\{1,\gamma^2\} t}.
+%     \end{equation}
+%     In addition, \cref{lemma:overdamped_langevin_decay_derivatives} implies the existence of $\lambda_{\rm ovd} > 0$ independent of $i$ such that
+%     \begin{equation}
+%         \label{eq:decay_ovd}
+%         \norm{\e^{t \mathcal L_{\rm ovd}}}[\mathcal B\left(H^i_0(\mu)\right)] \leq C \e^{- \lambda_{\rm ovd} t}.
+%     \end{equation}
+%     Based on formal asymptotics expansions similar to those in~\cite[Chapter 6]{pavliotis2011applied},
+%     we define the function
+%     \(
+%         \widetilde u(q, p, t) =
+%         \widehat u(q, t)
+%         + \gamma^{-1} p \, \partial_q \widehat u(q, t)
+%         + \gamma^{-2} (p^2 - \beta^{-1}) \partial_q^{2} \widehat u.
+%     \)
+%     An explicit calculation gives
+%     \begin{align*}
+%         (\partial_t - \gamma \mathcal L) \widetilde u
+%         &= \gamma^{-1} p \, \partial_t \partial_q \widehat u(q, t) + \gamma^{-2} (p^2 - \beta^{-1}) \partial_t \partial_q^{2} \widehat u
+%         - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u \\
+%         &= - \gamma^{-1} p \, \partial_q \partial_q^* \partial_q \widehat u(q, t) - \gamma^{-2} (p^2 - \beta^{-1})  \partial_q^{2} \partial_q^* \partial_q \widehat u \\
+%         &\qquad - \gamma^{-1} p (p^2 - \beta^{-1}) \partial_q^{3} \widehat u + 2 \gamma^{-1} p \, V'(q) \, \partial_q^2 \widehat u.
+%     \end{align*}
+%     The right-hand side, which we denote by $\gamma^{-1} r(t)$, has values in $L^2_0(\mu)$.
+%     By the general Leibniz rule gives,
+%     it is simple to show that
+%     \begin{equation}
+%         \label{eq:commutators_derivatives}
+%         \commut{\partial_q^N}{\partial_q^*}
+%         = \commut{\partial_q^N}{\beta V' - \partial_q}
+%         = \beta \commut{\partial_q^N}{V'}
+%         = \beta \sum_{k=1}^{N} {N \choose k} V^{(k+1)} \partial_q^{(N-k)},
+%     \end{equation}
+%     which can be employed to show that $\norm{r(t)} \leq C \norm{\widehat u(t)}_4$.
+%     Using~\cref{lemma:overdamped_langevin_decay_derivatives,lemma:elliptic_reg},
+%     we deduce that
+%     \begin{align}
+%         \label{eq:bound_remainder}
+%         \norm{r(t)} \leq \frac{C}{\sqrt{\min(t, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(t-1, 0)} \norm{f}[3]
+%     \end{align}
+%     % and so $\norm{r(t)} \leq C \e^{-\lambda_{\rm ovd} t} \norm{f}_4$ by~\eqref{eq:decay_ovd}.
+%     Using the notation $e(t) = u(t) - \widetilde u(t)$,
+%     we calculate that $e$ satisfies the equation
+%     \[
+%         \partial_t e = \gamma \mathcal L e - \gamma^{-1} r, \qquad
+%         e(0) = \gamma^{-1} p \, f'(q) + \gamma^{-2} (\beta^{-1} - p^2) f''(q).
+%     \]
+%     By Duhamel's formula,
+%     this implies
+%     \[
+%         e(t) = \e^{t \gamma \mathcal L} \bigl( e(0) \bigr) + \gamma^{-1} \int_{0}^{t} \e^{(t- s) \gamma \mathcal L} r(s) \, \d s.
+%     \]
+%     From~\eqref{eq:decay_langevin} and~\eqref{eq:bound_remainder} we deduce immediately that
+%     \begin{align*}
+%         e(t)
+%         &\leq C \e^{- \lambda_{\rm Lang} t} \norm{e(0)}
+%         + C \gamma^{-1} \norm{f}[3] \int_{0}^{t} \e^{- \lambda_{\rm Lang} (t-s)} \frac{1}{\sqrt{\min(s, 1)}}  \e^{- \lambda_{\rm ovd} \, \max(s-1, 0)} \d s \\
+%         &\leq C \e^{- \lambda t} \norm{e(0)} + C \norm{f}_3 \gamma^{-1} \e^{- \lambda t},
+%     \end{align*}
+%     for $\lambda = \min(\lambda_{\rm ovd}, \lambda_{\rm Lang})$.
+%     The result then follows after noticing that $\norm{e(0)} \leq C \gamma^{-1} \norm{f}_2$ and
+%     \[
+%         \norm{\widetilde u(t) - \widehat u(t)} \leq C \norm{f}_2 \gamma^{-1} \e^{- \lambda_{\rm ovd} t},
+%     \]
+%     by \eqref{eq:decay_ovd}.
+% \end{proof}
 
 The next lemma provides an intermediate result for proving~\cref{proposition:semigroup_meanzero_observable}.
 The result proved here is sharper than what would be obtained from a simple application of~\eqref{eq:decay_langevin},

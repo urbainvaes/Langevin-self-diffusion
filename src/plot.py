@@ -53,6 +53,8 @@ for iδ, δ in enumerate(δs_underdamped):
         cu = np.polyfit(np.log10(γu[ifitu]), np.log10(yu[ifitu]), deg=1)
     ax.loglog(γu, yu, ".-",
               label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
+    # ax.semilogx(γu, γu*yu, ".-",
+    #           label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
 ax.set_prop_cycle(None)
 # for iδ, δ in enumerate(δs_galerkin):
 #     ig = np.nonzero(D11_wo_galerkin[:, iδ])[0]
@@ -76,15 +78,15 @@ plt.legend()
 plt.savefig("diffusion.pdf")
 plt.show()
 
-# δ = 0
 fig, ax = plt.subplots()
+δ = 0
 ax.set_prop_cycle(None)
 iu = np.nonzero(σ11_wo_underdamped[:, 0])[0]
 γu = γs_underdamped[iu]
 yu = σ11_wo_underdamped[:, 0][iu]
 ax.loglog(γu, σ11_wo_underdamped[:, 0][iu], label="No variance reduction")
 ax.loglog(γu, σ11_wi_underdamped[:, 0][iu], ".--", label="Underdamped control variate")
-ax.loglog(γs_new_galerkin, σ11_wi_new_galerkin, ".--", label="Spectral Galerkin with more modes")
+# ax.loglog(γs_new_galerkin, σ11_wi_new_galerkin, ".--", label="Spectral Galerkin with more modes")
 ig = np.nonzero(σ11_wo_galerkin[:, 0])[0]
 γg = γs_galerkin[ig]
 yg = σ11_wo_galerkin[:, 0][ig]

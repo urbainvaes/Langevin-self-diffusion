@@ -175,7 +175,7 @@
     The scaling of the mobility of multi-dimensional Langevin dynamics in a periodic potential as the friction vanishes is not well understood for non-separable potentials.
     Theoretical results are lacking,
     and numerical calculation of the mobility in the underdamped regime is challenging because
-    the computational cost required to achieve a given relative accuracy is inversely proportional to the friction coefficient.
+    the computational cost is inversely proportional to the friction coefficient.
     In this note, we propose a new variance-reduction method based on control variates for efficiently estimating the mobility of Langevin-type dynamics.
     We provide bounds on the bias and variance of the proposed estimator,
     and we illustrate its efficacy through numerical experiments,
@@ -186,18 +186,18 @@
 \end{abstract}
 
 \section{Introduction}%
-Langevin-type dynamics are Newtonian atomistic models for the evolution of a system of particles interacting with an environment at fixed temperature.
+Langevin dynamics model the evolution of a system of particles interacting with an environment at fixed temperature.
 They are widely used for the calculation of macroscopic properties of matter in molecular simulation.
 Assuming a diagonal mass matrix,
 the standard Langevin dynamics, sometimes called underdamped Langevin dynamics,
-reads after non-dimensionalization~\cite[Section 2.2.4]{MR2681239}
+reads after appropriate non-dimensionalization~\cite[Section 2.2.4]{MR2681239}
 \begin{subequations}
 \label{eq:langevin}
 \begin{align}
     \label{eq:langevin_q}
     \d q_t &= p_t \, \d t, \\
     \label{eq:langevin_p}
-    \d p_t &= - \grad V(q_t) \, \d t - \gamma \, p_t \, \d t + \sqrt{2 \gamma} \, \d W_t.
+    \d p_t &= - \grad V(q_t) \, \d t - \gamma \, p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t.
 \end{align}
 \end{subequations}
 Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and velocity variables,
@@ -221,7 +221,7 @@ We recall that the dynamics~\eqref{eq:langevin} is ergodic with respect to the B
     \qquad H(q, p) = V(q) + \frac{\abs{p}^2}{2},
 \end{equation}
 with $Z$ the normalization constant.
-It will be convenient to also introduce
+It will be convenient to also introduce the marginal densities
 \begin{equation}
     \label{eq:definition_prob_measures}
     \nu(\d q) = \frac{\e^{- \beta V(q)} \, \d q}{\int_{\torus^d}\e^{-\beta V(\widetilde q)} \d \widetilde q},
@@ -235,16 +235,16 @@ it is defined as the proportionality constant,
 in the limit of a small forcing,
 between the induced average velocity and the strength  of the forcing.
 More precisely,
-the mathematical definition of the mobility is
+the mobility is defined mathematically as
 \[
     D^{\gamma}_{\vect e} = \lim_{\eta \to 0} \frac{1}{\eta}\expect_{\mu_{\eta}} (\vect e^\t p),
 \]
 where $\mu_{\eta}$ is the invariant probability distribution of~\eqref{eq:langevin} when
 an additional drift term $\eta \vect e$ is present on the right-hand side of~\eqref{eq:langevin_p}.
-We note that, except when $\eta = 0$ where we recover~\eqref{eq:invariant_measure},
+Except when $\eta = 0$ where we recover~\eqref{eq:invariant_measure},
 the measure $\mu_{\eta}$ is not known explicitly,
-and so $D^{\gamma}_{\vect e}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
-Note that we can define the symmetric mobility matrix $D^{\gamma}$ from the directional mobility
+and so $D^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
+Note also that we can define the symmetric mobility matrix $D^{\gamma}$ from the directional mobility
 using the parallelogram identity:
 \[
     4 \vect e_1^\t D^{\gamma} \vect e_2
@@ -254,9 +254,9 @@ using the parallelogram identity:
 \]
 
 It can be shown that the mobility coincides with the so-called effective diffusion coefficient associated with the equilibrium dynamics~\eqref{eq:langevin}:
-the diffusively rescaled position process $\varepsilon q_{t/\varepsilon^2}$ converges as $\varepsilon \to 0$,
+the diffusively rescaled position process $(\varepsilon q_{t/\varepsilon^2})_{t\geq0}$ converges as $\varepsilon \to 0$,
 weakly in the space of continuous functions over compact time intervals,
-to a Brownian motion in $\real^d$ with prefactor $\sqrt{2 D^{\gamma}_{\vect e}}$.
+to a Brownian motion in $\real^d$ with prefactor $\sqrt{2 D^{\gamma}}$.
 In particular, by the continuous mapping theorem,
 \begin{equation}
     \label{eq:einsteins_formula}
@@ -268,18 +268,25 @@ suggesting that the mobility can be calculated by
 estimating the mean square displacement at a sufficiently large time of the equilibrium dynamics~\eqref{eq:langevin}
 using Monte Carlo simulation,
 which is one of the approaches taken in~\cite{MR2427108}.
+Specifically, given a number $J$ of realizations of the dynamics~\eqref{eq:langevin} over a sufficiently long time interval $[0, T]$,
+the mobility can be estimated as
+\begin{equation}
+    \label{eq:naive_estimator}
+    \widehat D^{\gamma}_{\vect e} 
+    = \frac{1}{J} \sum_{j=1}^{J} \frac{\abs{\vect e^\t (q^{(j)}_T - q^{(j)}_0)}^2}{2T}.
+\end{equation}
 The variance reduction approach we propose in the next section aims at reducing the mean square error of estimators of this type.
 
 The mobility (or effective diffusion coefficient)
-can also be related to the solution of a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
+is also related to the solution of a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
 which is given by
 \begin{equation}
     \label{eq:decomposition_generator}
     \mathcal L
     = p \cdot \grad_q - \grad V \cdot \grad_p + \gamma \left( - p \cdot \grad_p + \laplacian_p \right)
-    = \mathcal L_{\rm Ham} + \gamma \mathcal L_{FD}.
+    =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{FD}.
 \end{equation}
-More precisely, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that $D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p}$,
+Specifically, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that $D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p}$,
 where $\ip{\dummy}{\dummy}$ denotes the inner product of $L^2(\mu)$ and $\phi_{\vect e}$ denotes the solution in $L^2(\mu)$,
 unique up to an additive constant,
 of the Poisson equation
@@ -295,15 +302,18 @@ converges, uniformly for $t$ in compact subintervals of $[0, \infty)$ almost sur
 to the solution of the overdamped Langevin equation
 \begin{equation}
     \label{eq:overdamped_langevin}
-    \d q_t = - \grad V(q_t) + \sqrt{2} \, \d W_t.
+    \d q_t = - \grad V(q_t) + \sqrt{2 \beta^{-1}} \, \d W_t.
 \end{equation}
 It is also possible to prove that $\gamma D^{\gamma} = D^{\rm ovd} + \bigo{\gamma^{-2}}$ as $\gamma \to \infty$,
 where~$D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
-and to derive explicit expression for the correction terms by asymptotic analysis~\cite{MR2394704}.
+and to derive explicit expressions for the correction terms by asymptotic analysis~\cite{MR2394704}.
 The diffusion coefficient in the overdamped limit is given by $D^{\rm ovd}_{\vect e} = \norm{\vect e + \grad \chi_{\vect e}}[\nu]^2$,
-where $\chi$ is the solution in~$L^2(\nu)$ of the Poisson equation $- \mathcal L_{\rm ovd} \chi_{\vect e} = \vect e^\t \grad(q)$
-and $\mathcal L_{\rm ovd} = - \grad V \cdot \grad + \laplacian$ is the generator of the Markov semigroup associated with~\eqref{eq:overdamped_langevin}.
-A reasoning similar to that in~\cite[Proposition 4.1]{MR2394704} shows that,
+where $\chi$ is the solution in~$L^2(\nu)$ of the Poisson equation
+\[
+    - \mathcal L_{\rm ovd} \chi_{\vect e} = \vect e^\t \grad(q), \qquad \mathcal L_{\rm ovd} = - \grad V \cdot \grad + \laplacian,
+\]
+with $\mathcal L_{\rm ovd}$ is the generator of the Markov semigroup associated with~\eqref{eq:overdamped_langevin}.
+A reasoning similar to that in~\cite[Proposition 4.1]{MR2394704} in the one-dimensional setting shows that,
 in fact, $D^{\rm ovd}_{\vect e}$ is an upper bound for $\gamma D^{\gamma}_{\vect e}$ for all $\gamma > 0$.
 
 The underdamped limit is much more difficult to analyze,
@@ -319,9 +329,9 @@ These results extend to the multi-dimensional setting only when the potential is
 that is when $V$ can be decomposed as $V(q) = \sum_i V_i(q_i)$,
 but no theoretical results exist in the non-separable case,
 which was explored mostly by means of numerical experiments.
-Early results in~\cite{chen1996surface} show that the effective diffusion coefficient scales as~$\gamma^{-1/2}$ in the underdamped regime for a particular case of a non-separable periodic potential.
+Early numerical results in~\cite{chen1996surface} show that the effective diffusion coefficient scales as~$\gamma^{-1/2}$ in the underdamped regime for a particular case of a non-separable periodic potential.
 Later, in~\cite{Braun02},
-the authors note that this behavior as~$\gamma^{-1/2}$ is valid only when $\gamma \in [0.01, 0.1]$,
+different authors note that this behavior as~$\gamma^{-1/2}$ is valid only when $\gamma \in [0.01, 0.1]$,
 but not for smaller values of the damping coefficient.
 They conclude from simulation results that the effective diffusion coefficient scales as~$\gamma^{-\sigma}$ with $0 \leq \sigma \leq 1/3$ in the underdamped regime,
 and suggest that $\sigma$ could be zero for all non-separable potentials.
@@ -353,13 +363,31 @@ Our contributions are the following.
         We apply the proposed variance reduction approach to the estimation of mobility for two-dimensional Langevin dynamics in a non-separable periodic potential.
         To this end, we construct an approximation to the Poisson equation by tensorization of approximations obtained in one spatial dimension.
         We study numerically the performance of this approach,
-        and we present numerical results illustrating the asymptotic behavior as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ of the effective diffusion coefficient,
-        as observed in~\cite{roussel_thesis}.
+        and we present numerical results corroborating the asymptotic behavior as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ of the effective diffusion coefficient
+        observed in~\cite{roussel_thesis}.
     \item
         Using the proposed variance reduction approach
         for calculating the diffusion coefficient of generalized Langevin dynamics in the underdamped regime,
-        we provide numerical evidence supporting the asymptotic behavior conjectured in~\cite{GPGSUV21} using formal asymptotics.
+        we provide numerical evidence supporting the asymptotic behavior of the effective diffusion coefficient conjectured in our previous work~\cite{GPGSUV21} using formal asymptotics.
 \end{itemize}
+The rest of the paper is organized as follows.
+In~\cref{sec:method},
+we present a control variate approach for improving the naive Monte Carlo estimator~\eqref{eq:naive_estimator},
+and we obtain bounds on the bias and variance of the improved estimator in the particular case of Langevin dynamics~\eqref{eq:langevin}.
+In~\cref{sec:application_to_one_dimensional_langevin_type_dynamics},
+we employ the proposed approach for calculating the mobility of one-dimensional Langevin and generalized Langevin dynamics,
+as proof of concept,
+and we assess the performance of different control variates in terms of variance reduction.
+In~\cref{sec:applications_2d},
+we present numerical results for two-dimensional Langevin dynamics,
+exhibiting a scaling as $\gamma^{-\sigma}$ of the mobility in the underdamped regime.
+\Cref{sec:conclusions_and_perspectives_for_future_work} is reserved for conclusions and perspectives for future work,
+and the appendices contain technical results employed in~\cref{sec:application_to_one_dimensional_langevin_type_dynamics}.
+
+
+
+\section{Method and theoretical results}%
+\label{sec:method}%
 
 Let $\phi$ denote the solution to
 \begin{equation}
@@ -729,8 +757,8 @@ and when $\psi = 0$ we recover the previous bound.
     and so the variance of $v(t)$ is approximately $2 D^2 - 2 D_{\psi}^2$.
 \end{proof}
 
-\section{Toy example: Langevin dynamics in one dimension}%
-\label{sec:toy_example_langevin_dynamics_in_one_dimension}
+\section{Application to one-dimensional Langevin-type dynamics}%
+\label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
 As mentioned in the introduction,
 we consider in this section two methods of constructing a control variate:
@@ -959,6 +987,15 @@ and the associated variance are illustrated in for a range of friction coefficie
 %     + 36 \left(  \frac{\sum_{i=1}^{N} \sum_{j=i+1}^{N} \abs{j+1-i}^2 \abs{j+i}^2}
 %     { N^2 (N+1)^2 (2N+1)^2} \right).
 % \end{align*}
+
+\section{Application to Langevin dynamics in two dimensions}%
+\label{sec:applications_2d}%
+
+
+
+\section{Conclusions and perspectives for future work}%
+\label{sec:conclusions_and_perspectives_for_future_work}
+
 \appendix
 \section{Proof of \cref{proposition:semigroup_meanzero_observable}}%
 \label{sec:auxiliary_technical_results}
@@ -987,7 +1024,7 @@ and we recall that a probability measure $\pi$ is said to satisfy the Poincaré 
 We also define $\nabla_q^* = \beta \nabla V(q) - \nabla_q$ and $\nabla_p^* = \beta p - \nabla_p$,
 and note that these operators are formally the $L^2(\mu)$ adjoints of $\nabla_q$ and $\nabla_p$.
 Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$.
-The first lemma shows the exponential convergence of the derivatives of the overdamped Langevin semigroup.
+The first lemma concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
     Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,

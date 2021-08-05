@@ -272,7 +272,7 @@ Specifically, given a number $J$ of realizations of the dynamics~\eqref{eq:lange
 the mobility can be estimated as
 \begin{equation}
     \label{eq:naive_estimator}
-    \widehat D^{\gamma}_{\vect e} 
+    \widehat D^{\gamma}_{\vect e}
     = \frac{1}{J} \sum_{j=1}^{J} \frac{\abs{\vect e^\t (q^{(j)}_T - q^{(j)}_0)}^2}{2T}.
 \end{equation}
 The variance reduction approach we propose in the next section aims at reducing the mean square error of estimators of this type.
@@ -389,72 +389,97 @@ and the appendices contain technical results employed in~\cref{sec:application_t
 \section{Method and theoretical results}%
 \label{sec:method}%
 
-Let $\phi$ denote the solution to
-\begin{equation}
-    \label{eq:poisson}
-    - \mathcal L \phi = p,
-\end{equation}
-and suppose that $\psi$ denote an approximation of $\phi$.
-By It\^o's formula, it holds
-\begin{align}
-    \notag
-    \phi(q_t, p_t) - \phi(q_0, p_0) &= - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\phi]{p}(q_s, p_s) \, \d W_s \\
-    \label{eq:ito_control}
-    \psi(q_t, p_t) - \psi(q_0, p_0) &= \int_{0}^{t} (\mathcal L \psi) (q_s, p_s) \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s.
-\end{align}
-Let also $u(t)$ and $v(t)$ denote the random variables
+Throughout this section,
+we focus on the Langevin dynamics~\eqref{eq:langevin} for simplicity,
+but the approach we present can be applied to other Langevin-type dynamics.
+A few of the results and arguments we present, however,
+are tailored specifically for Langevin dynamics and would have to be modified for more other dynamics.
+We also assume throughout the section that $\bigl((q_t, p_t)\bigr)_{t\geq 0}$ is a solution of~\eqref{eq:langevin} with statistically stationary initial condition~$(q_0, p_0) \sim \mu$.
+
+Let us fix a direction $\vect e$ and denote again by $\phi_{\vect e}$ the solution to the Poisson equation~\eqref{eq:poisson_equation}.
+Since the number of independent realizations in Monte Carlo estimators
+appears only as a divisor in the variance,
+we study estimators based on one realization only.
+That is, instead of~\eqref{eq:naive_estimator} we take as point of comparison the naive estimator
 \begin{equation}
     \label{eq:simple_estimator}
-    u(t) = \frac{\abs{q_t - q_0}^2}{2t}
+    u(T) = \frac{\abs{\vect e^\t (q_T - q_0)}^2}{2T},
 \end{equation}
-and
-\begin{align*}
-    v(t) &= D_{\psi}+ \frac{1}{2t} \left( \abs{q_t - q_0}^2 - \abs{\xi_t}^2\right)
-\end{align*}
-where $D_{\psi} := \gamma \beta^{-1} \int_{\torus \times \real} \abs{\derivative{1}[\psi]{p}}^2 \, \d \mu$ and
-\begin{align}
-    \label{eq:control_variate}
-    \xi_t = \psi(q_t, p_t) - \psi(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \derivative{1}[\psi]{p}(q_s, p_s) \, \d W_s
-\end{align}
-It holds
-\[
-    \lim_{t \to \infty} \expect \bigl( u(t) \bigr) = \lim_{t \to \infty} \expect \bigl( v(t) \bigr)
-    = \gamma \beta^{-1} \int_{\torus \times \real} \abs{\derivative{1}[\phi]{p}}^2 \, \d \mu
-    = \int_{\torus \times \real} \phi \, p \, \d \mu =: D_{\phi}.
-\]
-so both $u(t)$ and $v(t)$ are asymptotically unbiased estimators of $D_{\phi}$.
 
-\paragraph{Bias of the estimator.}%
-We study in this section the bias of the estimators $u(t)$ and $v(t)$ under stationary initial conditions,
-that is $(q_0, p_0) \sim \mu$.
-In this case, it holds that
+We motivate in this section that
+the following estimator of $D_{\vect e}$ is better than $u(T)$ provided that $\psi_{\vect e}$ is a sufficiently good approximation of $\phi_{\vect e}$:
+\begin{subequations}
+\begin{equation}
+    v(T) = d_{\psi}+ \frac{1}{2T} \left( \abs{\vect e^\t(q_T - q_0)}^2 - \abs{\xi_T}^2\right),
+\end{equation}
+where $d_{\psi} := \gamma \beta^{-1} \int \abs{\grad_p \psi_{\vect e}}^2 \, \d \mu$ and
+\begin{align}
+    \label{eq:definition_control_variate}
+    \xi_T = \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_p \psi_{\vect e}(q_t, p_t) \, \d W_t.
+\end{align}
+\end{subequations}
+Note that $v(T) = u(T)$ if $\psi_{\vect e} = 0$,
+and that $v(T) = D_{\vect e}^{\gamma}$ if $\psi_{\vect e} = \phi_{\vect e}$ since by It\^o's formula
+\begin{equation}
+    \label{eq:ito_control_variate}
+    \xi_T = \int_{0}^{T} \mathcal L \phi_{\vect e}(q_t, p_t) \, \d t = - \int_0^T \vect e^\t p_t \, \d t = \vect e^\t (q_0 - q_T)
+\end{equation}
+in this case, and $d_{\phi} = D_{\vect e}^{\gamma}$.
+In addition, using It\^o's isometry we verify formally that $v(T)$ is asymptotically unbiased as~$T \to \infty$ regardless of the choice of $\psi_{\vect e}$:
+\[
+    \lim_{T \to \infty} \expect \bigl( v(T) \bigr)
+    = d_{\psi} + \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu
+    = \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu =: D_{\vect e}^{\gamma}.
+\]
+\begin{remark}
+    In view of~\eqref{eq:ito_control_variate}
+    it would have been equivalent, in the case where $\psi_{\vect e}$ is smooth,
+    to define
+    \(
+        \xi_T = \int_{0}^{T} \mathcal L \phi_{\vect e}(q_t, p_t) \, \d t
+    \)
+    from the beginning.
+    However, the definition~\eqref{eq:definition_control_variate} makes sense even if $\psi_{\vect e}$ is differentiable only once,
+    and is therefore more widely applicable.
+    Our results in this section focus on the case where $\psi_{\vect e}$ is at least twice differentiable for simplicity,
+    but in~\cref{sec:application_to_one_dimensional_langevin_type_dynamics} we will employ approximations $\psi_{\vect e}$ which are differentiable only once.
+\end{remark}
+
+We now obtain more precise results on the bias and variance of $u(T)$ and $v(T)$.
+
+\paragraph{Bias of the estimators.}%
+We begin by studying the bias of $u(T)$.
+Since the initial conditions are assumed statistically stationary,~$(q_0, p_0) \sim \mu$,
+it holds that
 \begin{equation}
 \label{eq:bias_without_control}
 \begin{aligned}
     \expect \bigl(u(t)\bigr)
-    &= \frac{1}{2t} \expect \left( \int_{0}^{t} p_s \, \d s \int_{0}^{t} p_u \, \d u \right)
-    = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (p_s p_u) \, \d s \, \d u \right) \\
-    &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \ip{\e^{\abs{s - u} \mathcal L}p}{p} \, \d s \, \d u \right)
-    =  \int_{0}^{t} \ip{\e^{s \mathcal L}p}{p} \left(1 - \frac{s}{t}\right) \d s  \\
-    &= \int_{0}^{\infty} \ip{\e^{s \mathcal L}p}{p}  \d s - \int_{0}^{t} \ip{\e^{s \mathcal L}p}{p} \min\left(1, \frac{s}{t}\right) \, \d s.
+    &= \frac{1}{2t} \expect \left( \int_{0}^{t} \vect e^\t p_s \, \d s \int_{0}^{t} \vect e^\t p_u \, \d u \right)
+    = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (\vect e^\t p_s) (\vect e^\t p_u) \, \d s \, \d u \right) \\
+    &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \ip{\e^{\abs{s - u} \mathcal L}(\vect e^\t p)}{(\vect e^\t p)} \, \d s \, \d u \right)
+    =  \int_{0}^{t} \ip{\e^{s \mathcal L} (\vect e^\t p)}{(\vect e^\t p)} \left(1 - \frac{s}{t}\right) \d s  \\
+    &= \int_{0}^{\infty} \ip{\e^{s \mathcal L}(\vect e^\t p)}{(\vect e^\t p)}  \d s - \int_{0}^{t} \ip{\e^{s \mathcal L} (\vect e^\t p)}{(\vect e^\t p)} \min\left(1, \frac{s}{t}\right) \, \d s.
     % D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
 \end{aligned}
 \end{equation}
 The first term is the effective diffusion coefficient,
 and the second term is the bias.
-In order to obtain a bound on the bias,
-a natural approach is to use a known bound on the Markov semigroup associated with Langevin dynamics~\cite{roussel2018spectral},
+As a first attempt towards bounding the latter term,
+we use the known general bound for the Markov semigroup associated with Langevin dynamics~\cite{roussel2018spectral}
 stating that
 \begin{equation}
     \label{eq:decay_semigroup_general}
     \forall \gamma > 0, \qquad \forall t \geq 0, \qquad
     \norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \lambda s \min(\gamma, \gamma^{-1}) \bigr)
 \end{equation}
-for appropriate constants $M > 0$ and $\hat \lambda > 0$.
+for appropriate constants $M > 0$ and $\lambda > 0$.
 An application of this bound gives
-\(
-    \ip{\e^{s \mathcal L}p}{p} \leq \norm*{\e^{s \mathcal L}p} \norm*{p} \leq \beta^{-1} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr),
-\)
+\[
+    \ip{\e^{s \mathcal L}(\vect e^\t p)}{(\vect e^\t p)}
+    \leq \norm*{\e^{s \mathcal L}(\vect e^\t p)} \norm*{\vect e^\t p}
+    \leq \beta^{-1} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr),
+\]
 which leads to the following estimate on the bias:
 \begin{equation}
     \label{eq:bias}
@@ -576,7 +601,12 @@ we have the following result.
     \end{align*}
 \end{proposition}
 \begin{proof}
-Using Itô's formula~\eqref{eq:ito_control} and the same reasoning as in~\eqref{eq:bias_without_control},
+Using Itô's formula for $\psi_{\vect e}$,
+\[
+    \psi_{\vect e}(q_t, p_t) - \psi_{\vect e}(q_0, p_0)
+    = \int_{0}^{t} (\mathcal L \psi_{\vect e}) (q_s, p_s) \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \grad_p \psi_{\vect e} (q_s, p_s) \cdot \d W_s,
+\]
+and the same reasoning as in~\eqref{eq:bias_without_control},
 we obtain
 \begin{align*}
     \expect_{\mu} v(t)
@@ -723,14 +753,14 @@ and when $\psi = 0$ we recover the previous bound.
 \textcolor{red}{Better approach to control the variance asymptotically?}
 \begin{proof}
     Using It\^o's isometry and the central limit theorem for martingales~\cite[Theorem 3.3]{pavliotis2008multiscale},
-    we obtain that it holds approximately for large times
+    we obtain that, approximately for large times,
     \[
         \frac{1}{\sqrt{2t}}
         \begin{pmatrix}
             q_t - q_0 \\
             \xi_t
         \end{pmatrix}
-        \sim
+        \xrightarrow[T \to \infty]{\rm Law}
         \mathcal N \left(0,
             \begin{pmatrix}
                 D & \int \psi p \, \d \mu \\
@@ -1410,64 +1440,64 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     we deduce~\cref{proposition:semigroup_meanzero_observable}.
 \end{proof}
 
-\subsection{Bound on momentum}%
-\begin{lemma}
-    \label{lemma:bound_momentum}
-    Let $(q_t, p_t)$ be a solution to~\eqref{eq:langevin}.
-    Then it holds
-    \[
-        \proba \left(\sup_{0 \leq t \leq T} \abs{p_t}  \geq P \right)
-        \leq \frac{C\bigl( 1 + \log (1 + \gamma T) \bigr)}{\left(P - \frac{1}{\gamma}\norm{\grad V}[\infty]\right)^2}.
-    \]
-\end{lemma}
-\begin{proof}
-    Let $\vect e$ be a unit vector,
-    and let $(p^{\vect e}_t)$ be a solution to
-    \begin{align*}
-        \d p^{\vect e}_t &= \norm{\grad V}[\infty] \vect e \, \d t - \gamma \, p^{\vect e}_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
-        \qquad p^{\vect e}_0 = p_0.
-    \end{align*}
-    where $W_t$ is the same Brownian motion as in~\eqref{eq:langevin_p}.
-    Then we have
-    \begin{align}
-        \notag
-        (p_t - p^{\vect e}_t) \cdot \vect e
-        &= - \int_{0}^{t} \bigl( \grad V(q_s) \cdot \vect e + \norm{\grad V}[\infty] \bigr) \, \d s
-        - \gamma \, \int_{0}^{t} (p_s - p^{\vect e}_s) \cdot \vect e \, \d s \\
-        \label{eq:bound_p_by_pe}
-        &\leq - \gamma \, \int_{0}^{t} (p_s - p^{\vect e}_s) \cdot \vect e \, \d s
-        \leq 0,
-    \end{align}
-    where we used Gr\"onwall's lemma in the last inequality.
-    Letting $p_{\infty} = \frac{1}{\gamma}\norm{V}[\infty] \vect e$,
-    we rewrite the equation for $p^{\vect e}_t$ as
-    \begin{align*}
-        \d \left( p^{\vect e}_t - p_{\infty} \right) = - \gamma \, (p^{\vect e}_t - p_{\infty}) \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
-        \qquad p^{\vect e}_0 = p_0,
-    \end{align*}
-    the solution of which is an Ornstein--Uhlenbeck (OU) process
-    \begin{align*}
-        p^{\vect e}_t - p_{\infty} =
-        - p_{\infty} \e^{-\gamma t} + \xi_t.
-    \end{align*}
-    The process $\xi_t$ is a stationary process whose supremum can be bounded using results from~\cite[Theorem A.1]{MR2029590},
-    which itself is based on the law of iterated logarithms and~\cite[Theorem 2.8]{MR1088478}:
-    there exists a constant $C$ such that
-    \[
-        \forall T \geq 0, \qquad
-        \expect \left( \sup_{0 \leq t \leq T} \abs{\xi_t}^2 \right)
-        \leq C \bigl( 1 + \log (1 + \gamma T) \bigr)
-    \]
-    From Markov's inequality,
-    we deduce
-    \[
-        \proba \left(\sup_{0 \leq t \leq T} \abs{p^{\vect e}_t}  \geq P \right)
-        \leq \proba \left(\sup_{0 \leq t \leq T} \abs{\xi_t} \geq (P - \abs{p_{\infty}}) \right)
-        \leq \frac{C}{\left(P - \frac{1}{\gamma}\norm{\grad V}[\infty]\right)^2} \bigl( 1 + \log (1 + \gamma T) \bigr).
-    \]
-    This inequality is true for all the coordinate unit vectors $\vect e_1, \dotsc, \vect e_d$,
-    and so the statement follows easily.
-\end{proof}
+% \subsection{Bound on momentum}%
+% \begin{lemma}
+%     \label{lemma:bound_momentum}
+%     Let $(q_t, p_t)$ be a solution to~\eqref{eq:langevin}.
+%     Then it holds
+%     \[
+%         \proba \left(\sup_{0 \leq t \leq T} \abs{p_t}  \geq P \right)
+%         \leq \frac{C\bigl( 1 + \log (1 + \gamma T) \bigr)}{\left(P - \frac{1}{\gamma}\norm{\grad V}[\infty]\right)^2}.
+%     \]
+% \end{lemma}
+% \begin{proof}
+%     Let $\vect e$ be a unit vector,
+%     and let $(p^{\vect e}_t)$ be a solution to
+%     \begin{align*}
+%         \d p^{\vect e}_t &= \norm{\grad V}[\infty] \vect e \, \d t - \gamma \, p^{\vect e}_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
+%         \qquad p^{\vect e}_0 = p_0.
+%     \end{align*}
+%     where $W_t$ is the same Brownian motion as in~\eqref{eq:langevin_p}.
+%     Then we have
+%     \begin{align}
+%         \notag
+%         (p_t - p^{\vect e}_t) \cdot \vect e
+%         &= - \int_{0}^{t} \bigl( \grad V(q_s) \cdot \vect e + \norm{\grad V}[\infty] \bigr) \, \d s
+%         - \gamma \, \int_{0}^{t} (p_s - p^{\vect e}_s) \cdot \vect e \, \d s \\
+%         \label{eq:bound_p_by_pe}
+%         &\leq - \gamma \, \int_{0}^{t} (p_s - p^{\vect e}_s) \cdot \vect e \, \d s
+%         \leq 0,
+%     \end{align}
+%     where we used Gr\"onwall's lemma in the last inequality.
+%     Letting $p_{\infty} = \frac{1}{\gamma}\norm{V}[\infty] \vect e$,
+%     we rewrite the equation for $p^{\vect e}_t$ as
+%     \begin{align*}
+%         \d \left( p^{\vect e}_t - p_{\infty} \right) = - \gamma \, (p^{\vect e}_t - p_{\infty}) \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
+%         \qquad p^{\vect e}_0 = p_0,
+%     \end{align*}
+%     the solution of which is an Ornstein--Uhlenbeck (OU) process
+%     \begin{align*}
+%         p^{\vect e}_t - p_{\infty} =
+%         - p_{\infty} \e^{-\gamma t} + \xi_t.
+%     \end{align*}
+%     The process $\xi_t$ is a stationary process whose supremum can be bounded using results from~\cite[Theorem A.1]{MR2029590},
+%     which itself is based on the law of iterated logarithms and~\cite[Theorem 2.8]{MR1088478}:
+%     there exists a constant $C$ such that
+%     \[
+%         \forall T \geq 0, \qquad
+%         \expect \left( \sup_{0 \leq t \leq T} \abs{\xi_t}^2 \right)
+%         \leq C \bigl( 1 + \log (1 + \gamma T) \bigr)
+%     \]
+%     From Markov's inequality,
+%     we deduce
+%     \[
+%         \proba \left(\sup_{0 \leq t \leq T} \abs{p^{\vect e}_t}  \geq P \right)
+%         \leq \proba \left(\sup_{0 \leq t \leq T} \abs{\xi_t} \geq (P - \abs{p_{\infty}}) \right)
+%         \leq \frac{C}{\left(P - \frac{1}{\gamma}\norm{\grad V}[\infty]\right)^2} \bigl( 1 + \log (1 + \gamma T) \bigr).
+%     \]
+%     This inequality is true for all the coordinate unit vectors $\vect e_1, \dotsc, \vect e_d$,
+%     and so the statement follows easily.
+% \end{proof}
 
 
 % \begin{proof}

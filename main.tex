@@ -454,81 +454,84 @@ it holds that
 \begin{equation}
 \label{eq:bias_without_control}
 \begin{aligned}
-    \expect \bigl(u(t)\bigr)
-    &= \frac{1}{2t} \expect \left( \int_{0}^{t} \vect e^\t p_s \, \d s \int_{0}^{t} \vect e^\t p_u \, \d u \right)
-    = \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \expect (\vect e^\t p_s) (\vect e^\t p_u) \, \d s \, \d u \right) \\
-    &= \frac{1}{2t} \left( \int_{0}^{t} \int_{0}^{t} \ip{\e^{\abs{s - u} \mathcal L}(\vect e^\t p)}{(\vect e^\t p)} \, \d s \, \d u \right)
-    =  \int_{0}^{t} \ip{\e^{s \mathcal L} (\vect e^\t p)}{(\vect e^\t p)} \left(1 - \frac{s}{t}\right) \d s  \\
-    &= \int_{0}^{\infty} \ip{\e^{s \mathcal L}(\vect e^\t p)}{(\vect e^\t p)}  \d s - \int_{0}^{t} \ip{\e^{s \mathcal L} (\vect e^\t p)}{(\vect e^\t p)} \min\left(1, \frac{s}{t}\right) \, \d s.
+    \expect \bigl(u(T)\bigr)
+    &= \frac{1}{2T} \expect \left( \int_{0}^{T} \vect e^\t p_{t} \, \d t \int_{0}^{T} \vect e^\t p_s \, \d s \right)
+    = \frac{1}{2t} \left( \int_{0}^{T} \int_{0}^{T} \expect (\vect e^\t p_t) (\vect e^\t p_s) \, \d s \, \d t \right) \\
+    &= \frac{1}{2t} \left( \int_{0}^{T} \int_{0}^{T} \ip{\e^{\abs{t - s} \mathcal L}(\vect e^\t p)}{\vect e^\t p} \, \d s \, \d t \right)
+    =  \int_{0}^{T} \ip{\e^{t \mathcal L} (\vect e^\t p)}{\vect e^\t p} \left(1 - \frac{t}{T}\right) \d t  \\
+    &= \int_{0}^{\infty} \ip{\e^{t \mathcal L}(\vect e^\t p)}{\vect e^\t p}  \d t - \int_{0}^{T} \ip{\e^{t \mathcal L} (\vect e^\t p)}{\vect e^\t p} \min\left\{1, \frac{t}{T}\right\} \, \d t.
     % D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
 \end{aligned}
 \end{equation}
-The first term is the effective diffusion coefficient,
+The first term is the effective diffusion coefficient
 and the second term is the bias.
 As a first attempt towards bounding the latter term,
-we use the known general bound for the Markov semigroup associated with Langevin dynamics~\cite{roussel2018spectral}
+we use a general bound for the Markov semigroup associated with Langevin dynamics~\cite{roussel2018spectral}
 stating that
 \begin{equation}
     \label{eq:decay_semigroup_general}
     \forall \gamma > 0, \qquad \forall t \geq 0, \qquad
-    \norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \lambda s \min(\gamma, \gamma^{-1}) \bigr)
+    \norm*{ \e^{s \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq M \exp \bigl(- \lambda s \min\{\gamma, \gamma^{-1}\} \bigr)
 \end{equation}
 for appropriate constants $M > 0$ and $\lambda > 0$.
 An application of this bound gives
 \[
-    \ip{\e^{s \mathcal L}(\vect e^\t p)}{(\vect e^\t p)}
+    \ip{\e^{s \mathcal L}(\vect e^\t p)}{\vect e^\t p}
     \leq \norm*{\e^{s \mathcal L}(\vect e^\t p)} \norm*{\vect e^\t p}
-    \leq \beta^{-1} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr),
+    \leq M \beta^{-1} \exp\bigl(- \lambda s \min\{\gamma, \gamma^{-1}\}\bigr),
 \]
 which leads to the following estimate on the bias:
 \begin{equation}
     \label{eq:bias}
-    \abs{\expect_{\mu} u(t) - D}
-    \leq \frac{1}{\beta t}\int_{0}^{\infty} \exp\bigl(- \lambda s \min(\gamma, \gamma^{-1})\bigr) s \, \d s
-    = \frac{\max (\gamma^2, \gamma^{-2})}{\beta \lambda^2 t}.
+    \abs{\expect_{\mu} u(T) - D_{\vect e}^{\gamma}}
+    \leq \frac{M}{\beta T}\int_{0}^{\infty} \exp\bigl(- \lambda s \min\{\gamma, \gamma^{-1}\}\bigr) s \, \d s
+    = \frac{M \max \{\gamma^2, \gamma^{-2}\}}{\beta \lambda^2 T}.
 \end{equation}
 Since the effective diffusion coefficient scales as $\gamma^1$ in both the underdamped ($\gamma \to 0$) and overdamped limits ($\gamma \to \infty$)~\cite{MR2394704,MR2427108},
-this estimate suggests that the relative bias of the estimator scales as $\max(\gamma^{-1}, \gamma^3) t$ and that,
-consequently, the integration time should scale as $t \propto \max(\gamma^{-1}, \gamma^3)$ in order to meet a given threshold on the relative error.
-It turns out that, in fact, the estimate~\eqref{eq:bias} is not optimal,
-and it is sufficient to choose $t \propto \gamma$ in the overdamped limit.
+this estimate suggests that the relative bias of the estimator scales as $\max\{\gamma^{-1}, \gamma^3\} T^{-1}$ and that,
+consequently, the integration time should scale as $T \propto \max\{\gamma^{-1}, \gamma^3\}$ in order to meet a given threshold on the relative error.
+It turns out that the estimate~\eqref{eq:bias} is in fact not optimal,
+and it is sufficient to choose $T \propto \gamma$ in the overdamped limit.
 We can derive a sharper estimate from the following result:
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
     Let $\Pi_p: \lp{2}{\mu} \ni u \mapsto  u - \int u(q, p) \, \d \kappa(p)$ and $\Pi_p^\perp = \id - \Pi_p$.
     Assume that $f$ and $g$ are smooth functions in $\Pi_p^\perp L^2(\mu)$
     such that $\partial_q f \in \lp{2}{\mu}$ and $\partial_q h \in \lp{2}{\mu}$.
-    Then there exist constants $C$ and $\lambda$ independent of $\gamma$, $f$ and $h$ such that
+    Then there exist constants $K$ and $\kappa$ independent of $\gamma$, $f$ and $h$ such that
     \begin{equation}
         \label{eq:optimal_decay_correlation}
         \forall \gamma \geq 1, \quad
         \forall t \geq 0, \qquad
         \abs{\ip{\e^{t \mathcal L}f}{h}}
-        \leq C \, \bigl( \norm{f} + \norm{\partial_q f} \bigr) \bigl( \norm{h} + \norm{\partial_q h} \bigr)  \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} t} + \e^{-\lambda  \gamma t} \right).
+        \leq K \norm{f}[1_q]  \norm{h}[1_q] \left( \gamma^{-2} \e^{- \kappa \gamma^{-1} t} + \e^{-\kappa  \gamma t} \right),
     \end{equation}
+    where $\norm{\dummy}[1_q] = \norm{\dummy} + \norm{\grad_q \dummy}$.
 \end{proposition}
-Applying this result with $f(q, p) = p$, we obtain
+Applying this result with $f(q, p) = h(q, p) = \vect e^\t p$, we obtain
 \begin{equation*}
     \forall \gamma \geq 1, \qquad
-    \abs{\expect_{\mu} u(t) - D}
-    \leq \frac{C}{t}\int_{0}^{\infty} \left( \gamma^{-2} \e^{- \lambda \gamma^{-1} s} + \e^{-\lambda  \gamma s} \right)  s \, \d s
-    \leq \frac{C}{t}.
+    \abs{\expect_{\mu} u(T) - D}
+    \leq \frac{K}{T}\int_{0}^{\infty} \left( \gamma^{-2} \e^{- \kappa \gamma^{-1} s} + \e^{-\kappa  \gamma s} \right)  s \, \d s
+    \leq \frac{K}{\kappa T}.
 \end{equation*}
 The proof of \cref{proposition:semigroup_meanzero_observable} is postponed to \cref{sec:auxiliary_technical_results}.
 In this section,
-we motivate the result by scrutinizing two examples where
-explicit expressions of the bias or of the velocity auto-correlation can be obtained:
+we motivate the result by scrutinizing two settings where
+explicit expressions of the bias or of velocity auto-correlation can be obtained:
 constant potential and quadratic potential.
 \begin{example}
-    Consider the case where $V(q) = 0$.
-    In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$ and,
-    applying Itô's formula to this function, we obtain
-    (note that this equation can be derived directly from~\eqref{eq:langevin_p})
+    [Constant potential]
+    Consider the case where $V(q) = 0$ in one dimension.
+    In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$,
+    and applying Itô's formula to this function we obtain
+    (note that this also follows directly from~\eqref{eq:langevin_p})
     \[
         \gamma^{-1}(p_t - p_0) = - \int_{0}^{t} p_s \, \d s + \sqrt{2 \gamma^{-1} \beta^{-1}} (W_t - W_0)
         = q_0 - q_t + \sqrt{2 \gamma^{-1} \beta^{-1}} W_t.
     \]
-    We deduce, using the explicit solution to the Ornstein--Uhlenbeck equation satisfied by $p$, that
+    Using the explicit solution to the Ornstein--Uhlenbeck equation satisfied by $p$,
+    we deduce that
     \begin{align*}
         q_t - q_0
         &= - \gamma^{-1} \left( p_0 \left(\e^{-\gamma t} - 1\right) + \sqrt{2 \gamma \beta^{-1}}\int_{0}^{t} \e^{-\gamma (t - s)} \, \d W_s \right)
@@ -539,15 +542,15 @@ constant potential and quadratic potential.
     the right-hand side of this equation is a mean-zero Gaussian random variable and,
     using It\^o's isometry, we calculate that
     \[
-        \frac{\expect \abs{q_t - q_0}^2}{2t} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{t \gamma} \left(\e^{-\gamma t} - 1\right) \right).
+        \frac{\expect \abs{q_T - q_0}^2}{2T} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{T \gamma} \left(\e^{-\gamma T} - 1\right) \right).
     \]
-    In this example, the relative bias is bounded from by $(t \gamma)^{-1}$.
+    In this example, the relative bias is bounded from above by $(T \gamma)^{-1}$.
 \end{example}
 
 \begin{example}
-    [Case of a quadratic potential]
+    [Quadratic potential]
     \label{example:quadratic}
-    Consider the case of the quadratic confining potential $V(q) = \frac{k q^2}{2}$.
+    Consider now the case of the quadratic confining potential $V(q) = \frac{k q^2}{2}$.
     In this case, the eigenfunctions of $\mathcal L$ are polynomials,
     with the linear ones and associated eigenvalues being
     \[
@@ -569,98 +572,103 @@ constant potential and quadratic potential.
         \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_+ t} +
         \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_- t} = T_1(t) + T_2(t).
     \]
-    The velocity autocorrelation function has a similar form that that in \cref{proposition:semigroup_meanzero_observable}.
-    Indeed the factor multiplying the first term scales as $\bigo{\gamma^{-2}}$
-    and $\lambda_+ = \bigo {\gamma^{-1}}$ as $\gamma \to \infty$.
+    This function has form consistent with the bound in \cref{proposition:semigroup_meanzero_observable},
+    in that the factor multiplying the first term scales as $\bigo{\gamma^{-2}}$
+    and $\lambda_+$ scales as $\bigo {\gamma^{-1}}$ as $\gamma \to \infty$.
     Note that, in this non-periodic case, the effective diffusion coefficient is equal to zero.
     % it holds that $\int_{0}^{\infty} T_1(t) \, \d t = \bigo{\gamma^{-1}}$
     % because the factor multiplying the exponential scales as $\bigo {\gamma^{-2}}$.
 \end{example}
 
-Concerning the bias of estimator $v(t)$,
-we have the following result.
-
+We now obtain a bound on the bias of the improved estimator $v(T)$.
 \begin{proposition}
     [Bias of the estimator]
-    Assume stationary initial conditions~$(q_0, p_0) \sim \mu$.
-    Then there exists $C$ independent of $\psi$ and $\gamma$ such that
-    \begin{align}
-        \label{eq:basic_bound_bias}
-        \forall t \geq 0, \quad \gamma > 0, \qquad
-        \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
-        \leq &\frac{C}{t} \, \max(\gamma^2, \gamma^{-2}) \norm{p + \mathcal L\psi}  \left(1 + \norm{\mathcal L \psi} \right).
-    \end{align}
-    If $\mathcal L \psi \in L^2(\mu)$ and $\partial_q \mathcal \psi \in L^2(\mu)$,
-    this estimate can be refined in the overdamped limit to
-    \begin{align*}
-        \forall t \geq 0, \quad \gamma \geq 1, \qquad
-        \abs{\expect \bigl( v(t) \bigr) - D_{\phi}}
-        &\leq C t^{-1}
-            \norm{p + (\id - \Pi_p) \mathcal L \psi} \bigl(1 + \norm{\mathcal L \psi}[5] \bigr) \\
-             &\quad + C t^{-1} \gamma^2 \norm{\Pi_p \mathcal L \psi} \norm{\mathcal L \psi}
-    \end{align*}
+    Assume that $\mathcal L \psi_{\vect e} \in \lp{2}{\mu}$.
+    \begin{itemize}
+        \item \textbf{General bound for $\gamma \in (0, \infty)$:}
+            With the same notation as in~\eqref{eq:bias},
+            it holds that
+            \begin{align}
+                \label{eq:basic_bound_bias}
+                \abs{\expect \bigl( v(T) \bigr) - D^{\gamma}_{\vect e}}
+                \leq & \left( \frac{M \max\{\gamma^2, \gamma^{-2}\}}{T \lambda^2 } \right) \,  \norm{\vect e^\t p + \mathcal L \psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right).
+            \end{align}
+        \item \textbf{Refined bound in the overdamped regime:}
+        If also $\mathcal L \psi_{\vect e} \in L^2(\mu)$ and $\partial_q \mathcal \psi_{\vect e} \in L^2(\mu)$,
+        then there exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
+        \begin{align}
+            \notag
+            \forall \gamma \geq 1, \qquad
+            \abs{\expect \bigl( v(T) \bigr) - D_{\vect e}^{\gamma}}
+            &\leq C T^{-1}
+            \norm*{\vect e^\t p +  \mathcal L \psi_{\vect e}}[1_q] \, \bigl(1 + \norm{\mathcal L \psi_{\vect e}}[1_q] \bigr) \\
+            \label{eq:refined_bound}
+            &\quad + C T^{-1} \gamma^2 \norm{\Pi_p \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}}
+        \end{align}
+    \end{itemize}
 \end{proposition}
+\begin{remark}
+    The right-hand side of~\eqref{eq:basic_bound_bias} is small when $\psi_{\vect e} \approx \phi_{\vect e}$,
+    and when $\psi_{\vect e} = 0$ we recover the bound~\eqref{eq:bias} derived previously.
+\end{remark}
 \begin{proof}
 Using Itô's formula for $\psi_{\vect e}$,
+we have
 \[
-    \psi_{\vect e}(q_t, p_t) - \psi_{\vect e}(q_0, p_0)
-    = \int_{0}^{t} (\mathcal L \psi_{\vect e}) (q_s, p_s) \, \d s + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{t} \grad_p \psi_{\vect e} (q_s, p_s) \cdot \d W_s,
+    \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0)
+    = \int_{0}^{T} (\mathcal L \psi_{\vect e}) (q_t, p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_p \psi_{\vect e} (q_t, p_t) \cdot \d W_t,
 \]
-and the same reasoning as in~\eqref{eq:bias_without_control},
-we obtain
+and employing the same reasoning as in~\eqref{eq:bias_without_control} we obtain
 \begin{align*}
-    \expect_{\mu} v(t)
-    &= D_{\psi} + \left( \frac{1}{2t} \right) \expect_{\mu} \biggl( \abs{q_t - q_0}^2 - \biggl| \int_0^t {\mathcal L \psi}(q_s, p_s) \, \d s \biggr|^2 \biggr) \\
-    &= D_{\psi} +  \frac{1}{2t}  \int_{0}^{t} \Bigl( \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \Bigr) \min\left(1, \frac{s}{t}\right) \d s \\
-    &= D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) \Bigl( \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi} \Bigr) \, \d s.
+    \expect_{\mu} v(T)
+    &= d_{\psi} + \left( \frac{1}{2T} \right) \expect_{\mu} \biggl( \abs{\vect e^\t (q_T - q_0)}^2 - \biggl| \int_0^T {\mathcal L \psi}(q_t, p_t) \, \d t \biggr|^2 \biggr) \\
+    &= d_{\psi} +  \frac{1}{2T}  \int_{0}^{T} \Bigl( \ip{\e^{t \mathcal L}(\vect e^\t p)}{\vect e^\t p} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \Bigr) \min\left\{1, \frac{t}{T}\right\} \d t \\
+    &= d_{\phi} - \int_{0}^{\infty} \min\left\{1, \frac{t}{T}\right\} \Bigl( \ip{\e^{t \mathcal L}(\vect e^\t p)}{\vect e^\t  p} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \Bigr) \, \d t.
 \end{align*}
 In order to obtain~\eqref{eq:basic_bound_bias}, we write
 \begin{align*}
-     \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi}
-    &= \ip{p + \mathcal L \psi}{\e^{s \mathcal L} p - \e^{s \mathcal L^*} \mathcal  L\psi} \\
-    &\leq \norm{p + \mathcal L \psi}
-    \left( \norm*{\e^{s \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{p} + \norm*{\e^{s \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi} \right) \\
-    &\leq M \e^{- \lambda \min(\gamma, \gamma^{-1}) s} \norm{\mathcal L\psi + p}  \left(\beta^{-1/2} + \norm{\mathcal L \psi} \right).
+    \ip{\e^{t \mathcal L}(\vect e^\t p)}{\vect e^\t p} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}
+    &= \ip{\vect e^\t p + \mathcal L \psi_{\vect e}}{\e^{t \mathcal L} (\vect e^\t p) - \e^{t \mathcal L^*} \mathcal  L\psi_{\vect e}} \\
+    &\leq \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}
+    \left( \norm*{\e^{t \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \, \norm*{\vect e^\t p} + \norm*{\e^{t \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi_{\vect e}} \right) \\
+    &\leq M \e^{- \lambda \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
 \end{align*}
+where the first inequality is justified in view of the fact that $\e^{t \mathcal L^*}$ and $\e^{t \mathcal L}$ have the same norm,
+since the operator $\mathcal L^*$, which is the formal $L^2(\mu)$ adjoint of $\mathcal L$,
+coincides with $\mathcal L$ up to the sign of the Hamiltonian part.
+We then obtain~\eqref{eq:basic_bound_bias} by employing the reasoning that led to~\eqref{eq:bias}.
 
 To obtain the refined bound in the overdamped limit,
 we write
 \begin{align*}
-    \ip{\e^{s \mathcal L}p}{p} - \ip{\e^{s \mathcal L} \mathcal L \psi}{\mathcal L \psi}
-    % &\qquad
-    % = \ip{\e^{s \mathcal L}p}{p}
-    % - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{(\id - \Pi_p) \mathcal L \psi}
-    % - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}
-    % - \ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi} \\
-    % &\qquad
-      &= \ip{\e^{s \mathcal L} p}{p + (\id - \Pi_p) \mathcal L \psi}
-    - \ip{\e^{s \mathcal L} \bigl(p + (\id - \Pi_p) \mathcal L \psi\bigr)}{(\id - \Pi_p) \mathcal L \psi} \\
-    &\qquad \quad - \ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}
-    - \ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi}.
+    &\ip{\e^{t \mathcal L}(\vect e^\t p)}{\vect e^\t p)} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}
+      = \ip{\e^{t \mathcal L} (\vect e^\t p)}{\vect e^\t p + (\id - \Pi_p) \mathcal L \psi_{\vect e}} \\
+      &\qquad - \ip{\e^{t \mathcal L} \bigl(\vect e^\t p + (\id - \Pi_p) \mathcal L \psi_{\vect e}\bigr)}{(\id - \Pi_p) \mathcal L \psi_{\vect e}}
+      - \ip{\e^{t \mathcal L} (\id - \Pi_p) \mathcal L \psi_{\vect e}}{\Pi_p \mathcal L \psi_{\vect e}}
+    - \ip{\e^{t \mathcal L} \Pi_p \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}.
 \end{align*}
-The last two terms are bounded using the general bound on the Langevin semigroup~\eqref{eq:decay_semigroup_general}:
+The last two terms are bounded using the general bound on the Langevin semigroup~\eqref{eq:decay_semigroup_general},
 \[
-    \abs{\ip{\e^{s \mathcal L} (\id - \Pi_p) \mathcal L \psi}{\Pi_p \mathcal L \psi}}
-    \vee \abs{\ip{\e^{s \mathcal L} \Pi_p \mathcal L \psi}{\mathcal L \psi}}
-    \leq M \exp \left( - \lambda \min(\gamma, \gamma^{-1}) s\right) \norm{\Pi_p \mathcal L \psi} \norm{\mathcal L \psi},
+    \abs{\ip{\e^{t \mathcal L} (\id - \Pi_p) \mathcal L \psi_{\vect e}}{\Pi_p \mathcal L \psi_{\vect e}}}
+    \vee \abs{\ip{\e^{t \mathcal L} \Pi_p \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}}
+    \leq M \exp \left( - \lambda \min\{\gamma, \gamma^{-1}\} t\right) \norm{\Pi_p \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
 \]
 and the first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:
 \begin{align*}
-    \abs{\ip{\e^{s \mathcal L} p}{p + (\id - \Pi_p) \mathcal L \psi}}
-    &\leq C \norm{p + (\id - \Pi_p) \mathcal L \psi} \zeta(t), \\
-    \abs{\ip{\e^{s \mathcal L} \bigl(p + (\id - \Pi_p) \mathcal L \psi\bigr)}{(\id - \Pi_p) \mathcal L \psi}}
-    &\leq C \norm{(\id - \Pi_p) \mathcal L \psi}[5] \norm{p + (\id - \Pi_p) \mathcal L \psi} \zeta(t),
+    \abs{\ip{\e^{t \mathcal L} (\vect e^\t p)}{\vect e^\t p + (\id - \Pi_p) \mathcal L \psi_{\vect e}}}
+    &\leq C \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}[1_q] \, \zeta(t), \\
+    \abs{\ip{\e^{t \mathcal L} \bigl(\vect e^\t p + (\id - \Pi_p) \mathcal L \psi_{\vect e}\bigr)}{(\id - \Pi_p) \mathcal L \psi_{\vect e}}}
+    &\leq C \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}[1_q] \, \norm*{\mathcal L \psi_{\vect e}}[1_q] \, \zeta(t),
 \end{align*}
-where $\zeta(t) = \gamma^{-2} \e^{- \frac{\lambda}{\gamma}s } + \e^{- \lambda \gamma s}$.
-For the second inequality,
-we used that the right-hand side of~\eqref{eq:optimal_decay_correlation} in \cref{proposition:semigroup_meanzero_observable} is a bound from above also for $\abs{\ip*{\e^{t \mathcal L^*}\!\! f}{h}} = \abs{\ip{f}{\e^{t \mathcal L}h}}$,
-because the operator $\mathcal L^*$,
-which is the formal $L^2(\mu)$ adjoint of $\mathcal L$,
-coincides with $\mathcal L$ up to the sign of the Hamiltonian part.
+where $\zeta(t) = \gamma^{-2} \e^{- \kappa \gamma^{-1} t } + \e^{- \kappa \gamma t}$.
+Here we employed the fact that, for any $f \in L^2(\mu)$ such that $\grad_q f \in L^2(\mu)$,
+it holds
+\[
+    \ip{\grad_q (\id - \Pi_p) f}{\grad_q \Pi_p f} = 0,
+\]
+and so $\norm{(\id - \Pi_p) f}[1_q] \leq \norm{\grad_q f}[1_q]$.
+The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as that which led to~\eqref{eq:bias}.
 \end{proof}
-
-The constant on the right-hand side is smaller when $\psi \approx \phi$,
-and when $\psi = 0$ we recover the previous bound.
 
 \begin{remark}
     In practice, it is possible to modify a control variate $\psi$ in such a way that $\Pi_p \mathcal L \psi = 0$.
@@ -679,9 +687,13 @@ and when $\psi = 0$ we recover the previous bound.
         -  \left(\partial_q^*\psi_1(q) +  k \left( \partial_q^* \e^{\beta V(q)} \right) \right)
         = \partial_q^*\psi_1(q) - \partial_q^*\psi_1(q) - 0 = 0,
     \end{align*}
-    and it is simple to check that $\widetilde \psi = \psi$
-    if $\psi = \phi$ is the exact solution to the Poisson equation~\eqref{eq:poisson}.
-    \textcolor{red}{Ideally, we'd like a bound on some norm of $\mathcal L (\psi - \widetilde \psi)$ here}.
+    and it is simple to check that our choice of $k$ guarantees that $\widetilde \psi = \psi$
+    if $\psi = \phi$ is the exact solution to the Poisson equation~\eqref{eq:poisson_equation}.
+    Notice that
+    \[
+        \widetilde \psi_{\vect e} - \phi_{\vect e} = \
+    \]
+
 \end{remark}
 
 \paragraph{Variance of the estimator.}%

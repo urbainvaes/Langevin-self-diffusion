@@ -671,16 +671,25 @@ The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as 
 \end{proof}
 
 \begin{remark}
-    In practice, it is possible to modify a control variate $\psi$ in such a way that $\Pi_p \mathcal L \psi = 0$.
-    Indeed, notice that $\Pi_p \mathcal L = \Pi_p \mathcal L_{\rm Ham} =  \Pi_p \partial_p \partial_q^*$.
-    Let $\psi_1(q) = \int \psi(q,p) \, \beta p \, \d \kappa(p)$ and define
+    In one spatial dimension, it is possible to modify a control variate $\psi$ in such a way that $\Pi_p \mathcal L \psi = 0$.
+    Let $\alpha^{\psi}_1(q) = \int \psi(q,p) \, \sqrt{\beta} p \, \d \kappa(p)$ and define
     \[
-        \widetilde \psi(q,p)
-        % = \psi(q,p) - p \left(  \psi_1(q) - \e^{\beta V(q)} \int \psi_1(\widetilde q) \, \e^{-\beta V(\widetilde q)} \, \d \nu(\widetilde q)  \right)
-        = \psi(q,p) - p \left(  \psi_1(q) + k \e^{\beta V(q)}   \right),
-        \qquad k = \, \int \e^{- \beta V(\widetilde q)} \, \psi_1(\widetilde q) \, \d \nu(\widetilde q).
+        \widetilde \psi = \psi(q,p) - \sqrt{\beta} p \left(  \alpha_1^{\psi}(q) - k \e^{\beta V(q)}   \right), 
+        \qquad k = \frac{\int \alpha_1^{\psi}\!(q) \, \e^{\beta V(q)} \, \d \nu(q)}{\int \e^{2 \beta V(q)} \, \d \nu(q)}.
     \]
-    We verify
+    Note that $\widetilde \psi$ is the $L^2(\mu)$ orthogonal projection of $\psi$ on the subspace of functions of the form
+    \[
+        f = \alpha_0(q) + \alpha_1 \, \e^{\beta V(q)} \, \sqrt{\beta} p + \alpha_2(q) \, H_2(p) + \alpha_3(q) H_3(p), \dotsc
+    \]
+    where $(H_i)_{i \geq 0}$ are appropriately rescaled Hermite polynomials.
+    The exact solution $\phi$ is of this form since $\Pi_p \mathcal L = \Pi_p \mathcal L_{\rm Ham} =  \Pi_p \partial_p \partial_q^*$,
+    and the kernel of $\partial_q^*$ is spanned by $\e^{\beta V(q)$.
+    We can bound
+    \begin{align*}
+        \norm*{\widetilde \psi - \phi} 
+        &\leq  \norm{\psi - \phi} + \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}} \\
+        &= \norm{\psi - \phi} + \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}}.
+    \end{align*}
     \begin{align*}
         \Pi_p \partial_p \partial_q^* \widetilde \psi
         &= \int \partial_p \partial_q^* \psi(q, \widetilde p) \, \d \kappa(\widetilde p)
@@ -693,7 +702,6 @@ The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as 
     \[
         \widetilde \psi_{\vect e} - \phi_{\vect e} = \
     \]
-
 \end{remark}
 
 \paragraph{Variance of the estimator.}%

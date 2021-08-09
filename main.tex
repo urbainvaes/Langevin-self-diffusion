@@ -524,7 +524,8 @@ leading to a computational cost in the overdamped limit scaling as $\gamma^2$.
 The proof of \cref{proposition:semigroup_meanzero_observable} is postponed to \cref{sec:auxiliary_technical_results}.
 In this section,
 we motivate the result by scrutinizing two settings where
-explicit expressions of the bias or of velocity auto-correlation can be obtained:
+explicit expressions of the bias, or of the velocity auto-correlation,
+can be obtained:
 constant potential and quadratic potential.
 \begin{example}
     [Constant potential]
@@ -736,18 +737,17 @@ the first one is non-asymptotic but
     provided that all the terms on the right-hand side are finite.
 \end{proposition}
 \begin{remark}
-    Note that the variance does not converge to zero in the limit as $t \to \infty$.
-    This asymptotic behavior of the variance,
+    Note that the variance does not converge to zero in the limit as $T \to \infty$.
+    The asymptotic behavior of the variance,
     which is in contrast with the usual behavior for estimators based on linear response,
-    is made precise in \cref{proposition:asymptotic_variance} below.
-    Consequently, there is an optimal choice of $T$ in order to minimize the mean-square error of estimators.
+    is made more precise in \cref{proposition:asymptotic_variance} below.
 \end{remark}
 \begin{remark}
     In order to assess the quality of estimator~\eqref{eq:variance_estimator} in the underdamped limit,
     let us consider the particular setting where $\psi_{\vect e} = 0$ in one dimension.
     In~\cite[Remark 6.10]{MR2394704},
-    the authors prove $\norm{\phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ as $\gamma \to 0$ for every $p \in [1, \infty)$,
-    and they conjecture that also $\norm{\partial_p \phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$.
+    the authors prove that $\norm{\phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ as $\gamma \to 0$ for every $p \in [1, \infty)$,
+    and they conjecture that also $\norm{\partial_p \phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ in the same limit.
     Assuming this is true, the estimate~\eqref{eq:variance_estimator} gives
     \begin{equation}
         \label{eq:variance_scaling}
@@ -818,14 +818,23 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
         \var\bigl(v(T)\bigr) \xrightarrow[T \to \infty]{}
         2 d_{\phi}^2 + 2 d_{\psi}^2 - 4 \gamma^2 \beta^{-2} \left( \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \right)^2.
     \end{equation}
-    In particular,
+    In particular, there exists a constant $C$ independent of $\gamma$ and $\psi_{\vect e}$ such that
     \begin{align}
         \label{eq:bounds_asymptotic_variance}
-        2(d_{\phi} - d_{\psi})^2 
-        \leq \lim_{T \to \infty} \var \bigl(v(T)\bigr) 
-        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + 4 \sqrt{\gamma \beta^{-1}} d_{\phi}^{3/2} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}.
+        2(d_{\phi} - d_{\psi})^2
+        \leq \lim_{T \to \infty} \var \bigl(v(T)\bigr)
+        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + C \max\{\gamma^{1/2}, \gamma^{-1/2}\} d_{\phi}^{3/2} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}.
     \end{align}
 \end{proposition}
+\begin{remark}
+    This result implies that $\var\bigl(u(T)\bigr) \to 2 d_{\phi}^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
+    which is consistent with our explicit computations in \cref{example:constant} for the case of a constant potential.
+\end{remark}
+\begin{remark}
+    In one dimension,
+    the lower bound in this proposition can be combined with the inequality $d_\phi \geq \gamma^{-1} D_{\rm und}$ mentioned in the introduction
+    to obtain a lower on the variance that does not require to know $d_\phi$.
+\end{remark}
 \begin{proof}
     Using It\^o's isometry and the central limit theorem for martingales~\cite[Theorem 3.3]{pavliotis2008multiscale},
     we obtain that
@@ -853,28 +862,29 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
         = 2 \Sigma_{11}^2 + 2 \Sigma_{22}^2 - 4 \Sigma_{12}^2.
     \end{align*}
     This identity directly implies ~\eqref{eq:asymptotic_variance}.
-    The lower bound in~\eqref{eq:bounds_asymptotic_variance} follows from an application of Cauchy-Schwarz inequality,
-    and the upper bound
-    % Using that
-    % \begin{align*}
-    %      \gamma^2 \beta^{-2} \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu
-    %      \leq  \left( \gamma^1 \beta^{-1} \int \grad_p \phi_{\vect e} \cdot \grad_p \phi_{\vect e} \, \d \mu \right)
-    %     \left( \gamma^1 \beta^{-1} \int \grad_p \psi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \right)
-    %     = d_{\psi} d_{\phi},
-    % \end{align*}
-    % we deduce
-    % \begin{equation}
-    %     \lim_{T \to \infty} \var \bigl(v(T)\bigr) \leq 2(d_{\phi} - d_{\psi})^2.
-    % \end{equation}
-    % For the Galerkin control variate, it holds by construction $\int \psi p \, \d \mu = \int \psi \, \mathcal L \psi \, \d \mu = D_{\psi}$,
-    % and so the variance of $v(t)$ is approximately $2 D^2 - 2 D_{\psi}^2$.
+    The lower bound in~\eqref{eq:bounds_asymptotic_variance} follows directly from an application of Cauchy-Schwarz inequality.
+    In order to obtain the upper bound,
+    we use the fact that $\ip{a}{b} = \ip{a}{a} + \ip{a}{b - a} \geq \norm{a}^2 - \norm{a} \norm{b-a}$ in any Hilbert space,
+    and so
+    \[
+        \lim_{T \to \infty} \var \bigl(v(T)\bigr)
+        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + 4 \sqrt{\gamma \beta^{-1}} d_{\phi}^{3/2} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}.
+    \]
+    Finally, using~\eqref{eq:decay_semigroup_general}, we have
+    \begin{align*}
+        \gamma \beta^{-1} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}^2
+        &= - \ip{\phi_{\vect e} - \psi_{\vect e}}{\mathcal L (\phi_{\vect e} - \psi_{\vect e})} \\
+        &\leq \norm{\mathcal L^{-1}}[\mathcal B\left(L^2_0(\mu)\right)] \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2
+        \leq \left( \frac{M}{\lambda} \right) \max\{\gamma, \gamma^{-1}\} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2,
+    \end{align*}
+    which concludes the proof.
 \end{proof}
 
 \section{Application to one-dimensional Langevin-type dynamics}%
 \label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
 As mentioned in the introduction,
-we consider in this section two methods of constructing a control variate:
+we consider in this section two different approaches for constructing a control variate $\psi$:
 through a Fourier/Hermite Galerkin method and,
 in the underdamped regime,
 through formal asymptotic expansions.
@@ -897,7 +907,7 @@ $\Pi_N$ is the $\lp{2}{\mu}$ projection operator on~$V_N$,
 $u_N = \Pi_N 1 / \norm{\Pi_N 1} \in V_N$
 and $\alpha_N$ is a Lagrange multiplier.
 As above,
-$\ip{\cdot}{\cdot}$ and $\norm{\cdot}$ denote respectively the standard scalar product and norm of $\lp{2}{\mu}$.
+$\ip{\cdot}{\cdot}$ and $\norm{\cdot}$ denote respectively the standard inner product and norm of $\lp{2}{\mu}$.
 As in~\cite{roussel2018spectral},
 we choose $V_N$ to be the subspace of $\lp{2}{\mu}$ spanned by the basis functions
 \begin{equation*}
@@ -922,28 +932,27 @@ and $H_j$ are rescaled normalized Hermite functions,
   \qquad \psi_j (p) := (2 \pi)^{-\frac{1}{4}} \frac{(-1)^j}{\sqrt{j!}} \e^{\frac{p^2}{4}} \, \derivative*{j}{p^j} \, \Bigl( \e^{- \frac{p^2}{2}} \Bigr).
 \end{equation}
 The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
-and $\sigma$ is a scaling parameter that can be adjusted to better resolve $\Phi_N$.
+which is a scaling parameter that can be adjusted to better resolve $\Phi_N$.
 
-In practice, since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally costly,
+In practice, since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally expensive,
 the approximate solution $\Phi_N$ is pre-calculated over a Cartesian grid with vertices
 \[
     (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
 \]
-From the values of $\Phi_N$,
+From the values of $\Phi_N$ at these points,
 a bilinear interpolant $\widehat \Phi_N$ is defined over the domain $[-\pi, \pi] \times [-L_p, L_p]$.
-That is, given $(q, p)$, $\Phi_N(q, p)$ is approximated in the method by
+That is, given $(q, p)$, the function evaluation $\Phi_N(q, p)$ is approximated by
 \begin{align*}
     \widehat \Phi_N(q, p)
     &= \Phi_N(q_i,p_j) + \frac{\Phi_N(q_{i+1}, p_j) - \Phi_N(q_i, p_j)}{q_{i+1} - q_i} (q - q_i)
     +\frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
-    &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{j+1} - q_j)(p_{j+1} - p_j)}  (q-q_i)(p-p_j).
+    &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{j+1} - q_j)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
 \end{align*}
-The parameter $L_p$ is chosen in such a way that escaping the domain is unlikely during a simulation
-(\textcolor{red}{See estimate~\cref{lemma:bound_momentum}: this estimate is not good as $\gamma \to 0$,
-but I leave it here for now as it might be possible to improve it.})
-The coefficient $D_\psi$ is calculated based on this interpolant by direct Monte Carlo simulation.
+where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$, 
+with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$.
+The parameter $L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation
+The approximate effective diffusion coefficient $d_\psi$ is calculated based on this interpolant by direct Monte Carlo simulation.
 The parameters employed for the construction of the control variate are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate}.
-
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -1011,7 +1020,7 @@ in the general multi-dimensional case, is based on the iteration
 The first line can be viewed as a Strang splitting of the Hamiltonian part of the dynamics,
 while the second line is an exact discretization of the fluctuation/dissipation part.
 We write the terms~$(G_n)_{n\geq0}$ as a stochastic integrals, instead of giving only their law,
-because they are correlated with Brownian increments necessary for constructing the control variate $\xi_t$.
+because they are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
 Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
 \[
     I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \derivative{1}[\psi]{p}(q^{n}, p^{n}) \, \widetilde G_n, \qquad \widetilde G_n = W_{t_{n+1}} - W_{t_n}.

@@ -287,7 +287,7 @@ which is given by
     =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{FD}.
 \end{equation}
 Specifically, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that $D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p}$,
-where $\ip{\dummy}{\dummy}$ denotes the inner product of $L^2(\mu)$ and $\phi_{\vect e}$ denotes the solution in $L^2(\mu)$,
+where $\ip{\dummy}{\dummy}$ denotes the inner product of $\lp{2}{\mu}$ and $\phi_{\vect e}$ denotes the solution in $\lp{2}{\mu}$,
 unique up to an additive constant,
 of the Poisson equation
 \begin{equation}
@@ -308,7 +308,7 @@ It is also possible to prove that $\gamma D^{\gamma} = D^{\rm ovd} + \bigo{\gamm
 where~$D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
 and to derive explicit expressions for the correction terms by asymptotic analysis~\cite{MR2394704}.
 The diffusion coefficient in the overdamped limit is given by $D^{\rm ovd}_{\vect e} = \norm{\vect e + \grad \chi_{\vect e}}[\nu]^2$,
-where $\chi$ is the solution in~$L^2(\nu)$ of the Poisson equation
+where $\chi$ is the solution in~$\lp{2}{\mu}$ of the Poisson equation
 \[
     - \mathcal L_{\rm ovd} \chi_{\vect e} = \vect e^\t \grad(q), \qquad \mathcal L_{\rm ovd} = - \grad V \cdot \grad + \laplacian,
 \]
@@ -322,7 +322,7 @@ In spatial dimension one, it was shown in~\cite{MR2394704} that $\gamma D^{\gamm
 that is also a lower bound for $\gamma D^{\gamma}$ for all $\gamma > 0$.
 It is also possible~\cite[Lemma 3.4]{MR2394704}, in this case,
 to show that the solution to the Poisson equation,
-multiplied by $\gamma$, converges in $L^2(\mu)$ to a limit as $\gamma \to 0$,
+multiplied by $\gamma$, converges in $\lp{2}{\mu}$ to a limit as $\gamma \to 0$,
 which can be calculated explicitly in simple settings~\cite{MR2427108}.
 
 These results extend to the multi-dimensional setting only when the potential is separable,
@@ -428,8 +428,8 @@ in this case, and $d_{\phi} = D_{\vect e}^{\gamma}$.
 In addition, using It\^o's isometry we verify formally that $v(T)$ is asymptotically unbiased as~$T \to \infty$ regardless of the choice of $\psi_{\vect e}$:
 \[
     \lim_{T \to \infty} \expect \bigl( v(T) \bigr)
-    = d_{\psi} + \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu
-    = \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu =: D_{\vect e}^{\gamma}.
+    = d_{\psi} + \gamma \beta^{-1} \int \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu
+    = \gamma \beta^{-1} \int \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu = D_{\vect e}^{\gamma}.
 \]
 \begin{remark}
     In view of~\eqref{eq:ito_control_variate}
@@ -496,7 +496,7 @@ We can derive a sharper estimate from the following result:
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
     Let $\Pi_p: \lp{2}{\mu} \ni u \mapsto  u - \int u(q, p) \, \d \kappa(p)$ and $\Pi_p^\perp = \id - \Pi_p$.
-    Assume that $f$ and $g$ are smooth functions in $\Pi_p^\perp L^2(\mu)$
+    Assume that $f$ and $g$ are smooth functions in $\Pi_p^\perp \lp{2}{\mu}$
     such that $\partial_q f \in \lp{2}{\mu}$ and $\partial_q h \in \lp{2}{\mu}$.
     Then there exist constants $K$ and $\kappa$ independent of $\gamma$, $f$ and $h$ such that
     \begin{equation}
@@ -513,8 +513,14 @@ Applying this result with $f(q, p) = h(q, p) = \vect e^\t p$, we obtain
     \forall \gamma \geq 1, \qquad
     \abs{\expect_{\mu} u(T) - D}
     \leq \frac{K}{T}\int_{0}^{\infty} \left( \gamma^{-2} \e^{- \kappa \gamma^{-1} s} + \e^{-\kappa  \gamma s} \right)  s \, \d s
-    \leq \frac{K}{\kappa T}.
+    \leq \frac{K}{\kappa T},
 \end{equation*}
+showing that the relative bias in fact scales as~$\max\{\gamma^{-1}, \gamma\} T^{-1}$,
+and so it is sufficient to take $T \propto \gamma$ to control the bias in the overdamped limit.
+Despite this improvement,
+the computational cost of calculating the effective diffusion coefficient from Monte Carlo simulation in the overdamped regime is prohibitive,
+because the time step must scale as $\gamma^{-1}$ in order to accurately integrate the Langevin dynamics,
+leading to a computational cost in the overdamped limit scaling as $\gamma^2$.
 The proof of \cref{proposition:semigroup_meanzero_observable} is postponed to \cref{sec:auxiliary_technical_results}.
 In this section,
 we motivate the result by scrutinizing two settings where
@@ -522,6 +528,7 @@ explicit expressions of the bias or of velocity auto-correlation can be obtained
 constant potential and quadratic potential.
 \begin{example}
     [Constant potential]
+    \label{example:constant}
     Consider the case where $V(q) = 0$ in one dimension.
     In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$,
     and applying Itô's formula to this function we obtain
@@ -542,9 +549,16 @@ constant potential and quadratic potential.
     the right-hand side of this equation is a mean-zero Gaussian random variable and,
     using It\^o's isometry, we calculate that
     \[
-        \frac{\expect \abs{q_T - q_0}^2}{2T} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{T \gamma} \left(\e^{-\gamma T} - 1\right) \right).
+        \expect \bigl( u(T) \bigr) = \frac{\expect \abs{q_T - q_0}^2}{2T} = \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{T \gamma} \left(\e^{-\gamma T} - 1\right) \right).
     \]
     In this example, the relative bias is bounded from above by $(T \gamma)^{-1}$.
+    Furthermore,
+    since $\frac{\lvert q_T- q_0 \rvert^2}{2T\sigma^2}$ is distributed according to $\chi^2(1)$,
+    the variance of $u(T)$ is equal to
+    \[
+        \var \bigl(u(T)\bigr) = 2  \bigl(\expect u(T)\bigr)^2
+        \xrightarrow[T \to \infty]{} 2 \lvert D^{\gamma} \rvert^2.
+    \]
 \end{example}
 
 \begin{example}
@@ -572,7 +586,7 @@ constant potential and quadratic potential.
         \left( \frac{-\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_+ t} +
         \left( \frac{\gamma + \sqrt{\gamma^2 - 4k}}{2 \beta \sqrt{\gamma^2 - 4k}} \right) \e^{\lambda_- t} = T_1(t) + T_2(t).
     \]
-    This function has form consistent with the bound in \cref{proposition:semigroup_meanzero_observable},
+    This function has a form consistent with the bound in \cref{proposition:semigroup_meanzero_observable},
     in that the factor multiplying the first term scales as $\bigo{\gamma^{-2}}$
     and $\lambda_+$ scales as $\bigo {\gamma^{-1}}$ as $\gamma \to \infty$.
     Note that, in this non-periodic case, the effective diffusion coefficient is equal to zero.
@@ -594,7 +608,7 @@ We now obtain a bound on the bias of the improved estimator $v(T)$.
                 \leq & \left( \frac{M \max\{\gamma^2, \gamma^{-2}\}}{T \lambda^2 } \right) \,  \norm{\vect e^\t p + \mathcal L \psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right).
             \end{align}
         \item \textbf{Refined bound in the overdamped regime:}
-        If also $\mathcal L \psi_{\vect e} \in L^2(\mu)$ and $\partial_q \mathcal \psi_{\vect e} \in L^2(\mu)$,
+        If also $\mathcal L \psi_{\vect e} \in \lp{2}{\mu}$ and $\grad_q \mathcal L \psi_{\vect e} \in \lp{2}{\mu}$,
         then there exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
         \begin{align}
             \notag
@@ -634,7 +648,7 @@ In order to obtain~\eqref{eq:basic_bound_bias}, we write
     &\leq M \e^{- \lambda \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
 \end{align*}
 where the first inequality is justified in view of the fact that $\e^{t \mathcal L^*}$ and $\e^{t \mathcal L}$ have the same norm,
-since the operator $\mathcal L^*$, which is the formal $L^2(\mu)$ adjoint of $\mathcal L$,
+since the operator $\mathcal L^*$, which is the formal $\lp{2}{\mu}$ adjoint of $\mathcal L$,
 coincides with $\mathcal L$ up to the sign of the Hamiltonian part.
 We then obtain~\eqref{eq:basic_bound_bias} by employing the reasoning that led to~\eqref{eq:bias}.
 
@@ -661,150 +675,199 @@ and the first two terms are bounded using \cref{proposition:semigroup_meanzero_o
     &\leq C \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}[1_q] \, \norm*{\mathcal L \psi_{\vect e}}[1_q] \, \zeta(t),
 \end{align*}
 where $\zeta(t) = \gamma^{-2} \e^{- \kappa \gamma^{-1} t } + \e^{- \kappa \gamma t}$.
-Here we employed the fact that, for any $f \in L^2(\mu)$ such that $\grad_q f \in L^2(\mu)$,
+Here we employed the fact that, for any $f \in \lp{2}{\mu}$ such that $\grad_q f \in \lp{2}{\mu}$,
 it holds
 \[
     \ip{\grad_q (\id - \Pi_p) f}{\grad_q \Pi_p f} = 0,
 \]
 and so $\norm{(\id - \Pi_p) f}[1_q] \leq \norm{\grad_q f}[1_q]$.
-The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as that which led to~\eqref{eq:bias}.
+The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as that which gave~\eqref{eq:bias}.
 \end{proof}
 
-\begin{remark}
-    In one spatial dimension, it is possible to modify a control variate $\psi$ in such a way that $\Pi_p \mathcal L \psi = 0$.
-    Let $\alpha^{\psi}_1(q) = \int \psi(q,p) \, \sqrt{\beta} p \, \d \kappa(p)$ and define
-    \[
-        \widetilde \psi = \psi(q,p) - \sqrt{\beta} p \left(  \alpha_1^{\psi}(q) - k \e^{\beta V(q)}   \right), 
-        \qquad k = \frac{\int \alpha_1^{\psi}\!(q) \, \e^{\beta V(q)} \, \d \nu(q)}{\int \e^{2 \beta V(q)} \, \d \nu(q)}.
-    \]
-    Note that $\widetilde \psi$ is the $L^2(\mu)$ orthogonal projection of $\psi$ on the subspace of functions of the form
-    \[
-        f = \alpha_0(q) + \alpha_1 \, \e^{\beta V(q)} \, \sqrt{\beta} p + \alpha_2(q) \, H_2(p) + \alpha_3(q) H_3(p), \dotsc
-    \]
-    where $(H_i)_{i \geq 0}$ are appropriately rescaled Hermite polynomials.
-    The exact solution $\phi$ is of this form since $\Pi_p \mathcal L = \Pi_p \mathcal L_{\rm Ham} =  \Pi_p \partial_p \partial_q^*$,
-    and the kernel of $\partial_q^*$ is spanned by $\e^{\beta V(q)$.
-    We can bound
-    \begin{align*}
-        \norm*{\widetilde \psi - \phi} 
-        &\leq  \norm{\psi - \phi} + \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}} \\
-        &= \norm{\psi - \phi} + \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}}.
-    \end{align*}
-    \begin{align*}
-        \Pi_p \partial_p \partial_q^* \widetilde \psi
-        &= \int \partial_p \partial_q^* \psi(q, \widetilde p) \, \d \kappa(\widetilde p)
-        -  \left(\partial_q^*\psi_1(q) +  k \left( \partial_q^* \e^{\beta V(q)} \right) \right)
-        = \partial_q^*\psi_1(q) - \partial_q^*\psi_1(q) - 0 = 0,
-    \end{align*}
-    and it is simple to check that our choice of $k$ guarantees that $\widetilde \psi = \psi$
-    if $\psi = \phi$ is the exact solution to the Poisson equation~\eqref{eq:poisson_equation}.
-    Notice that
-    \[
-        \widetilde \psi_{\vect e} - \phi_{\vect e} = \
-    \]
-\end{remark}
+% \begin{remark}
+%     In one spatial dimension, it is possible to modify a control variate $\psi$ in such a way that $\Pi_p \mathcal L \psi = 0$.
+%     Let $\alpha^{\psi}_1(q) = \int \psi(q,p) \, \sqrt{\beta} p \, \d \kappa(p)$ and define
+%     \[
+%         \widetilde \psi = \psi(q,p) - \sqrt{\beta} p \left(  \alpha_1^{\psi}(q) - k \e^{\beta V(q)}   \right),
+%         \qquad k = \frac{\int \alpha_1^{\psi}\!(q) \, \e^{\beta V(q)} \, \d \nu(q)}{\int \e^{2 \beta V(q)} \, \d \nu(q)}.
+%     \]
+%     Note that $\widetilde \psi$ is the $L^2(\mu)$ orthogonal projection of $\psi$ on the subspace of functions of the form
+%     \[
+%         f = \alpha_0(q) + \alpha_1 \, \e^{\beta V(q)} \, \sqrt{\beta} p + \alpha_2(q) \, H_2(p) + \alpha_3(q) H_3(p), \dotsc
+%     \]
+%     where $(H_i)_{i \geq 0}$ are appropriately rescaled Hermite polynomials.
+%     The exact solution $\phi$ is of this form since $\Pi_p \mathcal L = \Pi_p \mathcal L_{\rm Ham} =  \Pi_p \partial_p \partial_q^*$,
+%     and the kernel of $\partial_q^*$ is spanned by $\e^{\beta V(q)}$.
+%     We can bound
+%     \begin{align*}
+%         \norm*{\widetilde \psi - \phi}[3]
+%         &\leq  \norm{\psi - \phi}[3] + \norm{\widetilde \psi - \psi}[3] \\
+%         & \norm{\psi - \phi}[3] \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}} \\
+%         &= \norm{\psi - \phi} + \lvert \alpha_1^{\phi} - k \rvert \norm*{\e^{\beta V(q)}}.
+%     \end{align*}
+%     \begin{align*}
+%         \Pi_p \partial_p \partial_q^* \widetilde \psi
+%         &= \int \partial_p \partial_q^* \psi(q, \widetilde p) \, \d \kappa(\widetilde p)
+%         -  \left(\partial_q^*\psi_1(q) +  k \left( \partial_q^* \e^{\beta V(q)} \right) \right)
+%         = \partial_q^*\psi_1(q) - \partial_q^*\psi_1(q) - 0 = 0,
+%     \end{align*}
+%     and it is simple to check that our choice of $k$ guarantees that $\widetilde \psi = \psi$
+%     if $\psi = \phi$ is the exact solution to the Poisson equation~\eqref{eq:poisson_equation}.
+%     Notice that
+%     \[
+%         \widetilde \psi_{\vect e} - \phi_{\vect e} = \
+%     \]
+% \end{remark}
 
-\paragraph{Variance of the estimator.}%
+\paragraph{Variance of the estimators.}%
+We now obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
+The two following results are of different nature:
+the first one is non-asymptotic but
 
 \begin{proposition}
-    The variance of the estimator satisfies
+    There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
     \begin{equation}
         \label{eq:variance_estimator}
-        \mathrm{Var} \bigl(v(t)\bigr)
+        \var \bigl(v(T)\bigr)
         \leq
-        C \left( t^{-1} \norm{\phi - \psi}[4]^2  + \norm{\grad_p \phi - \grad_p \psi}[4]^2 \right)
-        \left( t^{-1} \norm{\phi + \psi}[4]^2  + \norm{\grad_p \phi + \grad_p \psi}[4]^2 \right)
+        C \left( T^{-1} \norm{\phi - \psi}[4]^2  + \gamma \norm{\grad_p \phi - \grad_p \psi}[4]^2 \right)
+        \left( T^{-1} \norm{\phi + \psi}[4]^2  + \gamma \norm{\grad_p \phi + \grad_p \psi}[4]^2 \right),
     \end{equation}
+    provided that all the terms on the right-hand side are finite.
 \end{proposition}
 \begin{remark}
     Note that the variance does not converge to zero in the limit as $t \to \infty$.
-    This is apparent when $\psi = 0$,
-    i.e.\ without a control variate.
-    In this case,
-    since $\frac{1}{\sqrt{2 t}}(q_t - q_0)$ is approximately distributed according to $\mathcal N(0, D)$ for $t$ sufficiently large,
-    it holds that $\frac{1}{2D t} \abs{q_t - q_0}^2$ is approximately distributed according to $\chi^2(1)$,
-    with variance 2.
-    Consequently, the variance of the estimator $u(t)$ given in~\eqref{eq:simple_estimator} is $2D^2$ asymptotically as $t \to \infty$.
+    This asymptotic behavior of the variance,
+    which is in contrast with the usual behavior for estimators based on linear response,
+    is made precise in \cref{proposition:asymptotic_variance} below.
+    Consequently, there is an optimal choice of $T$ in order to minimize the mean-square error of estimators.
 \end{remark}
 \begin{remark}
-    \textcolor{red}{The scaling with respect to $\gamma$ as $\gamma \to 0$ of this bound is not good,
-        because we expect $\norm{\phi - \psi}[4]^2$ to scale as $\gamma^{-2}$.
-    }
+    In order to assess the quality of estimator~\eqref{eq:variance_estimator} in the underdamped limit,
+    let us consider the particular setting where $\psi_{\vect e} = 0$ in one dimension.
+    In~\cite[Remark 6.10]{MR2394704},
+    the authors prove $\norm{\phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ as $\gamma \to 0$ for every $p \in [1, \infty)$,
+    and they conjecture that also $\norm{\partial_p \phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$.
+    Assuming this is true, the estimate~\eqref{eq:variance_estimator} gives
+    \begin{equation}
+        \label{eq:variance_scaling}
+        \forall 0 < \gamma \leq 1, \qquad
+        \var \bigl(v(T)\bigr)
+        \leq C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2.
+    \end{equation}
+    For an integration time $T$ scaling $\gamma^{-1}$,
+    which is required in order to control the bias,
+    we find that the variance scales as $\gamma^{-2}$,
+    hence the relative standard deviation scales as $\mathcal O(1)$.
+    In practice, this means that we can keep the number of Monte Carlo replicas constant as $\gamma \to 0$.
 \end{remark}
-
-% \begin{remark}
-%     Note also that,
-% \end{remark}
-
 \begin{proof}
-    We can obtain a crude bound using
+    The proof is based on the crude inequality
     \begin{align}
         \notag
-        \mathrm{Var} \bigl(v(t)\bigr)
-        &\leq \expect \left( \abs{v(t) - D_{\psi}}^2 \right)
-        = \frac{1}{4 t^2} \expect \big( |q_t - q_0 - \xi_t|^2 |q_t - q_0 + \xi_t|^2 \big) \\
+        \var \bigl(v(T)\bigr)
+        &\leq \expect \left( \abs{v(T) - d_{\psi}}^2 \right)
+        = \frac{1}{4 T^2} \expect \big( |q_T - q_0 - \xi_T|^2 |q_T - q_0 + \xi_T|^2 \big) \\
         \label{eq:bound_variance_two_factors}
-        &\leq \frac{1}{4 t^2} \sqrt{\expect \left(  |q_t - q_0 - \xi_t|^4 \right)} \sqrt{\expect \left( |q_t - q_0 + \xi_t|^4 \right)}.
+        &\leq \frac{1}{4 T^2}
+        {\Bigl(\expect \left(  |q_T - q_0 - \xi_T|^{2p} \right)\Bigr)^{\frac{1}{p}}} \,
+        {\Bigl(\expect \left( |q_T - q_0 + \xi_T|^{2q} \right)\Bigr)^{\frac{1}{q}}},
+        \qquad \frac{1}{p} + \frac{1}{q} = 1.
     \end{align}
-    Denoting the It\^o integrals in~\eqref{eq:ito_control} by $I_{\phi}$ and $I_{\psi}$,
-    respectively, we now bound
+    We recall that, by It\^o's formula, it holds
     \begin{align*}
-        \expect \left( |q_t - q_0 + \xi_t|^4 \right)
-    &= \expect \left( \abs{\phi_t - \phi_0 - \psi_t + \psi_0 + I_{\psi} - I_{\phi}}^4 \right) \\
-    &\leq 3^3 \left( \expect \left( \abs{\phi_t - \psi_t}^4 \right) + \expect \left( \abs{\phi_0 - \psi_0}^4 \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right) \right).
+        \phi_{\vect e}(q_T, p_T) - \phi_{\vect e}(q_0, p_0)
+        &= - \int_{0}^{T} \, (\vect e^\t p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \phi_{\vect e} (q_t, p_t) \cdot \d W_t, \\
+        \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0)
+        &= \int_{0}^{T} \, \mathcal L \psi_{\vect e}(q_t, p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \psi_{\vect e} (q_t, p_t) \cdot \d W_t.
     \end{align*}
-    The first two terms are bounded by $\norm{\phi - \psi}_{L^4(\mu)}^4$.
+    Denoting the It\^o integrals in these equations by $I_{\phi}$ and $I_{\psi}$ respectively,
+    and using the short-hand notation $\chi_{s} = \chi_{\vect e}(q_s, p_s)$ for $\chi \in \{\phi, \psi\}$,
+    we now bound
+    \begin{align*}
+        \expect \left( |q_T - q_0 + \xi_T|^{2p} \right)
+        &= \expect \left( \abs{\phi_{0} - \phi_{T} - \psi_{0} + \psi_{T}  + I_{\phi} - I_{\psi}}^{2p} \right) \\
+        &\leq 3^{2p-1} \left( \expect \left( \abs{\phi_t - \psi_t}^{2p} \right) + \expect \left( \abs{\phi_0 - \psi_0}^{2p} \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^{2p} \right) \right).
+    \end{align*}
+    The first two terms are bounded by $\norm{\phi_{\vect e} - \psi_{\vect e}}_{L^{2p}(\mu)}^{2p}$.
     Using a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366}
     and the assumption of stationary initial conditions,
-    we bound the last term as
+    we can bound the last term as
     \begin{align*}
-        \expect \left( \abs{I_{\psi} - I_{\phi}}^4 \right)
-        &\leq 6^2 \times 4 \gamma^2 \beta^{-2} \times  t \, \expect \int_{0}^{t} \abs{\derivative{1}[\phi]{p}(q_s, p_s) - \derivative{1}[\psi]{p}(q_s, p_s)}^4 \, \d s \\
-        &= 6^2 \times  4 \gamma^2 \beta^{-2} \times t^2 \int \abs{\derivative{1}[\phi]{p} - \derivative{1}[\psi]{p}}^4 \d \mu.
+        \expect \left( \abs{I_{\psi} - I_{\phi}}^{2p} \right)
+        &\leq \bigl(p(2p - 1)\bigr)^p \, \left(2 \gamma \beta^{-1}\right)^p \,  T^{p-1} \,
+        \expect \int_{0}^{t} \abs{\grad_p \phi(q_s, p_s) - \grad_p \psi(q_s, p_s)}^{2p} \, \d s \\
+        &= \bigl(p(2p - 1)\bigr)^p \, \left(2 \gamma \beta^{-1}\right)^p \,  T^{p} \, \int \abs{\grad_p \phi - \grad_p \psi}^{2p} \d \mu.
     \end{align*}
     Likewise, the second factor in~\eqref{eq:bound_variance_two_factors} can be bounded as
     \begin{align*}
-        \expect \left( |q_t - q_0 - \xi_t|^4 \right)
-    &\leq 3^3 \left( \expect \left( 2 \norm{\phi + \psi}[L^4(\mu)]^4 + 6^2 \times 4 \gamma^2 \beta^{-2} t \norm{\derivative{1}[\phi]{p} + \derivative{1}[\psi]{p}}[L^{4}(\mu)]^4 \right) \right),
+        \expect \left( |q_T - q_0 - \xi_T|^{2q} \right)
+        &\leq 3^{2q-1} \Bigl( 2 \norm{\phi_{\vect e} + \psi_{\vect e}}[L^{2q}(\mu)]^{2q} \\
+        & \qquad + \bigl(q(2q - 1)\bigr)^q \, \left(2 \gamma \beta^{-1}\right)^q \, T^{q} \norm{\grad_p \phi_{\vect e} + \grad_p \psi_{\vect e}}[L^{4}(\mu)]^4 \Bigr).
     \end{align*}
-    which concludes the proof.
+    The statement is then obtained by letting $p = 2$.
 \end{proof}
 
-\textcolor{red}{Better approach to control the variance asymptotically?}
+We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \infty$.
+\begin{proposition}
+    [Asymptotic variance]
+    \label{proposition:asymptotic_variance}
+    It holds that
+    \begin{equation}
+        \label{eq:asymptotic_variance}
+        \var\bigl(v(T)\bigr) \xrightarrow[T \to \infty]{}
+        2 d_{\phi}^2 + 2 d_{\psi}^2 - 4 \gamma^2 \beta^{-2} \left( \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \right)^2.
+    \end{equation}
+    In particular,
+    \begin{align}
+        \label{eq:bounds_asymptotic_variance}
+        2(d_{\phi} - d_{\psi})^2 
+        \leq \lim_{T \to \infty} \var \bigl(v(T)\bigr) 
+        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + 4 \sqrt{\gamma \beta^{-1}} d_{\phi}^{3/2} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}.
+    \end{align}
+\end{proposition}
 \begin{proof}
     Using It\^o's isometry and the central limit theorem for martingales~\cite[Theorem 3.3]{pavliotis2008multiscale},
-    we obtain that, approximately for large times,
+    we obtain that
     \[
-        \frac{1}{\sqrt{2t}}
+        \frac{1}{\sqrt{2T}}
         \begin{pmatrix}
-            q_t - q_0 \\
-            \xi_t
+            \vect e^\t (q_T - q_0) \\
+            \xi_T
         \end{pmatrix}
         \xrightarrow[T \to \infty]{\rm Law}
         \mathcal N \left(0,
+            \gamma \beta^{-1}
             \begin{pmatrix}
-                D & \int \psi p \, \d \mu \\
-                \int \psi p \, \d \mu & D_{\psi} \\
+                \int \grad_p \phi_{\vect e} \cdot \grad_p \phi_{\vect e} \, \d \mu & \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \\
+                \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu & \int \grad_p \psi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu
             \end{pmatrix}
-        \right)
+        \right).
     \]
     For a bivariate Gaussian vector $X \sim \mathcal N(0, \Sigma)$ with density $g_{\Sigma}$,
     it holds by the general formula for the higher-order moments of multivariate Gaussians (Isserlis' theorem)
     that
     \begin{align*}
-        \mathrm{Var} (X_1^2 - X_2^2)
+        \var (X_1^2 - X_2^2)
         &= \int_{\real^2} \left( x_1^2 - x_2^2 - \Sigma_{11} + \Sigma_{22} \right)^2 \, g_{\Sigma}(x_1, x_2) \, \d x_1 \, \d x_2
         = 2 \Sigma_{11}^2 + 2 \Sigma_{22}^2 - 4 \Sigma_{12}^2.
     \end{align*}
-    In our case, this gives
-    \begin{align*}
-        \mathrm{Var}\bigl(v(t)\bigr)
-        &\approx 2 D^2 + 2 D_{\psi}^2 - 4 \left( \int \psi p \, \d \mu \right)^2
-        = 2 D^2 + 2 D_{\psi}^2 - 4 \left( D + \int (\psi - \phi) p \, \d \mu \right)^2
-        % &\leq 2 (D_{\psi}^2 - D^2) - 8 D \int (\psi - \phi) p \, \d \mu \leq 2 (D_{\psi}^2 - D^2) - 8 D \beta^{-1} \norm{\psi - \phi}.
-    \end{align*}
-    For the Galerkin control variate, it holds by construction $\int \psi p \, \d \mu = \int \psi \, \mathcal L \psi \, \d \mu = D_{\psi}$,
-    and so the variance of $v(t)$ is approximately $2 D^2 - 2 D_{\psi}^2$.
+    This identity directly implies ~\eqref{eq:asymptotic_variance}.
+    The lower bound in~\eqref{eq:bounds_asymptotic_variance} follows from an application of Cauchy-Schwarz inequality,
+    and the upper bound
+    % Using that
+    % \begin{align*}
+    %      \gamma^2 \beta^{-2} \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu
+    %      \leq  \left( \gamma^1 \beta^{-1} \int \grad_p \phi_{\vect e} \cdot \grad_p \phi_{\vect e} \, \d \mu \right)
+    %     \left( \gamma^1 \beta^{-1} \int \grad_p \psi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \right)
+    %     = d_{\psi} d_{\phi},
+    % \end{align*}
+    % we deduce
+    % \begin{equation}
+    %     \lim_{T \to \infty} \var \bigl(v(T)\bigr) \leq 2(d_{\phi} - d_{\psi})^2.
+    % \end{equation}
+    % For the Galerkin control variate, it holds by construction $\int \psi p \, \d \mu = \int \psi \, \mathcal L \psi \, \d \mu = D_{\psi}$,
+    % and so the variance of $v(t)$ is approximately $2 D^2 - 2 D_{\psi}^2$.
 \end{proof}
 
 \section{Application to one-dimensional Langevin-type dynamics}%

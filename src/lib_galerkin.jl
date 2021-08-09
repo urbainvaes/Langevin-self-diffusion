@@ -99,11 +99,14 @@ function galerkin_solve(γ)
 
     # Numerical parameters
     p = 300;
-    # σ, p = 1, 30;
+    # p = 100;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
     ωmax, dmax = p, p*2;
+
+    # Test overdamped
+    σ, ωmax, dmax = 1, 20, 40;
 
     # FOURIER TOOLS {{{1
     function flat_fourier(func)
@@ -321,7 +324,7 @@ function galerkin_solve(γ)
             fevals = hcat(fourier_eval.(ωmax, qs)...)'
             hevals = gen_hermite_eval(dmax, ps, σ)
             values = zeros(length(qs), length(ps))
-            step = (length(series) ÷ 100)
+            step = max(length(series) ÷ 100, 1)
             for i in 1:length(series)
                 if i ÷ step > (i - 1) ÷ step
                     print(".")
@@ -334,57 +337,57 @@ function galerkin_solve(γ)
         return result
     end
 
-    datadir = "precom_data/galerkin/γ=$γ";
-    if isfile("$datadir/eigenvals.txt")
-        println("Using existing eigenvalue decomposition!")
-        eigenvals = DelimitedFiles.readdlm("$datadir/eigenvals.txt");
-        eigenvecs = DelimitedFiles.readdlm("$datadir/eigenvecs.txt");
-    else
-        eigenvals, eigenvecs = Arpack.eigs(minusL, which=:SM, nev=100)
-        DelimitedFiles.writedlm("$datadir/eigenvals.txt", real.(eigenvals));
-        DelimitedFiles.writedlm("$datadir/eigenvecs.txt", real.(eigenvecs));
-    end
+    # datadir = "precom_data/galerkin/γ=$γ";
+    # if isfile("$datadir/eigenvals.txt")
+    #     println("Using existing eigenvalue decomposition!")
+    #     eigenvals = DelimitedFiles.readdlm("$datadir/eigenvals.txt");
+    #     eigenvecs = DelimitedFiles.readdlm("$datadir/eigenvecs.txt");
+    # else
+    #     eigenvals, eigenvecs = Arpack.eigs(minusL, which=:SM, nev=100)
+    #     DelimitedFiles.writedlm("$datadir/eigenvals.txt", real.(eigenvals));
+    #     DelimitedFiles.writedlm("$datadir/eigenvecs.txt", real.(eigenvecs));
+    # end
 
     # For 2d
-    sin_mul = real(T*prod_operator(flat_fourier(q -> sin(q)))*T¯¹);
-    cos_mul = real(T*prod_operator(flat_fourier(q -> cos(q)))*T¯¹);
-    Ip = sparse.sparse(1.0*la.I(dmax + 1));
-    M1 = tensorize(sin_mul, Dp);
-    M2 = tensorize(cos_mul, Ip);
+    # sin_mul = real(T*prod_operator(flat_fourier(q -> sin(q)))*T¯¹);
+    # cos_mul = real(T*prod_operator(flat_fourier(q -> cos(q)))*T¯¹);
+    # Ip = sparse.sparse(1.0*la.I(dmax + 1));
+    # M1 = tensorize(sin_mul, Dp);
+    # M2 = tensorize(cos_mul, Ip);
 
     # Projection of the rhs
-    inner_products = eigenvecs'eigenvecs
-    decomp_rhs = inner_products\(eigenvecs'rhs)
-    D_approx = decomp_rhs'inner_products*(decomp_rhs./eigenvals)
+    # inner_products = eigenvecs'eigenvecs
+    # decomp_rhs = inner_products\(eigenvecs'rhs)
+    # D_approx = decomp_rhs'inner_products*(decomp_rhs./eigenvals)
 
-    new_minusL = inner_products .* eigenvals
-    new_inner_products_rhs = eigenvecs'rhs
-    new_sol = new_minusL\new_inner_products_rhs
-    D_approx = new_inner_products_rhs'new_sol
-    new_M1 = eigenvecs'M1*eigenvecs
-    new_M2 = eigenvecs'M2*eigenvecs
-    new_one = eigenvecs'u
-    new_I = sparse.sparse(1.0*la.I(nev));
+    # new_minusL = inner_products .* eigenvals
+    # new_inner_products_rhs = eigenvecs'rhs
+    # new_sol = new_minusL\new_inner_products_rhs
+    # D_approx = new_inner_products_rhs'new_sol
+    # new_M1 = eigenvecs'M1*eigenvecs
+    # new_M2 = eigenvecs'M2*eigenvecs
+    # new_one = eigenvecs'u
+    # new_I = sparse.sparse(1.0*la.I(nev));
 
-    nev = size(eigenvecs)[2]
-    twod_multi_indices = zeros(Int, nev*nev, 2);
-    twod_lin_indices = zeros(Int, nev, nev);
-    lin_index = 1;
-    for k in 1:nev
-        for l in 1:nev
-            twod_multi_indices[lin_index,:] = [k l];
-            twod_lin_indices[k, l] = lin_index;
-            lin_index += 1;
-        end
-    end
-    twod_tensorize(op1, op2) = tensorize_with_indices(op1, op2, twod_lin_indices)
-    twod_tensorize_vecs(vec1, vec2) = tensorize_vecs_with_indices(vec1, vec2, twod_lin_indices)
+    # nev = size(eigenvecs)[2]
+    # twod_multi_indices = zeros(Int, nev*nev, 2);
+    # twod_lin_indices = zeros(Int, nev, nev);
+    # lin_index = 1;
+    # for k in 1:nev
+    #     for l in 1:nev
+    #         twod_multi_indices[lin_index,:] = [k l];
+    #         twod_lin_indices[k, l] = lin_index;
+    #         lin_index += 1;
+    #     end
+    # end
+    # twod_tensorize(op1, op2) = tensorize_with_indices(op1, op2, twod_lin_indices)
+    # twod_tensorize_vecs(vec1, vec2) = tensorize_vecs_with_indices(vec1, vec2, twod_lin_indices)
 
-    δ = .1
-    twod_minusL = (twod_tensorize(new_minusL, new_I) + twod_tensorize(new_I, new_minusL)
-                   + δ*twod_tensorize(new_M1, new_M2) + δ*twod_tensorize(new_M2, new_M1))
-    twod_rhs = twod_tensorize_vecs(new_inner_products_rhs, new_one)
-    sol = twod_minusL \ twod_rhs
+    # δ = .1
+    # twod_minusL = (twod_tensorize(new_minusL, new_I) + twod_tensorize(new_I, new_minusL)
+    #                + δ*twod_tensorize(new_M1, new_M2) + δ*twod_tensorize(new_M2, new_M1))
+    # twod_rhs = twod_tensorize_vecs(new_inner_products_rhs, new_one)
+    # sol = twod_minusL \ twod_rhs
 
     # function new_tensorize(op1, op2)
     #     op1 = sparse.sparse(op1);
@@ -405,21 +408,21 @@ function galerkin_solve(γ)
     #     end
     #     return sparse.sparse(R, C, V, n1*n2, n1*n2);
     # end
-    function new_tensorize_vecs(vec1, vec2)
-        result = zeros(nev*nev)
-        for i in 1:(nev*nev)
-            i1, i2 = new_multi_indices[i, :]
-            result[i] = vec1[iq]*vec2[ip]
-        end
-        return result
-    end
-
-    twod = rhs
+    # function new_tensorize_vecs(vec1, vec2)
+    #     result = zeros(nev*nev)
+    #     for i in 1:(nev*nev)
+    #         i1, i2 = new_multi_indices[i, :]
+    #         result[i] = vec1[iq]*vec2[ip]
+    #     end
+    #     return result
+    # end
+    # twod = rhs
 
     # Effective diffusion
     solution = (A\b)[1:end-1];
     dp_solution = diffp*solution;
     D = solution'rhs
+    println("Effective diffusion (Galerkin): $D")
 
     # Turn them into functions
     solution_fun = eval_series(solution);

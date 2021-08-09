@@ -54,8 +54,9 @@ np_total = 5000;
 np = ceil(Int, (np_total / nbatches))
 
 # Time step and final time
-Δt = .01;
-tf = ceil(Int, 100/γ);
+Δt = .01 / max(1, γ);
+# Δt = .01;
+tf = ceil(Int, 100*max(1/γ, γ));
 
 # Number of iterations
 niter = ceil(Int, tf/Δt);
@@ -66,7 +67,8 @@ q0, p0 = Sampling.sample_gibbs(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Control
-Dc, ψ, ∂ψ = Control.get_controls(γ, false)
+# Dc, ψ, ∂ψ = Control.get_controls(γ, false)
+Dc, ψ, ∂ψ = Control.get_controls(γ, true)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)

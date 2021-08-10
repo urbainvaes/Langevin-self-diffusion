@@ -20,9 +20,6 @@ D11_wi_galerkin = np.loadtxt("data/data-galerkin-D11_wi.txt")
 D11_wo_galerkin = np.loadtxt("data/data-galerkin-D11_wo.txt")
 σ11_wo_galerkin = np.loadtxt("data/data-galerkin-σ11_wo.txt")
 
-# γs_new_galerkin = [.00001, .0001, .001]
-# σ11_wi_new_galerkin = [6000,  200, 13]
-
 γs_underdamped = np.loadtxt("data/data-underdamped-γs.txt")
 δs_underdamped = np.loadtxt("data/data-underdamped-δs.txt")
 D11_wi_underdamped = np.loadtxt("data/data-underdamped-D11_wi.txt")
@@ -45,13 +42,40 @@ if δs_underdamped.shape == ():
     σ11_wo_underdamped.shape = (len(γs_underdamped), 1)
 
 # Langevin dynamics in one dimension
+γs = γs_galerkin
 D_galerkin = D11_wi_galerkin[:, 0]
 nD_galerkin = γs_galerkin*D11_wi_galerkin[:, 0]
 σ_galerkin = σ11_wi_galerkin[:, 0]
 D_underdamped = D11_wi_underdamped[:, 0]
 σ_underdamped = σ11_wi_underdamped[:, 0]
-lower_bound_galerkin = np.sqrt(2.)*abs(D_galerkin - diff_und/γs_galerkin)
+D_nocontrol = D11_wo_underdamped[:, 0]
+σ_nocontrol = σ11_wo_underdamped[:, 0]
+approx_no_control = np.sqrt(2.)*abs(D_nocontrol)
 
+plt.ion()
+fig, ax = plt.subplots(1, 2)
+ax[0].set_xlabel('$\gamma$')
+ax[0].set_title(r"Effective diffusion coefficient: $\gamma D^{\gamma}/D_{\rm und}$")
+ax[0].semilogx(γs_galerkin, γs*D_nocontrol/diff_und, ".-", label="No control")
+ax[0].semilogx(γs_galerkin, γs*D_underdamped/diff_und, ".-", label="Underdamped")
+ax[0].semilogx(γs_galerkin, γs*D_galerkin/diff_und, ".-", label="Galerkin")
+ax[0].legend()
+ax[0].grid()
+ax[0].set_xlim([1e-5, 1])
+ax[1].set_xlabel('$\gamma$')
+ax[1].set_title(r'Relative standard deviation')
+ax[1].set_prop_cycle(None)
+ax[1].loglog(γs_galerkin, σ_nocontrol/D_nocontrol, '.-', label="No control")
+ax[1].loglog(γs_galerkin, σ_underdamped/D_nocontrol, '.-', label="Underdamped")
+ax[1].loglog(γs_galerkin, σ_galerkin/D_nocontrol, '.-', label="Galerkin")
+ax[1].loglog(γs_galerkin, approx_no_control/D_nocontrol, '-', lw=1, label=r"$\sqrt{2}$")
+ax[1].set_ylim([.01, 2])
+ax[1].set_xlim([1e-5, 1])
+ax[1].set_yscale('log', basey=2)
+ax[1].legend()
+ax[1].grid()
+# fig, ax[0] = plt.subplots()
+plt.show()
 
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)

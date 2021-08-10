@@ -68,7 +68,8 @@ q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Control
 # Dc, ψ, ∂ψ = Control.get_controls(γ, false)
-Dc, ψ, ∂ψ = Control.get_controls(γ, true)
+recalculate = true
+Dc, ψ, ∂ψ = Control.get_controls(γ, recalculate)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)

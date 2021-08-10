@@ -5,7 +5,7 @@ import numpy as np
 matplotlib.rc('font', size=16)
 matplotlib.rc('font', family='serif')
 matplotlib.rc('text', usetex=True)
-matplotlib.rc('figure', figsize=(12, 6))
+matplotlib.rc('figure', figsize=(15, 8))
 
 γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215, .00464,
       .01, .0215, .0464, .1, .215, .464, 1.]
@@ -26,6 +26,7 @@ D11_wi_underdamped = np.loadtxt("data/data-underdamped-D11_wi.txt")
 σ11_wi_underdamped = np.loadtxt("data/data-underdamped-σ11_wi.txt")
 D11_wo_underdamped = np.loadtxt("data/data-underdamped-D11_wo.txt")
 σ11_wo_underdamped = np.loadtxt("data/data-underdamped-σ11_wo.txt")
+D_only_galerkin = np.loadtxt("precom_data/galerkin_approx_diff_imported_from_cluster.txt")[:, 1]
 
 if δs_galerkin.shape == ():
     δs_galerkin.shape = (1,)
@@ -41,7 +42,7 @@ if δs_underdamped.shape == ():
     D11_wo_underdamped.shape = (len(γs_underdamped), 1)
     σ11_wo_underdamped.shape = (len(γs_underdamped), 1)
 
-# Langevin dynamics in one dimension
+# Langevin dynamics in one dimension {{{1
 γs = γs_galerkin
 D_galerkin = D11_wi_galerkin[:, 0]
 nD_galerkin = γs_galerkin*D11_wi_galerkin[:, 0]
@@ -56,25 +57,26 @@ plt.ion()
 fig, ax = plt.subplots(1, 2)
 ax[0].set_xlabel('$\gamma$')
 ax[0].set_title(r"Effective diffusion coefficient: $\gamma D^{\gamma}/D_{\rm und}$")
-ax[0].semilogx(γs_galerkin, γs*D_nocontrol/diff_und, ".-", label="No control")
-ax[0].semilogx(γs_galerkin, γs*D_underdamped/diff_und, ".-", label="Underdamped")
-ax[0].semilogx(γs_galerkin, γs*D_galerkin/diff_und, ".-", label="Galerkin")
+ax[0].semilogx(γs_galerkin, γs*D_nocontrol/diff_und, ".-", label="MC/No control")
+ax[0].semilogx(γs_galerkin, γs*D_galerkin/diff_und, ".-", label="MC/Galerkin")
+ax[0].semilogx(γs_galerkin, γs*D_underdamped/diff_und, ".-", label="MC/Underdamped")
+ax[0].semilogx(γs_galerkin, γs*D_only_galerkin/diff_und, ".-", label="Galerkin")
 ax[0].legend()
 ax[0].grid()
 ax[0].set_xlim([1e-5, 1])
 ax[1].set_xlabel('$\gamma$')
 ax[1].set_title(r'Relative standard deviation')
 ax[1].set_prop_cycle(None)
-ax[1].loglog(γs_galerkin, σ_nocontrol/D_nocontrol, '.-', label="No control")
-ax[1].loglog(γs_galerkin, σ_underdamped/D_nocontrol, '.-', label="Underdamped")
-ax[1].loglog(γs_galerkin, σ_galerkin/D_nocontrol, '.-', label="Galerkin")
-ax[1].loglog(γs_galerkin, approx_no_control/D_nocontrol, '-', lw=1, label=r"$\sqrt{2}$")
+ax[1].loglog(γs_galerkin, σ_nocontrol/D_nocontrol, '.-', label="MC/No control")
+ax[1].loglog(γs_galerkin, σ_galerkin/D_nocontrol, '.-', label="MC/Galerkin")
+ax[1].loglog(γs_galerkin, σ_underdamped/D_nocontrol, '.-', label="MC/Underdamped")
+ax[1].loglog(γs_galerkin, 0*γs_galerkin + np.sqrt(2), '-', lw=1, label=r"$\sqrt{2}$")
 ax[1].set_ylim([.01, 2])
 ax[1].set_xlim([1e-5, 1])
-ax[1].set_yscale('log', basey=2)
+ax[1].set_yscale('log', base=2)
 ax[1].legend()
 ax[1].grid()
-# fig, ax[0] = plt.subplots()
+fig.savefig("underdamped_1d.pdf", bbox_inches='tight')
 plt.show()
 
 fig, ax = plt.subplots()

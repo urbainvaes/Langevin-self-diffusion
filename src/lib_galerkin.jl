@@ -98,7 +98,7 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 300;
+    p = 400;
     # p = 100;
 
     # ωmax is the highest frequency of trigonometric functions in q and
@@ -106,7 +106,7 @@ function galerkin_solve(γ)
     ωmax, dmax = p, p*2;
 
     # Test overdamped
-    σ, ωmax, dmax = 1, 20, 40;
+    # σ, ωmax, dmax = 1, 20, 40;
 
     # FOURIER TOOLS {{{1
     function flat_fourier(func)

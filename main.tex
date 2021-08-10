@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-% \documentclass{amsart}
+% \documentclass[11pt]{amsart}
 \usepackage[utf8]{inputenc}
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
@@ -410,6 +410,7 @@ We motivate in this section that
 the following estimator of $D_{\vect e}$ is better than $u(T)$ provided that $\psi_{\vect e}$ is a sufficiently good approximation of $\phi_{\vect e}$:
 \begin{subequations}
 \begin{equation}
+    \label{eq:improved_estimator}
     v(T) = d_{\psi}+ \frac{1}{2T} \left( \abs{\vect e^\t(q_T - q_0)}^2 - \abs{\xi_T}^2\right),
 \end{equation}
 where $d_{\psi} := \gamma \beta^{-1} \int \abs{\grad_p \psi_{\vect e}}^2 \, \d \mu$ and
@@ -447,7 +448,7 @@ In addition, using It\^o's isometry we verify formally that $v(T)$ is asymptotic
 
 We now obtain more precise results on the bias and variance of $u(T)$ and $v(T)$.
 
-\paragraph{Bias of the estimators.}%
+\subsection{Bias of the estimators}%
 We begin by studying the bias of $u(T)$.
 Since the initial conditions are assumed statistically stationary,~$(q_0, p_0) \sim \mu$,
 it holds that
@@ -720,10 +721,11 @@ The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as 
 %     \]
 % \end{remark}
 
-\paragraph{Variance of the estimators.}%
+\subsection{Variance of the estimators}%
 We now obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
-It is difficult to obtain bounds that scale well as $\gamma \to \infty$,
-so we aim to obtain bounds with a good scaling in the underdamped regime only.
+It is difficult to obtain bounds that scale well both as $\gamma \to 0$ and $\gamma \to \infty$,
+so here we aim to obtain bounds with a good scaling in the underdamped regime only,
+as this is the interesting regime for the mobility.
 
 \begin{proposition}
     There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
@@ -889,7 +891,8 @@ through a Fourier/Hermite Galerkin method and,
 in the underdamped regime,
 through formal asymptotic expansions.
 
-\paragraph{Fourier/Hermite spectral method.}%
+\subsection{Fourier/Hermite spectral method}%
+\label{sub:galerkin_approach}
 We employ the non-conformal Galerkin method developed and analyzed in~\cite{roussel2018spectral}.
 Specifically, we calculate an approximate solution to~\eqref{eq:poisson_equation} through the saddle point formulation:
 \begin{align}
@@ -952,7 +955,7 @@ where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$.
 The parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
 The approximate effective diffusion coefficient $d_\psi$,
-which enters in the definition~\eqref{eq:definition_control_variate} of the estimator~$v(T)$,
+which enters in the definition~\eqref{eq:improved_estimator} of the estimator~$v(T)$,
 is calculated based on this interpolant by direct Monte Carlo simulation.
 The parameters employed for the construction of the control variate are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate}.
 \begin{table}[ht]
@@ -976,8 +979,8 @@ The parameters employed for the construction of the control variate are summariz
     \label{table:parameters_employed_for_the_construction_of_the_control_variate}
 \end{table}
 
-\paragraph{Control variate for the underdamped limit.}%
-\label{par:control_variate_for_the_underdamped_limit}
+\subsection{Control variate for the underdamped limit.}%
+\label{sub:underdamped_approach}
 In one dimension,
 the underdamped limit of Langevin dynamics is well understood.
 Specifically, it is possible to show that the solution to the Poisson equation~\eqref{eq:poisson_equation},
@@ -1007,7 +1010,7 @@ the function $S(\cdot)$ admits an explicit expression in terms of an elliptic in
 and in general it can be calculated efficiently by numerical quadrature.
 In practice, given an implementation of $S_{\rm und}(\cdot)$ we calculate $\psi_0$ using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations}.
 
-\paragraph{Numerical results.}%
+\subsection{Numerical results}%
 We discretize the Langevin dynamics using the geometric Langevin algorithm studied in~\cite{MR2608370} which,
 in the general multi-dimensional case, is based on the iteration
 \begin{align*}
@@ -1024,7 +1027,7 @@ We write the terms~$(G_n)_{n\geq0}$ as a stochastic integrals, instead of giving
 because they are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
 Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
 \[
-    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_p \psi(q^{n}, p^{n}) \cdot 
+    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_p \psi(q^{n}, p^{n}) \cdot
     \widetilde {\vect G}_n, \qquad \widetilde {\vect G}_n = \vect W_{t_{n+1}} - \vect W_{t_n}.
 \]
 where $(\widetilde {\vect G}_n)_{n \geq 0}$ are $\mathcal N(0, I_d)$ random vectors correlated with $(\vect G_n)_{n \geq 0}$
@@ -1049,14 +1052,9 @@ which are independent, is given by
 % Therefore the covariance matrix the mean-zero normally distributed random vectors $(G_n, \widetilde G_n)_{n \geq 0}$,
 % which are independent, is given by
 
-
-
-We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $J$ of trajectories.
-The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate},
-and the effective diffusion coefficients calculated using the two approaches outlined,
-together with the associated variances,
-are illustrated in for a range of friction coefficients in \cref{fig:effective_diffusion_langevin}.
-
+We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$from a number $J$ of trajectories.
+The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_mc},
+and the associated numerical results are presented in~\cref{fig:effective_diffusion_langevin}.
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -1069,15 +1067,35 @@ are illustrated in for a range of friction coefficients in \cref{fig:effective_d
         \hline
     \end{tabular}
     \caption{Parameters employed for the Monte Carlo simulation.}
-    \label{table:parameters_employed_for_the_construction_of_the_control_variate}
+    \label{table:parameters_employed_for_mc}
 \end{table}
-
+We observe that the sample means corresponding to each of the estimators are in good agreement,
+and that for $\gamma = 10^{-5}$ the effective diffusion coefficient is very close, in relative terms,
+to its theoretical limit $D_{\rm und}/\gamma$.
+The two control variate approaches yield computational benefits in different regimes:
+the control variate constructed from the Fourier/Hermite approximation of the solution to Poisson equation~\eqref{eq:poisson_equation}
+enables a variance reduction by a factor more than 100 for $\gamma \geq 10^{-2}$,
+but the gain decreases as $\gamma \to 0$.
+In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered,
+but the gain decreases as $\gamma$ increases.
 \begin{figure}[htpb]
     \centering
-    \includegraphics[width=0.8\linewidth]{figures/diffusion.pdf}
-    \caption{Effective diffusion coefficient}%
+    \includegraphics[width=0.99\linewidth]{figures/underdamped_1d.pdf}
+    \caption{
+        Effective diffusion coefficient and standard deviation of the estimators considered.
+        The data labeled ``MC/No control'' correspond to Monte Carlo simulations without a control variate,
+        i.e.\ to the estimator $u(T)$ given in~\eqref{eq:simple_estimator}.
+        The data labeled ``MC/Galerkin'' and ``MC/Underdamped'' correspond to the improved estimator~\eqref{eq:definition_control_variate},
+        with $\psi$ obtained using the approaches of~\cref{sub:galerkin_approach} and~\cref{sub:underdamped_approach},
+        respectively.
+        Finally, the curve labeled ``Galerkin'' is the approximate diffusion coefficient obtained by the Galerkin method,
+        which is given by $\ip*{\widehat \Phi_N}{p}$ in the notation of \cref{sub:galerkin_approach}.
+    }%
     \label{fig:effective_diffusion_langevin}
 \end{figure}
+
+% An alternative viewpoint on the control variate approach presented in \cref{sub:galerkin_approach} is that
+% Monte Carlo simulation is employed in order to refine estimates obtained by Fourier/Hermite spectral method for the Poisson equation~\eqref{eq:poisson_equation}.
 
 % \paragraph{Estimator diffusion coefficient.}%
 % \label{par:estimator_diffusion_coefficient}
@@ -1113,18 +1131,25 @@ are illustrated in for a range of friction coefficients in \cref{fig:effective_d
 \section{Application to Langevin dynamics in two dimensions}%
 \label{sec:applications_2d}%
 
-
-
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}
+In this note,
+we show how control variates techniques can be employed for improving estimators of the mobility of Langevin dynamics based on Einstein's formula.
+The control variate we propose requires the knowledge of an approximate solution of a appropriate Poisson involving the generator of the dynamics.
+We obtain general bounds on the bias and variance of the improved estimator in terms of the error on the solution to this equation,
+and we study several approaches for constructing an approximate solution to the Poisson equation.
+
+In the one-dimensional setting,
+we demonstrate the efficiency of control variates 
+(i) obtained by a Fourier/Hermite spectral method and 
+(ii) based on explicit expressions for the limiting solution of the Poisson equation in the underdamped limit.
 
 \appendix
-\section{Proof of \cref{proposition:semigroup_meanzero_observable}}%
+\section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
 \label{sec:auxiliary_technical_results}
 
 The proof is based on several lemmata.
-In order to state the results, we introduce some notation.
-
+In order to state the results, we first introduce some notation.
 For a measure $\pi$, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
 of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
@@ -1146,7 +1171,8 @@ and we recall that a probability measure $\pi$ is said to satisfy the Poincaré 
 We also define $\nabla_q^* = \beta \nabla V(q) - \nabla_q$ and $\nabla_p^* = \beta p - \nabla_p$,
 and note that these operators are formally the $L^2(\mu)$ adjoints of $\nabla_q$ and $\nabla_p$.
 Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$.
-The first lemma concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
+The first lemma is an application of standard elliptic theory and
+concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
     Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
@@ -1172,10 +1198,10 @@ The first lemma concerns the exponential convergence of the derivatives of the o
 
     We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
      $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
-    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
+    Since $\mathcal L_{\rm ovd}^W$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
     it holds that
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd}^W)^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
     \]
     Introducing $\partial_x^* = \beta W' - \partial_x$
     and noting that $\mathcal L_{\rm ovd}^W = - \partial_x^* \partial_x$,
@@ -1193,14 +1219,14 @@ The first lemma concerns the exponential convergence of the derivatives of the o
     \begin{equation}
         \label{eq:exponential_convergence}
         \forall t \geq 0, \qquad
-        \seminorm{u(t)}_i \leq \e^{- 2 R t} \seminorm{u(0)}_i.
+        \seminorm{u(t)}_j \leq \e^{- 2 R t} \seminorm{u(0)}_j.
     \end{equation}
     Applying this estimate with $j = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
-    For~$j = 1$, it holds for sufficiently regular $h$ that
+    Since it holds for sufficiently regular $h$ that
     \[
         \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \beta^{-1} \norm{\partial_x h},
     \]
-    so~\eqref{eq:exponential_convergence} implies the exponential convergence of $\norm{\partial_x u}$.
+    equation~\eqref{eq:exponential_convergence} for $j = 1$ implies the exponential convergence of $\norm{\partial_x u}$.
     For $j = 2$, we calculate using the commutator relation $\commut{\partial_x}{\partial_x^*} = \beta V''$ that
     \[
         \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
@@ -1215,31 +1241,32 @@ The first lemma concerns the exponential convergence of the derivatives of the o
     \end{align*}
     and using the exponential convergence of the first term on the right-hand side,
     which was proved in the previous step,
-    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}^2$ for some appropriate constant $K \geq 1$.
+    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}[2]$ for some appropriate constant $K \geq 1$.
     This procedure can then be repeated in order to deduce the statement.
 \end{proof}
 
-\newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
-\begin{remark}
-    An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
-    to define an auxiliary norm
-    \[
-        \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
-    \]
-    with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
-    This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
-    and it is possible to show for all $\lambda \in (0, 1)$ that
-    \[
-        \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
-    \]
-    for $\varepsilon$ sufficiently small.
-    The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
-    obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
-    needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
-\end{remark}
+% \newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
+% \begin{remark}
+%     An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
+%     to define an auxiliary norm
+%     \[
+%         \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
+%     \]
+%     with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
+%     This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
+%     and it is possible to show for all $\lambda \in (0, 1)$ that
+%     \[
+%         \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
+%     \]
+%     for $\varepsilon$ sufficiently small.
+%     The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
+%     obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
+%     needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
+% \end{remark}
 
 For large times,
 the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial conditions.
+We include the proof here for convenience.
 \begin{lemma}
     [Elliptic regularization]
     \label{lemma:elliptic_reg}
@@ -1256,7 +1283,7 @@ the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ nor
     \[
         \forall t \in (0, 1], \qquad
         \ip{(-\mathcal L)^i u(t)}{u(t)}
-        \leq \frac{C_i}{t^{i/2}} \ip{(-\mathcal L)^j f}{f},
+        \leq \frac{C_i}{t^{\frac{i-j}2}} \ip{(-\mathcal L)^j f}{f},
     \]
     after which the statement follows easily from the expression $\mathcal L = - \partial_x^* \partial_x$ and using commutations.
     Defining the Lyapunov functional
@@ -1391,7 +1418,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
     \end{equation}
     where $G_i = {\rm Re}(\e^{ix})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
-    The space of functions of this form is dense in $(\id - \Pi_p) H^2(\mu)$,
+    The space of functions of this form is dense in $(\id - \Pi_p) H^1(\mu)$,
     so the general result follows by density.
 
     % We consider the following decomposition of the generator:

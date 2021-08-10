@@ -197,14 +197,14 @@ reads after appropriate non-dimensionalization~\cite[Section 2.2.4]{MR2681239}
     \label{eq:langevin_q}
     \d q_t &= p_t \, \d t, \\
     \label{eq:langevin_p}
-    \d p_t &= - \grad V(q_t) \, \d t - \gamma \, p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t.
+    \d p_t &= - \grad V(q_t) \, \d t - \gamma \, p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d \vect W_t.
 \end{align}
 \end{subequations}
 Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and velocity variables,
 with~$\torus^d = \real^d / 2\pi \integer^d$ the $d$-dimensional torus with period $2 \pi$.
 The parameter $\gamma$ is a dimensionless parameter we call the friction,
 $V$ is periodic potential
-and~$W_t$ is a standard $d$-dimensional Brownian motion.
+and~$\vect W_t$ is a standard $d$-dimensional Brownian motion.
 % $M$ is the mass matrix,
 % For simplicity we assume that $M = m I_d$,
 % where $I_d \in \real^{d \times d}$ is the identity matrix.
@@ -302,7 +302,7 @@ converges, uniformly for $t$ in compact subintervals of $[0, \infty)$ almost sur
 to the solution of the overdamped Langevin equation
 \begin{equation}
     \label{eq:overdamped_langevin}
-    \d q_t = - \grad V(q_t) + \sqrt{2 \beta^{-1}} \, \d W_t.
+    \d q_t = - \grad V(q_t) + \sqrt{2 \beta^{-1}} \, \d \vect W_t.
 \end{equation}
 It is also possible to prove that $\gamma D^{\gamma} = D^{\rm ovd} + \bigo{\gamma^{-2}}$ as $\gamma \to \infty$,
 where~$D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
@@ -415,7 +415,7 @@ the following estimator of $D_{\vect e}$ is better than $u(T)$ provided that $\p
 where $d_{\psi} := \gamma \beta^{-1} \int \abs{\grad_p \psi_{\vect e}}^2 \, \d \mu$ and
 \begin{align}
     \label{eq:definition_control_variate}
-    \xi_T = \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_p \psi_{\vect e}(q_t, p_t) \, \d W_t.
+    \xi_T = \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_p \psi_{\vect e}(q_t, p_t) \cdot \d \vect W_t.
 \end{align}
 \end{subequations}
 Note that $v(T) = u(T)$ if $\psi_{\vect e} = 0$,
@@ -722,8 +722,8 @@ The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as 
 
 \paragraph{Variance of the estimators.}%
 We now obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
-The two following results are of different nature:
-the first one is non-asymptotic but
+It is difficult to obtain bounds that scale well as $\gamma \to \infty$,
+so we aim to obtain bounds with a good scaling in the underdamped regime only.
 
 \begin{proposition}
     There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
@@ -777,9 +777,9 @@ the first one is non-asymptotic but
     We recall that, by It\^o's formula, it holds
     \begin{align*}
         \phi_{\vect e}(q_T, p_T) - \phi_{\vect e}(q_0, p_0)
-        &= - \int_{0}^{T} \, (\vect e^\t p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \phi_{\vect e} (q_t, p_t) \cdot \d W_t, \\
+        &= - \int_{0}^{T} \, (\vect e^\t p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \phi_{\vect e} (q_t, p_t) \cdot \d \vect W_t, \\
         \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0)
-        &= \int_{0}^{T} \, \mathcal L \psi_{\vect e}(q_t, p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \psi_{\vect e} (q_t, p_t) \cdot \d W_t.
+        &= \int_{0}^{T} \, \mathcal L \psi_{\vect e}(q_t, p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_p \psi_{\vect e} (q_t, p_t) \cdot \d \vect W_t.
     \end{align*}
     Denoting the It\^o integrals in these equations by $I_{\phi}$ and $I_{\psi}$ respectively,
     and using the short-hand notation $\chi_{s} = \chi_{\vect e}(q_s, p_s)$ for $\chi \in \{\phi, \psi\}$,
@@ -791,7 +791,7 @@ the first one is non-asymptotic but
     \end{align*}
     The first two terms are bounded by $\norm{\phi_{\vect e} - \psi_{\vect e}}_{L^{2p}(\mu)}^{2p}$.
     Using a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366}
-    and the assumption of stationary initial conditions,
+    and the assumption of statistically stationary initial conditions,
     we can bound the last term as
     \begin{align*}
         \expect \left( \abs{I_{\psi} - I_{\phi}}^{2p} \right)
@@ -830,11 +830,11 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
     This result implies that $\var\bigl(u(T)\bigr) \to 2 d_{\phi}^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
     which is consistent with our explicit computations in \cref{example:constant} for the case of a constant potential.
 \end{remark}
-\begin{remark}
-    In one dimension,
-    the lower bound in this proposition can be combined with the inequality $d_\phi \geq \gamma^{-1} D_{\rm und}$ mentioned in the introduction
-    to obtain a lower on the variance that does not require to know $d_\phi$.
-\end{remark}
+% \begin{remark}
+%     In one dimension,
+%     the lower bound in this proposition can be combined with the inequality $d_\phi \geq \gamma^{-1} D_{\rm und}$ mentioned in the introduction
+%     to obtain a lower on the variance that does not require to know $d_\phi$.
+% \end{remark}
 \begin{proof}
     Using It\^o's isometry and the central limit theorem for martingales~\cite[Theorem 3.3]{pavliotis2008multiscale},
     we obtain that
@@ -948,10 +948,12 @@ That is, given $(q, p)$, the function evaluation $\Phi_N(q, p)$ is approximated 
     +\frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
     &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{j+1} - q_j)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
 \end{align*}
-where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$, 
+where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$.
-The parameter $L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation
-The approximate effective diffusion coefficient $d_\psi$ is calculated based on this interpolant by direct Monte Carlo simulation.
+The parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
+The approximate effective diffusion coefficient $d_\psi$,
+which enters in the definition~\eqref{eq:definition_control_variate} of the estimator~$v(T)$,
+is calculated based on this interpolant by direct Monte Carlo simulation.
 The parameters employed for the construction of the control variate are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate}.
 \begin{table}[ht]
     \centering
@@ -997,24 +999,23 @@ and
     =
     \begin{cases}
         0 & \text{ if $H(q,p) < E_0$}, \\
-        \frac{2 \pi}{S\bigl(H(q,p)\bigr)} & \text{ if $H(q,p) > E_0$ and $p \geq 0$}, \\
-        \frac{2 \pi}{S\bigl(H(q,p)\bigr)} & \text{ if $H(q,p) > E_0$ and $p \geq 0$}.
+        \frac{2 \pi \abs{p}}{S_{\rm und}\bigl(H(q,p)\bigr)} & \text{ if $H(q,p) > E_0$}.
     \end{cases}
 \]
 For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in this section,
 the function $S(\cdot)$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108},
 and in general it can be calculated efficiently by numerical quadrature.
-In practice, given an implementation of $S(\cdot)$ we calculate $\psi_0$ using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations}.
+In practice, given an implementation of $S_{\rm und}(\cdot)$ we calculate $\psi_0$ using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations}.
 
 \paragraph{Numerical results.}%
 We discretize the Langevin dynamics using the geometric Langevin algorithm studied in~\cite{MR2608370} which,
 in the general multi-dimensional case, is based on the iteration
 \begin{align*}
-    & p_{n+1/2} = p_n - \frac{\Delta t}{2} \grad V(q_n),
+    & p_{n+1/2} = p_n - \left(\frac{\Delta t}{2}\right) \grad V(q_n),
     \qquad q_{n+1/2} = q_n + \Delta t \, p_n,
-    \qquad \widetilde p_{n+1} = p_{n+1/2} - \frac{\Delta t}{2} \grad V(q_{n+1}), \\
+    \qquad \widetilde p_{n+1} = p_{n+1/2} - \left(\frac{\Delta t}{2}\right) \grad V(q_{n+1}), \\
     & p_{n+1} = \exp \left(- \gamma \Delta t \right) \widetilde p_{n+1}
-    + \sqrt{2 \gamma \beta^{-1}} G_n, \qquad G_n = \int_{n \Delta t}^{(n+1)\Delta t} \e^{-\gamma \bigl((n+1)\Delta t-s\bigr)} \, \d W_s,
+    + \sqrt{2 \gamma \beta^{-1}} G_n, \qquad G_n = \int_{n \Delta t}^{(n+1)\Delta t} \e^{-\gamma \bigl((n+1)\Delta t-s\bigr)} \, \d \vect W_s,
 \end{align*}
 % where $(G_n)_{n \geq 0}$ are independent $\mathcal N(0, I_d)$ random variables.
 The first line can be viewed as a Strang splitting of the Hamiltonian part of the dynamics,
@@ -1023,21 +1024,19 @@ We write the terms~$(G_n)_{n\geq0}$ as a stochastic integrals, instead of giving
 because they are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
 Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
 \[
-    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \derivative{1}[\psi]{p}(q^{n}, p^{n}) \, \widetilde G_n, \qquad \widetilde G_n = W_{t_{n+1}} - W_{t_n}.
+    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_p \psi(q^{n}, p^{n}) \cdot 
+    \widetilde {\vect G}_n, \qquad \widetilde {\vect G}_n = \vect W_{t_{n+1}} - \vect W_{t_n}.
 \]
-where $(\widetilde G_n)_{n \geq 0}$ are $\mathcal N(0, I_d)$ random vectors correlated with $G_n$.
-An explicit calculation using It\^o's isometry shows that the distribution of the vectors $(G_n, \widetilde G_n)_{n \geq 0}$,
+where $(\widetilde {\vect G}_n)_{n \geq 0}$ are $\mathcal N(0, I_d)$ random vectors correlated with $(\vect G_n)_{n \geq 0}$
+and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_p \psi_{\vect e}(q_t, p_t) \cdot \d \vect W_t$.
+An explicit calculation using It\^o's isometry shows that the distribution of the vectors $(\vect G_n, \widetilde {\vect G}_n)_{n \geq 0}$,
 which are independent, is given by
 \[
-    % \begin{pmatrix}
-    %     G_n \\ \widetilde G_n
-    % \end{pmatrix}
-    % \sim
     \mathcal N
-    \left(0,
+    \left(\vect 0,
         \begin{pmatrix}
-            \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) & \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \\
-            \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) & \Delta t
+            \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) \mat I_d & \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\
+            \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d & \Delta t \, \mat I_d
         \end{pmatrix}
     \right).
 \]
@@ -1052,10 +1051,11 @@ which are independent, is given by
 
 
 
-We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $M$ of trajectories.
-
-The effective diffusion coefficients calculated using these two approaches
-and the associated variance are illustrated in for a range of friction coefficients.
+We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $J$ of trajectories.
+The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate},
+and the effective diffusion coefficients calculated using the two approaches outlined,
+together with the associated variances,
+are illustrated in for a range of friction coefficients in \cref{fig:effective_diffusion_langevin}.
 
 \begin{table}[ht]
     \centering
@@ -1063,7 +1063,7 @@ and the associated variance are illustrated in for a range of friction coefficie
         \hline
         Time step & $\Delta t$ & 0.01 \\
         \hline
-        \# Number of particles & $J$ & 5000 \\
+        \# Number of trajectories & $J$ & 5000 \\
         \hline
         \# Final time & $T$ & $100 \gamma^{-1}$ \\
         \hline
@@ -1074,9 +1074,9 @@ and the associated variance are illustrated in for a range of friction coefficie
 
 \begin{figure}[htpb]
     \centering
-    % \includegraphics[width=0.8\linewidth]{name.ext}
+    \includegraphics[width=0.8\linewidth]{figures/diffusion.pdf}
     \caption{Effective diffusion coefficient}%
-    \label{fig:name}
+    \label{fig:effective_diffusion_langevin}
 \end{figure}
 
 % \paragraph{Estimator diffusion coefficient.}%

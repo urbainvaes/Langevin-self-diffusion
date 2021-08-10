@@ -11,6 +11,8 @@ matplotlib.rc('figure', figsize=(12, 6))
       .01, .0215, .0464, .1, .215, .464, 1.]
 δs = [.0, .04, .08, .16, .32, .64]
 
+diff_und = 0.30626213513957773
+
 γs_galerkin = np.loadtxt("data/data-galerkin-γs.txt")
 δs_galerkin = np.loadtxt("data/data-galerkin-δs.txt")
 D11_wi_galerkin = np.loadtxt("data/data-galerkin-D11_wi.txt")
@@ -18,8 +20,8 @@ D11_wi_galerkin = np.loadtxt("data/data-galerkin-D11_wi.txt")
 D11_wo_galerkin = np.loadtxt("data/data-galerkin-D11_wo.txt")
 σ11_wo_galerkin = np.loadtxt("data/data-galerkin-σ11_wo.txt")
 
-γs_new_galerkin = [.00001, .0001, .001]
-σ11_wi_new_galerkin = [6000,  200, 13]
+# γs_new_galerkin = [.00001, .0001, .001]
+# σ11_wi_new_galerkin = [6000,  200, 13]
 
 γs_underdamped = np.loadtxt("data/data-underdamped-γs.txt")
 δs_underdamped = np.loadtxt("data/data-underdamped-δs.txt")
@@ -41,6 +43,15 @@ if δs_underdamped.shape == ():
     σ11_wi_underdamped.shape = (len(γs_underdamped), 1)
     D11_wo_underdamped.shape = (len(γs_underdamped), 1)
     σ11_wo_underdamped.shape = (len(γs_underdamped), 1)
+
+# Langevin dynamics in one dimension
+D_galerkin = D11_wi_galerkin[:, 0]
+nD_galerkin = γs_galerkin*D11_wi_galerkin[:, 0]
+σ_galerkin = σ11_wi_galerkin[:, 0]
+D_underdamped = D11_wi_underdamped[:, 0]
+σ_underdamped = σ11_wi_underdamped[:, 0]
+lower_bound_galerkin = np.sqrt(2.)*abs(D_galerkin - diff_und/γs_galerkin)
+
 
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)
@@ -77,6 +88,8 @@ ax.set_xlabel("$\gamma$")
 plt.legend()
 plt.savefig("diffusion.pdf")
 plt.show()
+
+D11_wi_galerkin * γs_galerkin
 
 fig, ax = plt.subplots()
 δ = 0

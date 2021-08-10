@@ -37,6 +37,7 @@ function get_controls(γ, _required_by_api)
         E > E₀ ? sign(p)*p*2π/S(E) : 0
     end
 
+
     # This takes vectors!
     function solution_underdamped()
         E₀ = 1

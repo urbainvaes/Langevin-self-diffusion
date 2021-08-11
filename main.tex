@@ -1094,42 +1094,25 @@ but the gain decreases as $\gamma$ increases.
     \label{fig:effective_diffusion_langevin}
 \end{figure}
 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.99\linewidth]{figures/time.pdf}
+    \caption{
+        Sample mean and sample standard deviation of the estimators $u(t)$ and $v(t)$ for the friction parameter $\gamma = 10^{-4}$.
+
+    }%
+    \label{fig:effective_diffusion_langevin}
+\end{figure}
+
 % An alternative viewpoint on the control variate approach presented in \cref{sub:galerkin_approach} is that
 % Monte Carlo simulation is employed in order to refine estimates obtained by Fourier/Hermite spectral method for the Poisson equation~\eqref{eq:poisson_equation}.
 
-% \paragraph{Estimator diffusion coefficient.}%
-% \label{par:estimator_diffusion_coefficient}
-
-% Let $U_t = \sqrt{2 D} W_t$ and consider the estimator
-% \[
-%     2 \hat D = \frac{t_1 U_{t_1}^2 + \dotsb + t_N U_{t_N}^2}{t_1^2 + \dotsb + t_N^2},
-% \]
-% where $t_i = i \Delta_t$.
-% This estimator is clearly unbiased: $\expect (\hat D) = D$.
-% Let $\xi_i = (U_{t_{i}} - U_{t_{i-1}})/\sqrt{2D \Delta t}$, for $i = 1, \dotsc, N$.
-% It holds
-% \begin{align*}
-%     \frac{\hat D - D}{D}
-%     &= 6 \left( \frac{ \sum_{i=1}^{N} \sum_{j=i}^{N} (\xi_i ^2 - 1)  j  + 2 \sum_{i=1}^{N} \sum_{j=i+1}^{N} \sum_{k=i}^{j} \xi_i \xi_j k}
-%     {1 + \dotsb + N^2} \right) \\
-%     &= 3 \left( \frac{ \sum_{i=1}^{N} (\xi_i ^2 - 1)  (N+1-i)(N+i)  + 2 \sum_{i=1}^{N} \sum_{j=i+1}^{N} \xi_i \xi_j (j+1-i)(j+i)}
-%     { N(N+1)(2N+1)} \right).
-% \end{align*}
-% We calculate
-% \begin{align*}
-%     \expect \abs{ \frac{\hat D - D}{D} }^2
-%     &= 9 \left( \frac{ \sum_{i=1}^{N} \expect (\xi_i ^4 + 1 - 2 \xi_i^2)  (N+1-i)^2 (N+i)^2}
-%     { N^2 (N+1)^2 (2N+1)^2} \right) \\
-%     &\quad + 36 \left(  \frac{\sum_{i=1}^{N} \sum_{j=i+1}^{N} \expect \left( \abs{\xi_i}^2 \abs{\xi_j}^2 \right) \abs{j+1-i}^2 \abs{j+i}^2}
-%     { N^2 (N+1)^2 (2N+1)^2} \right) \\
-%     &= 18 \left( \frac{ \sum_{i=1}^{N}  (N+1-i)^2 (N+i)^2}
-%     { N^2 (N+1)^2 (2N+1)^2} \right)
-%     + 36 \left(  \frac{\sum_{i=1}^{N} \sum_{j=i+1}^{N} \abs{j+1-i}^2 \abs{j+i}^2}
-%     { N^2 (N+1)^2 (2N+1)^2} \right).
-% \end{align*}
-
 \section{Application to Langevin dynamics in two dimensions}%
 \label{sec:applications_2d}%
+The approaches employed in \cref{sec:application_to_one_dimensional_langevin_type_dynamics} for constructing an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}
+do not generalize well to the multi-dimensional setting for non-separable potentials.
+On one hand, Galerkin methods suffer from the curse of dimensionality and,
+on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
 
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}

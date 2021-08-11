@@ -98,12 +98,15 @@ function galerkin_solve(γ)
     Zν = QuadGK.quadgk(q -> exp(-β*V(q)), -π, π)[1];
 
     # Numerical parameters
-    p = 400;
-    # p = 100;
+    p = 300;
 
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
     ωmax, dmax = p, p*2;
+    
+    # The following was used to generate data :
+    σ, p = 1, 400;
+    ωmax, dmax = p ÷ 4, p*2;
 
     # Test overdamped
     # σ, ωmax, dmax = 1, 20, 40;

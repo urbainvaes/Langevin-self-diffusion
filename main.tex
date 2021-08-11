@@ -1079,7 +1079,7 @@ but the gain decreases as $\gamma \to 0$.
 In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered,
 but the gain decreases as $\gamma$ increases.
 
-\begin{figure}[htpb]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/underdamped_1d.pdf}
     \caption{
@@ -1096,13 +1096,13 @@ but the gain decreases as $\gamma$ increases.
 \end{figure}
 
 \Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ and~$v(t)$,
-estimated from 5000 trajectories, 
+estimated from 5000 trajectories,
 with respect to the integration time $t$.
-It appears clearly that, 
+It appears clearly that,
 for the value $\gamma = 10^{-3}$ considered,
 the improved estimators $v(t)$ corresponding to the approaches outlined in \cref{sub:galerkin_approach} and \cref{sub:underdamped_approach}
 have a much smaller variance than $u(t)$ throughout the simulation.
-\begin{figure}[htpb]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
     \caption{
@@ -1124,8 +1124,12 @@ do not generalize well to the multi-dimensional setting for non-separable potent
 On one hand, Galerkin methods suffer from the curse of dimensionality and,
 on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
 We resort
-\begin{figure}
-
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.99\linewidth]{figures/diffusion.pdf}
+    \caption{
+    }%
+    \label{fig:time_bias_variance}
 \end{figure}
 
 \section{Conclusions and perspectives for future work}%

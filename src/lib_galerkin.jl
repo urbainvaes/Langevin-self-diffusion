@@ -38,7 +38,8 @@ function get_controls(γ, recalculate)
         Lp = pgrid[end]
     else
         _ignored, solution_fun, dp_solution_fun = galerkin_solve(γ)
-        nq, np, Lp = 300, 500, 9;
+        # nq, np, Lp = 300, 500, 9;
+        nq, np, Lp = 100, 100, 9; # Old parameters!
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
         pgrid = dp*collect(-np:np);
@@ -78,6 +79,7 @@ function get_controls(γ, recalculate)
         nsamples = 10^7
         q, p = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         D = γ*Statistics.mean(∂φ.(q, p).^2)
+        println("Effective diffusion (Interpolant): $D")
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end
 
@@ -103,7 +105,7 @@ function galerkin_solve(γ)
     # ωmax is the highest frequency of trigonometric functions in q and
     # dmax is the highest degree of Hermite polynomials in p
     ωmax, dmax = p, p*2;
-    
+
     # The following was used to generate data :
     σ, p = 1, 400;
     ωmax, dmax = p ÷ 4, p*2;

@@ -18,7 +18,7 @@ elseif control_type == "galerkin"
 end
 
 # Parameters
-β, γ, δ = 1, .0001, 0
+β, γ, δ = 1, .001, 0
 
 # Get directory of data
 clusterdir = "cluster/"

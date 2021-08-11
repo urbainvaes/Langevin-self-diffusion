@@ -1078,6 +1078,7 @@ enables a variance reduction by a factor more than 100 for $\gamma \geq 10^{-2}$
 but the gain decreases as $\gamma \to 0$.
 In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered,
 but the gain decreases as $\gamma$ increases.
+
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/underdamped_1d.pdf}
@@ -1094,14 +1095,23 @@ but the gain decreases as $\gamma$ increases.
     \label{fig:effective_diffusion_langevin}
 \end{figure}
 
+\Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ and~$v(t)$,
+estimated from 5000 trajectories, 
+with respect to the integration time $t$.
+It appears clearly that, 
+for the value $\gamma = 10^{-3}$ considered,
+the improved estimators $v(t)$ corresponding to the approaches outlined in \cref{sub:galerkin_approach} and \cref{sub:underdamped_approach}
+have a much smaller variance than $u(t)$ throughout the simulation.
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
     \caption{
-        Sample mean and sample standard deviation of the estimators $u(t)$ and $v(t)$ for the friction parameter $\gamma = 10^{-4}$.
-
+        Sample mean and sample standard deviation of the estimators $u(t)$ and $v(t)$,
+        for the friction parameter $\gamma = 10^{-4}$.
+        The approximate solution to the Poisson equation used for constructing the control variate appearing in $v(t)$ here
+        is that given in \cref{sub:underdamped_approach}.
     }%
-    \label{fig:effective_diffusion_langevin}
+    \label{fig:time_bias_variance}
 \end{figure}
 
 % An alternative viewpoint on the control variate approach presented in \cref{sub:galerkin_approach} is that
@@ -1113,19 +1123,26 @@ The approaches employed in \cref{sec:application_to_one_dimensional_langevin_typ
 do not generalize well to the multi-dimensional setting for non-separable potentials.
 On one hand, Galerkin methods suffer from the curse of dimensionality and,
 on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
+We resort
+\begin{figure}
+
+\end{figure}
 
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}
 In this note,
 we show how control variates techniques can be employed for improving estimators of the mobility of Langevin dynamics based on Einstein's formula.
-The control variate we propose requires the knowledge of an approximate solution of a appropriate Poisson involving the generator of the dynamics.
+The control variate approach we propose requires the knowledge of an approximate solution of a Poisson equation involving the generator of the dynamics.
 We obtain general bounds on the bias and variance of the improved estimator in terms of the error on the solution to this equation,
-and we study several practical approaches for constructing an approximate solution to the Poisson equation.
+and we study several practical approaches for constructing an approximate solution.
 
 In the one-dimensional setting,
 we demonstrate the efficiency of control variates
 (i) obtained by a Fourier/Hermite spectral method and
-(ii) based on explicit expressions for the limiting solution of the Poisson equation in the underdamped limit.
+(ii) based on an explicit expression for the limiting solution of the Poisson equation in the underdamped limit.
+The latter approach, in particular,
+leads to a variance reduction by a factor more than 10 for Monte Carlo methods in the very small friction regime $\gamma \leq 10^{-3}$,
+in which purely deterministic Galerkin methods are typically inaccurate.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%

@@ -9,7 +9,7 @@ include("lib_sampling.jl")
 include("lib_underdamped.jl")
 
 # Parameters
-β, γ, ν = 1, .001, 2
+β, γ, ν = 1, .1, 2
 
 # Get directory of data
 clusterdir = "cluster/"
@@ -47,7 +47,7 @@ D_control = zeros(nsteps)
 σ_control = zeros(nsteps)
 
 # Control
-recalculate = true
+recalculate = false
 Dc, _ = Underdamped.get_controls_gle(γ, ν, recalculate)
 _, ψ, _ = Underdamped.get_controls(γ, recalculate)
 
@@ -60,7 +60,7 @@ for i in 1:nsteps
 
     control = ξi + ψ.(q0, p0) - ψ.(qi, pi);
     to_average_1 = (qi - q0).^2 / (2*ts[i])
-    to_average_2 = Dc .+ (qi - q0).^2 / (2*ts[i]) .- control.^2 / (2*ts[i])
+    to_average_2 = Dc/γ .+ (qi - q0).^2 / (2*ts[i]) .- control.^2 / (2*ts[i])
 
     D[i] = Statistics.mean(to_average_1);
     σ[i] = Statistics.std(to_average_1);

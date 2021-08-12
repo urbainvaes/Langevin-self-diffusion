@@ -12,7 +12,7 @@ include("lib_underdamped.jl")
 
 # Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 2;
+ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 2.;
 control_type = "gle"
 
 # Batch number

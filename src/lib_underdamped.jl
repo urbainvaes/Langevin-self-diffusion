@@ -37,7 +37,6 @@ function get_controls(γ, _required_by_api)
         E > E₀ ? sign(p)*p*2π/S(E) : 0
     end
 
-
     # This takes vectors!
     function solution_underdamped()
         E₀ = 1
@@ -176,7 +175,7 @@ function get_controls_gle(γ, ν, recalculate)
     else
         β, nsamples = 1, 10^8
         qsamples, psamples = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
-        D = 1/(β*γ*ν^2)*Statistics.mean(dz_φ.(qsamples, psamples).^2)
+        D = 1/(β*ν^2)*Statistics.mean(dz_φ.(qsamples, psamples).^2)
         DelimitedFiles.writedlm("$datadir/D_nu=$ν.txt", D);
     end
 

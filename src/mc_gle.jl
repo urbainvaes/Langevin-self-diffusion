@@ -12,11 +12,11 @@ include("lib_underdamped.jl")
 
 # Parse arguments
 γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 1;
-control_type = length(ARGS) > 2 ? ARGS[3] : "gle";
+ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 2;
+control_type = "gle"
 
 # Batch number
-batches = length(ARGS) > 3 ? ARGS[4] : "1/1";
+batches = length(ARGS) > 2 ? ARGS[3] : "1/1";
 ibatch = parse(Int, match(r"^[^/]*", batches).match);
 nbatches = parse(Int, match(r"[^/]*$", batches).match);
 
@@ -106,7 +106,7 @@ for i = 1:niter
         print("Pogress: ", (1000*i) ÷ niter, "‰. ")
         control = ξ + ψ.(q0, p0) - ψ.(q, p);
         D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
-        D2 = Dc + D1 - Statistics.mean(control.^2)/(2*i*Δt);
+        D2 = Dc/γ + D1 - Statistics.mean(control.^2)/(2*i*Δt);
         σ1 = Statistics.std((q - q0).^2/(2*i*Δt))
         σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*i*Δt))
         println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",

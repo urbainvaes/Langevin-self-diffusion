@@ -21,7 +21,7 @@ sample_size = {
         1e-2: 5000,
         1e-3: 5000,
         1e-4: 5000,
-        1e-5: 500,
+        1e-5: 5000,
         }
 
 def get_diff(γ, plot=True):
@@ -40,14 +40,14 @@ def get_diff(γ, plot=True):
     limit = lim_gle/γ
 
     if  plot:
-        nsigma = 3
+        nsigma = 2
         fig, ax = plt.subplots()
         ax.set_xlabel('$t$')
         ax.set_title(r"MC estimation of $\mathbf{E}u(t)$ and $\mathbf{E}v(t)$ for $\gamma = 10^{" + str(int(np.log10(γ))) +  r"},$"
                      + r" with $\pm 3 \sigma$ confidence interval")
-        ax.plot(underdamped_ts, underdamped_D, ".-", c='red', label="MC/No control")
-        ax.plot(underdamped_ts, underdamped_D_control, ".-", c='green', label="MC/Underdamped")
-        ax.plot(underdamped_ts, 0*underdamped_ts + limit, "-", c='blue', lw=3, label="Conjectured limit")
+        ax.plot(underdamped_ts, underdamped_D, "-", c='red', label="MC/No control")
+        ax.plot(underdamped_ts, underdamped_D_control, "-", c='green', label="MC/Underdamped")
+        ax.plot(underdamped_ts, 0*underdamped_ts + limit, "--", c='blue', lw=3, label="Conjectured limit")
         ax.fill_between(underdamped_ts,
                         underdamped_D - nsigma*underdamped_σ/np.sqrt(nptotal),
                         underdamped_D + nsigma*underdamped_σ/np.sqrt(nptotal),

@@ -113,9 +113,3 @@ for i = 1:niter
                                 D1, D2, σ1, σ2))
     end
 end
-
-# control = ξ + ψ.(q0, p0) - ψ.(q, p);
-
-# dx, xmax = .1, 5
-# Plots.histogram(((q - q0).^2 - control.^2)/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf)
-# Plots.histogram((q - q0).^2/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf, size=(2000, 1500))

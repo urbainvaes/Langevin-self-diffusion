@@ -60,7 +60,7 @@ end
 
 function gle_solve(ν)
     qgrid = LinRange(-π, π, 300)
-    egrid = LinRange(1.000001, 25, 700)
+    egrid = LinRange(1.000001, 30, 2000)
     # egrid = LinRange(1.000001, 25, 10)
 
     function Sν(E)
@@ -174,7 +174,7 @@ function get_controls_gle(γ, ν, recalculate)
         println("Using existing approximate diffusion coefficient!")
         D = dlm.readdlm("$datadir/D_nu=$ν.txt")[1];
     else
-        β, nsamples = 1, 10^7
+        β, nsamples = 1, 10^8
         qsamples, psamples = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         D = 1/(β*γ*ν^2)*Statistics.mean(dz_φ.(qsamples, psamples).^2)
         DelimitedFiles.writedlm("$datadir/D_nu=$ν.txt", D);

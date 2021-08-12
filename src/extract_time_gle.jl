@@ -9,7 +9,7 @@ include("lib_sampling.jl")
 include("lib_underdamped.jl")
 
 # Parameters
-β, γ, ν = 1, .0001, 2
+β, γ, ν = 1, .001, 2
 
 # Get directory of data
 clusterdir = "cluster/"

@@ -119,4 +119,3 @@ end
 # dx, xmax = .1, 5
 # Plots.histogram(((q - q0).^2 - control.^2)/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf)
 # Plots.histogram((q - q0).^2/(2*niter*Δt), bins=0:dx:xmax, normalize=:pdf, size=(2000, 1500))
-

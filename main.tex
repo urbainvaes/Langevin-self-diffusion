@@ -324,8 +324,12 @@ It is also possible~\cite[Lemma 3.4]{MR2394704}, in this case,
 to show that the solution to the Poisson equation,
 multiplied by $\gamma$, converges in $\lp{2}{\mu}$ to a limit as $\gamma \to 0$,
 which can be calculated explicitly in simple settings~\cite{MR2427108}.
+Despite the existence of an asymptotic result,
+calculating the mobility for small $\gamma$ is challenging;
+the vanishing spectral gap of the generator $\mathcal L$ when $\gamma \to 0$ makes deterministic methods ill-conditioned
+and Monte Carlo methods very slow to converge.
 
-These results extend to the multi-dimensional setting only when the potential is separable,
+The aforementioned asymptotic result for the underdamped limit extends to the multi-dimensional setting only when the potential is separable,
 that is when $V$ can be decomposed as $V(q) = \sum_i V_i(q_i)$,
 but no theoretical results exist in the non-separable case,
 which was explored mostly by means of numerical experiments.
@@ -882,6 +886,14 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
     which concludes the proof.
 \end{proof}
 
+% \subsection{Remark on overdamped Langevin dynamics}%
+% \label{sub:discussion}
+%
+% We showed in this section that,
+% if $\psi_{\vect e}$ is a good approximation to the solution of the Poisson equation~\eqref{eq:poisson_equation},
+% then the estimator $v(T)$ given in~\eqref{eq:improved_estimator} can be expected to be better than the naive estimator $u(T)$,
+% both in terms of bias and variance.
+
 \section{Application to one-dimensional Langevin-type dynamics}%
 \label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
@@ -1113,6 +1125,79 @@ have a much smaller variance than $u(t)$ throughout the simulation.
     }%
     \label{fig:time_bias_variance}
 \end{figure}
+
+\subsection{Extension to generalized Langevin dynamics}%
+\label{sub:generalization_to_generalized_langevin_dynamics}
+The variance reduction approach described in \cref{sec:method},
+in particular with the control variate constructed from the limiting solution to the Poisson equation as $\gamma \to 0$,
+may be extended for calculating the mobility of simple generalized Langevin dynamics in one spatial dimension.
+The paradigmatic example dynamics we consider here is the following,
+which is studied in~\cite{MR2793823,GPGSUV21}:
+\begin{equation}
+\label{eq:gle}
+\left\{
+  \begin{aligned}
+      & \d q_t = p_t \, \d t, \\
+      & \d p_t = - V'(q_t) \, \d t + \frac{\sqrt{\gamma}}{\nu} \, z_t \, \d t, \\
+      & \d z_t = - \frac{\sqrt{\gamma}}{\nu} \, p_t  \, \d t
+       -   \frac{1}{\nu^2} \, z_t \, \d t + \sqrt{\frac{2\beta^{-1}}{\nu^2}} \, \d W_t.
+  \end{aligned}
+\right.
+\end{equation}
+A functional central limit theorem applies also to this dynamics:
+the diffusively rescaled position process $(\varepsilon q_{t/\varepsilon^2})_{t \geq 0}$ converges in distribution,
+in the Banach space of continuous functions over a bounded time interval,
+to a Brownian motion with prefactor $\sqrt{2 D^{\gamma, \nu}}$.
+Like Langevin dynamics, generalized Langevin dynamics are difficult to understand in the underdamped regime,
+and in particular there does not exist a rigorous result on the behavior of $D^{\gamma, \nu}$ in the limit as $\gamma \to 0$.
+Our goal in this section is to calculate accurately the mobility for the dynamics~\eqref{eq:gle} in the underdamped regime
+using a control variate approach similar to that described in~\cref{sec:method},
+and to assess in this way the validity of the asymptotic scaling of $D^{\gamma,\nu}$ conjectured in~\cite{GPGSUV21} by means of formal asymptotics.
+An application of It\^o's formula gives
+\[
+    q_T - q_0 = \int_{0}^{T} p_t \, \d t
+    = \phi(q_0, p_0) - \phi(q_t, p_t) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \phi(q_t, p_t) \, \d t,
+\]
+where $\phi$ is now the solution to the Poisson equation $- \mathcal L_{\rm GLE} \phi = p$,
+with $\mathcal L_{\rm GLE}$ the generator of~\eqref{eq:gle}.
+This suggests using the following estimator for the mobility:
+\begin{subequations}
+\begin{equation}
+    \label{eq:improved_estimator_gle}
+    v(T) = d_{\psi}+ \frac{1}{2T} \left( \abs*{q_T - q_0}^2 - \abs{\xi_T}^2\right),
+\end{equation}
+where $d_{\psi} := \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int \abs{\partial_z \psi}^2 \, \d \mu_{\rm GLE}$ and
+\begin{align}
+    \label{eq:definition_control_variate_gle}
+    \xi_T = \psi(q_0, p_0) - \psi(q_T, p_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \psi(q_t, p_t) \, \d W_t,
+\end{align}
+\end{subequations}
+for an approximate solution $\psi$ to the Poisson equation.
+Here $\mu_{\rm GLE}(\d x) \propto \exp \left( - H(q,p) + \frac{z^2}{2}\right) \, \d x$ is the invariant probability distribution of~\eqref{eq:gle}.
+
+In~\cite{GPGSUV21},
+we employ an asymptotic expansion of the form
+\(
+    \phi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1 + \gamma^{-1} \phi_2 \cdots
+\)
+in order to study the underdamped limit,
+and we derive expressions for $\phi_0$ and $\phi_1$
+which enable to formally show that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
+with a prefactor that can be calculated efficiently and is different from $D_{\rm und}$.
+Although the assumed asymptotic is shown to be invalid in~\cite{MR1088478},
+our numerical results in this section demonstrate that this expansion can be leveraged for constructing an efficient control variate in~\eqref{eq:definition_control_variate_gle}.
+Specifically,
+we obtain a considerable variance reduction by letting $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
+We refer to~\cite{GPGSUV21} for the expressions of the $\phi_0$ and $\phi_1$.
+
+\Cref{fig:effective_diffusion_gle}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/time-gle.pdf}
+    \caption{Mean and standard deviation of the naive estimator~\eqref{eq:simple_estimator} and improve estimator~\eqref{eq:improved_estimator_gle} for generalized Langevin dynamics.}%
+    \label{fig:effective_diffusion_gle}
+\end{figure}
+
 
 % An alternative viewpoint on the control variate approach presented in \cref{sub:galerkin_approach} is that
 % Monte Carlo simulation is employed in order to refine estimates obtained by Fourier/Hermite spectral method for the Poisson equation~\eqref{eq:poisson_equation}.

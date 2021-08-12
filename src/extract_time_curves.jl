@@ -33,7 +33,6 @@ if !isdir(datadir)
 end
 
 # Get the index of a filename
-index(filename) = parse(Int, match(r"i=(\d+)", filename).captures[1]);
 listfiles = readdir(datadir);
 if !("Δt=0.01-q0.txt" in listfiles)
     return -1;

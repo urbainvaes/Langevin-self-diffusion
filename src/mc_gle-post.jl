@@ -75,7 +75,7 @@ data = map(datafiles, batchdirs);
 Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
 
 nsteps = maximum(length(d["indices"]) for d in data)
-nsteps = max(nsteps, 200) # FIXME: change later!
+nsteps = min(nsteps, 220) # FIXME: change later!
 ts = zeros(nsteps);
 D = zeros(nsteps);
 σ = zeros(nsteps);
@@ -113,8 +113,8 @@ for i in 1:nsteps
 end
 
 data_array = [ts D σ D_control σ_control n_particles]
-run(`mkdir -p "data-gle/time/"`)
-open("data-gle/time/gle-gamma=$γ.txt"; write=true) do f
+run(`mkdir -p "data_gle/time/"`)
+open("data_gle/time/gle-gamma=$γ.txt"; write=true) do f
          write(f, "ts\tD\tσ\tD_control\tσ_control\tn_particles\n")
          DelimitedFiles.writedlm(f, data_array)
 end

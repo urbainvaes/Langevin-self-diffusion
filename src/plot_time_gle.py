@@ -24,7 +24,7 @@ sample_size = {
         }
 
 def get_diff(γ, plot=True):
-    filename = f"data-gle/time/gle-gamma={γ}.txt"
+    filename = f"data_gle/time/gle-gamma={γ}.txt"
     data = np.loadtxt(filename, skiprows=1)
 
     # Check julia code
@@ -78,11 +78,11 @@ for i, γ in enumerate(γs):
 fig, ax = plt.subplots()
 ax.set_title('Effective diffusion coefficient for the GLE')
 ax.set_xlabel('$\gamma$')
-ax.semilogx(γs, γs*Ds, '.-')
-ax.semilogx(γs, 0*γs + lim_gle, '-', label="Asymptotic limit for GLE?")
-ax.semilogx(γs, 0*γs + lim_lang, '-', label="Asymptotic limit for Langevin")
+ax.semilogx(γs, γs*Ds, 'o-', color='blue', label='MC/underdamped')
+ax.fill_between(γs, γs*Ds - 3*γs*σs, γs*Ds + 3*γs*σs, color='blue', alpha=.2)
+ax.semilogx(γs, 0*γs + lim_gle, 'g-', lw=3, label="Asymptotic limit for GLE?")
+ax.semilogx(γs, 0*γs + lim_lang, 'k--', lw=3, label="Asymptotic limit for Langevin")
 ax.set_xlim([γs[0], γs[-1]])
-ax.fill_between(γs, γs*Ds - 3*γs*σs, γs*Ds + 3*γs*σs, color='green', alpha=.2)
 ax.legend()
 fig.savefig("mobility_gle.pdf", bbox_inches='tight')
 

@@ -1190,21 +1190,34 @@ Specifically,
 we obtain a considerable variance reduction by letting $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
 We refer to~\cite{GPGSUV21} for the expressions of the $\phi_0$ and $\phi_1$.
 
-\Cref{fig:effective_diffusion_gle}
+\Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect u(t)$ and $\expect v(t)$ with respect to time,
+for a value of $\nu = 2$ that is sufficiently large to observe differences with standard Langevin dynamics.
+These expectations are estimated from 5000 trajectories,
+and the associated $99.7\%$ confidence intervals (assuming Gaussianity) are depicted.
+It is evident from the figures that the control variate enables considerable improvements,
+both in terms of bias and variance.
+Furthermore, we observe that the effective diffusion coefficient for $\gamma = 10^{-5}$ 
+is in very good agreement with the limit conjectured in~\cite{GPGSUV21}.
+The evolution of the effective diffusion with respect to $\gamma$ is presented in~\cref{fig:effective_diffusion_gle}.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.495\linewidth]{figures/time-gle-4.pdf}
     \includegraphics[width=0.495\linewidth]{figures/time-gle-5.pdf}
     \caption{%
-        Sample mean and associated confidence interval for the naive estimator~\eqref{eq:simple_estimator} and improve estimator~\eqref{eq:improved_estimator_gle} for generalized Langevin dynamics,
-        estimated from $5000$ ($\gamma = 10^{-4}$) and $500$ ($\gamma = 10^{-5}$) trajectories.
+        Expectations of the naive~\eqref{eq:simple_estimator} and improved~\eqref{eq:improved_estimator_gle} estimators for generalized Langevin dynamics
+        and associated confidence $99.7\%$ intervals,
+        estimated from $5000$ trajectories.
     }
-    \label{fig:effective_diffusion_gle}
+    \label{fig:effective_diffusion_time_gle}
 \end{figure}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\linewidth]{figures/mobility_gle.pdf}
     \caption{%
+        Expectation and $99.7\%$ confidence intervals for $v(T)$ in the underdamped limit,
+        in the case of generalized Langevin dynamics with $\nu = 2$.
+        Since $T$ scales as $1/\gamma$ with a large prefactor,
+        it is expected that $\expect v(T) \approx D^{\gamma,\nu}$.
     }
     \label{fig:effective_diffusion_gle}
 \end{figure}

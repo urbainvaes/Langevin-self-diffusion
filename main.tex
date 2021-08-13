@@ -242,9 +242,10 @@ the mobility is defined mathematically as
 where $\mu_{\eta}$ is the invariant probability distribution of~\eqref{eq:langevin} when
 an additional drift term $\eta \vect e$ is present on the right-hand side of~\eqref{eq:langevin_p}.
 Except when $\eta = 0$ where we recover~\eqref{eq:invariant_measure},
-the measure $\mu_{\eta}$ is not known explicitly,
-and so $D^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
-Note also that we can define the symmetric mobility matrix $D^{\gamma}$ from the directional mobility
+the measure~$\mu_{\eta}$ is not known explicitly,
+and so $D_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
+It turns out that $D_{\vect e}^{\gamma}$ is a quadratic function of $\vect e$,
+and we can define the symmetric mobility matrix $D^{\gamma}$ from the directional mobility
 using the parallelogram identity:
 \[
     4 \vect e_1^\t D^{\gamma} \vect e_2
@@ -341,10 +342,12 @@ They conclude from simulation results that the effective diffusion coefficient s
 and suggest that $\sigma$ could be zero for all non-separable potentials.
 More recently, in his thesis~\cite{roussel_thesis},
 Roussel calculated the mobility of Langevin dynamics  using a control variates approach for linear response.
-His results demonstrate clearly that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$ and in the particular case of the potential,
-\[
+His results demonstrate clearly that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$
+and in the particular case of the potential
+\begin{equation}
+    \label{eq:potential_julien}
     V(q) = - \cos(q_1) - \cos(q_2) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
-\]
+\end{equation}
 the mobility scales as $\gamma^{- \sigma}$,
 with an exponent $\sigma \in [0, 1]$ that depends on the degree $\delta$ of non-separability of the potential.
 
@@ -752,7 +755,7 @@ as this is the interesting regime for the mobility.
     In order to assess the quality of estimator~\eqref{eq:variance_estimator} in the underdamped limit,
     let us consider the particular setting where $\psi_{\vect e} = 0$ in one dimension.
     In~\cite[Remark 6.10]{MR2394704},
-    the authors prove that $\norm{\phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ as $\gamma \to 0$ for every $p \in [1, \infty)$,
+    the authors prove that $\norm{\phi}[\lp{p}{\mu}] = \bigo{\gamma^{-1}}$ as $\gamma \to 0$ for every $p \in [1, \infty)$,
     and they conjecture that also $\norm{\partial_p \phi}[\lp{p}{\mu}] = \mathcal O(\gamma^{-1})$ in the same limit.
     Assuming this is true, the estimate~\eqref{eq:variance_estimator} gives
     \begin{equation}
@@ -1196,7 +1199,7 @@ These expectations are estimated from 5000 trajectories,
 and the associated $99.7\%$ confidence intervals (assuming Gaussianity) are depicted.
 It is evident from the figures that the control variate enables considerable improvements,
 both in terms of bias and variance.
-Furthermore, we observe that the effective diffusion coefficient for $\gamma = 10^{-5}$ 
+Furthermore, we observe that the effective diffusion coefficient for $\gamma = 10^{-5}$
 is in very good agreement with the limit conjectured in~\cite{GPGSUV21}.
 The evolution of the effective diffusion with respect to $\gamma$ is presented in~\cref{fig:effective_diffusion_gle}.
 \begin{figure}[ht]
@@ -1212,7 +1215,7 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
 \end{figure}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.9\linewidth]{figures/mobility_gle.pdf}
+    \includegraphics[width=0.75\linewidth]{figures/mobility_gle.pdf}
     \caption{%
         Expectation and $99.7\%$ confidence intervals for $v(T)$ in the underdamped limit,
         in the case of generalized Langevin dynamics with $\nu = 2$.
@@ -1230,15 +1233,37 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
 \label{sec:applications_2d}%
 The approaches employed in \cref{sec:application_to_one_dimensional_langevin_type_dynamics} for constructing an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}
 do not generalize well to the multi-dimensional setting for non-separable potentials.
-On one hand, Galerkin methods suffer from the curse of dimensionality and,
+On one hand, Galerkin methods for the Poisson equation suffer from the curse of dimensionality and,
 on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
-We resort
+In this section we discuss alternative approaches.
+We consider in this work a non-separable potential even simpler than~\eqref{eq:potential_julien}:
+\begin{align*}
+    \label{eq:potential_simple}
+    V(q) =  v(q_1) + v(q_2) - \delta w(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
+\end{align*}
+In view of the symmetry of this potential,
+the diffusion tensor is a multiple of the identity,
+so we can focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector $\vect e = (1, 0)^\t$,
+which simplifies the discussion.
+Let $\phi_1(q, p)$ denote the solution to the Poisson equation $- \mathcal L \phi_1 = p_1$,
+where the generator~$\mathcal L$ of the dynamics now reads
+\[
+    \mathcal L = L_1 + L_2
+    + \delta \bigl( -\sin(q_1) \cos(q_2) \, \partial_{q_1} - \cos(q_1) \sin (q_2) \, \partial_{q_2} \bigr),
+\]
+with $L_i = p_i \partial_{q_i} - v'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$,
+for $i \in \{1, 2\}$.
+Notice that $\phi_1(q, p) = \phi(q_1, p_1)$ when $\delta = 0$,
+where $\phi$ is the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
+Therefore, it is natural to use $\phi(q_1, p_1)$, or an approximation thereof,
+as the function $\psi$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/diffusion.pdf}
     \caption{
     }%
-    \label{fig:time_bias_variance}
+    \label{fig:time_bias_variance_2d}
 \end{figure}
 
 \section{Conclusions and perspectives for future work}%

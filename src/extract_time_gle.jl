@@ -9,7 +9,7 @@ include("lib_sampling.jl")
 include("lib_underdamped.jl")
 
 # Parameters
-β, γ, ν = 1, .1, 2
+β, γ, ν = 1, .00001, 2
 
 # Get directory of data
 clusterdir = "cluster/"
@@ -71,6 +71,6 @@ end
 data_array = [ts D σ D_control σ_control]
 run(`mkdir -p "data-gle/time/"`)
 open("data-gle/time/gle-gamma=$γ.txt"; write=true) do f
-         write(f, "ts\tD\tσ\tD_control\tσ_control")
+         write(f, "ts\tD\tσ\tD_control\tσ_control\n")
          DelimitedFiles.writedlm(f, data_array)
 end

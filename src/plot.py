@@ -7,6 +7,7 @@ matplotlib.rc('font', family='serif')
 matplotlib.rc('text', usetex=True)
 matplotlib.rc('figure', figsize=(15, 8))
 
+# Get data {{{1
 γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215, .00464,
       .01, .0215, .0464, .1, .215, .464, 1.]
 δs = [.0, .04, .08, .16, .32, .64]
@@ -79,6 +80,7 @@ ax[1].grid()
 fig.savefig("underdamped_1d.pdf", bbox_inches='tight')
 plt.show()
 
+# Langevin dynamics in many dimensions: mean {{{1
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)
 for iδ, δ in enumerate(δs_underdamped):
@@ -90,8 +92,6 @@ for iδ, δ in enumerate(δs_underdamped):
         cu = np.polyfit(np.log10(γu[ifitu]), np.log10(yu[ifitu]), deg=1)
     ax.loglog(γu, yu, ".-",
               label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
-    # ax.semilogx(γu, γu*yu, ".-",
-    #           label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
 ax.set_prop_cycle(None)
 # for iδ, δ in enumerate(δs_galerkin):
 #     ig = np.nonzero(D11_wo_galerkin[:, iδ])[0]
@@ -99,12 +99,6 @@ ax.set_prop_cycle(None)
 #     yg = D11_wo_galerkin[:, iδ][ig]
 #     ax.loglog(γg, yg, ".-")
 # ax.set_prop_cycle(None)
-for iδ, δ in enumerate(δs_underdamped):
-    iu = np.nonzero(D11_wi_underdamped[:, iδ])[0]
-    γu = γs_underdamped[iu]
-    yu = D11_wo_underdamped[:, iδ][iu]
-    ax.loglog(γu, yu, ".--")
-ax.set_prop_cycle(None)
 # for iδ, δ in enumerate(δs_galerkin):
 #     ig = np.nonzero(D11_wi_galerkin[:, iδ])[0]
 #     γg = γs_galerkin[ig]
@@ -115,47 +109,48 @@ plt.legend()
 plt.savefig("diffusion.pdf")
 plt.show()
 
-D11_wi_galerkin * γs_galerkin
-
+plt.ion()
 fig, ax = plt.subplots()
 δ = 0
 ax.set_prop_cycle(None)
 iu = np.nonzero(σ11_wo_underdamped[:, 0])[0]
 γu = γs_underdamped[iu]
 yu = σ11_wo_underdamped[:, 0][iu]
-ax.loglog(γu, σ11_wo_underdamped[:, 0][iu], label="No variance reduction")
-ax.loglog(γu, σ11_wi_underdamped[:, 0][iu], ".--", label="Underdamped control variate")
+ax.loglog(γu, σ11_wo_underdamped[:, 0][iu]/D11_wo_underdamped[:, 0][iu], label="No variance reduction")
+ax.loglog(γu, σ11_wi_underdamped[:, 0][iu]/D11_wo_underdamped[:, 0][iu], ".--", label="Underdamped control variate")
 # ax.loglog(γs_new_galerkin, σ11_wi_new_galerkin, ".--", label="Spectral Galerkin with more modes")
 ig = np.nonzero(σ11_wo_galerkin[:, 0])[0]
 γg = γs_galerkin[ig]
 yg = σ11_wo_galerkin[:, 0][ig]
 # ax.loglog(γg, σ11_wo_galerkin[:, 0][ig])
-ax.loglog(γg, σ11_wi_galerkin[:, 0][ig], ".--", label="Spectral Galerkin control variate")
+ax.loglog(γg, σ11_wi_galerkin[:, 0][ig]/D11_wi_galerkin[:, 0][iu], ".--", label="Spectral Galerkin control variate")
 ax.set_xlabel("$\gamma$")
 ax.set_title("$\delta = {}$".format(δ))
 plt.legend()
 plt.savefig("var-delta={}.pdf".format(iδ))
-plt.show()
 
 
+fig, ax = plt.subplots()
+ax.plot(γs_underdamped, np.sqrt(2) + 0*γs_underdamped, "k-", lw=3, label="No control")
+# ax.plot(0, 0, "k-", label="MC/Galerkin")
+# ax.plot(0, 0, "k--", label="MC/Underdamped")
 for iδ, δ in enumerate(δs_galerkin):
-    fig, ax = plt.subplots()
-    ax.set_prop_cycle(None)
+    # ax.set_prop_cycle(None)
     iu = np.nonzero(σ11_wo_underdamped[:, iδ])[0]
     γu = γs_underdamped[iu]
     yu = σ11_wo_underdamped[:, iδ][iu]
-    ax.loglog(γu, σ11_wo_underdamped[:, iδ][iu], label="No variance reduction")
-    ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu], ".--", label="Underdamped control variate")
+    plot1 = ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu], "o--", label="MC/Underdamped, $\delta = {}$".format(δ))
     ig = np.nonzero(σ11_wo_galerkin[:, iδ])[0]
     γg = γs_galerkin[ig]
     yg = σ11_wo_galerkin[:, iδ][ig]
     # ax.loglog(γg, σ11_wo_galerkin[:, iδ][ig])
-    ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig], ".--", label="Galerkin control variate")
-    ax.set_xlabel("$\gamma$")
-    ax.set_title("$\delta = {}$".format(δ))
-    plt.legend()
-    plt.savefig("var-delta={}.pdf".format(iδ))
-    plt.show()
+    # plot1 = ax.loglog(0, 0)
+    # plot2 = ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig]/D11_wo_galerkin[:, iδ][ig], "o-", color=plot1[0].get_color(), label="MC/Galerkin, $\delta = {}$".format(δ))
+plt.legend()
+ax.set_title("Relative standard deviation")
+ax.set_xlim([1e-4, 1])
+ax.set_xlabel(r"$\gamma$")
+plt.savefig("var-delta.pdf", bbox_inches='tight')
 
 fig, ax = plt.subplots()
 ax.set_prop_cycle(None)

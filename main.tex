@@ -631,7 +631,7 @@ We now obtain a bound on the bias of the improved estimator $v(T)$.
     \end{itemize}
 \end{proposition}
 \begin{remark}
-    The right-hand side of~\eqref{eq:basic_bound_bias} is small when $\psi_{\vect e} \approx \phi_{\vect e}$,
+    The right-hand side of~\eqref{eq:basic_bound_bias} is small when $\mathcal L \psi_{\vect e} \approx \mathcal L \phi_{\vect e}$,
     and when $\psi_{\vect e} = 0$ we recover the bound~\eqref{eq:bias} derived previously.
 \end{remark}
 \begin{proof}
@@ -827,12 +827,12 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
         \var\bigl(v(T)\bigr) \xrightarrow[T \to \infty]{}
         2 d_{\phi}^2 + 2 d_{\psi}^2 - 4 \gamma^2 \beta^{-2} \left( \int \grad_p \phi_{\vect e} \cdot \grad_p \psi_{\vect e} \, \d \mu \right)^2.
     \end{equation}
-    In particular, there exists a constant $C$ independent of $\gamma$ and $\psi_{\vect e}$ such that
+    In particular, it holds
+    % there exists a constant $C$ independent of $\gamma$ and $\psi_{\vect e}$ such that
     \begin{align}
         \label{eq:bounds_asymptotic_variance}
-        2(d_{\phi} - d_{\psi})^2
-        \leq \lim_{T \to \infty} \var \bigl(v(T)\bigr)
-        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + C \max\{\gamma^{1/2}, \gamma^{-1/2}\} d_{\phi}^{3/2} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}.
+                \lim_{T \to \infty} \var \bigl(v(T)\bigr) \geq 2(d_{\phi} - d_{\psi})^2.
+        % \leq 2 (d_{\psi}^2 - d_{\phi}^2) + C \max\{\gamma^{1/2}, \gamma^{-1/2}\} d_{\phi}^{3/2} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}.
     \end{align}
 \end{proposition}
 \begin{remark}
@@ -872,21 +872,21 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
     \end{align*}
     This identity directly implies ~\eqref{eq:asymptotic_variance}.
     The lower bound in~\eqref{eq:bounds_asymptotic_variance} follows directly from an application of Cauchy-Schwarz inequality.
-    In order to obtain the upper bound,
-    we use the fact that $\ip{a}{b} = \ip{a}{a} + \ip{a}{b - a} \geq \norm{a}^2 - \norm{a} \norm{b-a}$ in any Hilbert space,
-    and so
-    \[
-        \lim_{T \to \infty} \var \bigl(v(T)\bigr)
-        \leq 2 (d_{\psi}^2 - d_{\phi}^2) + 4 \sqrt{\gamma \beta^{-1}} d_{\phi}^{3/2} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}.
-    \]
-    Finally, using~\eqref{eq:decay_semigroup_general}, we have
-    \begin{align*}
-        \gamma \beta^{-1} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}^2
-        &= - \ip{\phi_{\vect e} - \psi_{\vect e}}{\mathcal L (\phi_{\vect e} - \psi_{\vect e})} \\
-        &\leq \norm{\mathcal L^{-1}}[\mathcal B\left(L^2_0(\mu)\right)] \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2
-        \leq \left( \frac{M}{\lambda} \right) \max\{\gamma, \gamma^{-1}\} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2,
-    \end{align*}
-    which concludes the proof.
+    % In order to obtain the upper bound,
+    % we use the fact that $\ip{a}{b} = \ip{a}{a} + \ip{a}{b - a} \geq \norm{a}^2 - \norm{a} \norm{b-a}$ in any Hilbert space,
+    % and so
+    % \[
+    %     \lim_{T \to \infty} \var \bigl(v(T)\bigr)
+    %     \leq 2 (d_{\psi}^2 - d_{\phi}^2) + 4 \sqrt{\gamma \beta^{-1}} d_{\phi}^{3/2} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}.
+    % \]
+    % Finally, using~\eqref{eq:decay_semigroup_general}, we have
+    % \begin{align*}
+    %     \gamma \beta^{-1} \norm{\grad_p \phi_{\vect e} - \grad_p \psi_{\vect e}}^2
+    %     &= - \ip{\phi_{\vect e} - \psi_{\vect e}}{\mathcal L (\phi_{\vect e} - \psi_{\vect e})} \\
+    %     &\leq \norm{\mathcal L^{-1}}[\mathcal B\left(L^2_0(\mu)\right)] \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2
+    %     \leq \left( \frac{M}{\lambda} \right) \max\{\gamma, \gamma^{-1}\} \norm*{\vect e^\t p + \mathcal L \psi_{\vect e}}^2,
+    % \end{align*}
+    % which concludes the proof.
 \end{proof}
 
 % \subsection{Remark on overdamped Langevin dynamics}%
@@ -964,10 +964,10 @@ That is, given $(q, p)$, the function evaluation $\Phi_N(q, p)$ is approximated 
     \widehat \Phi_N(q, p)
     &= \Phi_N(q_i,p_j) + \frac{\Phi_N(q_{i+1}, p_j) - \Phi_N(q_i, p_j)}{q_{i+1} - q_i} (q - q_i)
     +\frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
-    &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{j+1} - q_j)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
+    &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{i+1} - q_i)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
 \end{align*}
 where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
-with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$.
+with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$, and $q_i = i \Delta q$, $p_j = j \Delta p$.
 The parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
 The approximate effective diffusion coefficient $d_\psi$,
 which enters in the definition~\eqref{eq:improved_estimator} of the estimator~$v(T)$,
@@ -1038,7 +1038,7 @@ in the general multi-dimensional case, is based on the iteration
 % where $(G_n)_{n \geq 0}$ are independent $\mathcal N(0, I_d)$ random variables.
 The first line can be viewed as a Strang splitting of the Hamiltonian part of the dynamics,
 while the second line is an exact discretization of the fluctuation/dissipation part.
-We write the terms~$(G_n)_{n\geq0}$ as a stochastic integrals, instead of giving only their law,
+We write the terms~$(G_n)_{n\geq0}$ as stochastic integrals, instead of giving only their law,
 because they are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
 Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
 \[
@@ -1048,7 +1048,7 @@ Specifically, the It\^o integral in the definition of the control variate is app
 where $(\widetilde {\vect G}_n)_{n \geq 0}$ are $\mathcal N(0, I_d)$ random vectors correlated with $(\vect G_n)_{n \geq 0}$
 and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_p \psi_{\vect e}(q_t, p_t) \cdot \d \vect W_t$.
 An explicit calculation using It\^o's isometry shows that the distribution of the vectors $(\vect G_n, \widetilde {\vect G}_n)_{n \geq 0}$,
-which are independent, is given by
+which are independent and identically distributed for different values of $n$, is given by
 \[
     \mathcal N
     \left(\vect 0,
@@ -1067,7 +1067,7 @@ which are independent, is given by
 % Therefore the covariance matrix the mean-zero normally distributed random vectors $(G_n, \widetilde G_n)_{n \geq 0}$,
 % which are independent, is given by
 
-We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$from a number $J$ of trajectories.
+We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $J$ of trajectories.
 The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_mc},
 and the associated numerical results are presented in~\cref{fig:effective_diffusion_langevin}.
 \begin{table}[ht]
@@ -1090,9 +1090,9 @@ to its theoretical limit $D_{\rm und}/\gamma$.
 The two control variate approaches yield computational benefits in different regimes:
 the control variate constructed from the Fourier/Hermite approximation of the solution to Poisson equation~\eqref{eq:poisson_equation}
 enables a variance reduction by a factor more than 100 for $\gamma \geq 10^{-2}$,
-but the gain decreases as $\gamma \to 0$.
-In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered,
-but the gain decreases as $\gamma$ increases.
+but this factor decreases as $\gamma \to 0$.
+In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered ($10^{-5}$),
+but the benefits decrease as $\gamma$ increases.
 
 \begin{figure}[ht]
     \centering
@@ -1112,11 +1112,11 @@ but the gain decreases as $\gamma$ increases.
 
 \Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ and~$v(t)$,
 estimated from 5000 trajectories,
-with respect to the integration time $t$.
+with respect to the integration time~$t$.
 It appears clearly that,
 for the value $\gamma = 10^{-3}$ considered,
-the improved estimators $v(t)$ corresponding to the approaches outlined in \cref{sub:galerkin_approach} and \cref{sub:underdamped_approach}
-have a much smaller variance than $u(t)$ throughout the simulation.
+the improved estimators $v(t)$ obtained using the approaches outlined in \cref{sub:galerkin_approach} and \cref{sub:underdamped_approach}
+have a much smaller variance than~$u(t)$ throughout the simulation.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
@@ -1181,20 +1181,20 @@ Here $\mu_{\rm GLE}(\d x) \propto \exp \left( - H(q,p) + \frac{z^2}{2}\right) \,
 In~\cite{GPGSUV21},
 we employ an asymptotic expansion of the form
 \(
-    \phi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1 + \gamma^{-1} \phi_2 \cdots
+    \phi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1 + \gamma^{-1} \phi_2 + \dotsb
 \)
-in order to study the underdamped limit,
+in order to study the underdamped limit
 and we derive expressions for $\phi_0$ and $\phi_1$
-which enable to formally show that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
+which enable to show formally that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
 with a prefactor that can be calculated efficiently and is different from $D_{\rm und}$.
-Although the assumed asymptotic is shown to be invalid in~\cite{MR1088478},
+Although the assumed asymptotic expansion is shown to be invalid in~\cite{MR1088478},
 our numerical results in this section demonstrate that this expansion can be leveraged for constructing an efficient control variate in~\eqref{eq:definition_control_variate_gle}.
 Specifically,
 we obtain a considerable variance reduction by letting $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
 We refer to~\cite{GPGSUV21} for the expressions of the $\phi_0$ and $\phi_1$.
 
 \Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect u(t)$ and $\expect v(t)$ with respect to time,
-for a value of $\nu = 2$ that is sufficiently large to observe differences with standard Langevin dynamics.
+for a value of~$\nu = 2$ that is sufficiently large to observe a different asymptotic behavior than that of standard Langevin dynamics.
 These expectations are estimated from 5000 trajectories,
 and the associated $99.7\%$ confidence intervals (assuming Gaussianity) are depicted.
 It is evident from the figures that the control variate enables considerable improvements,
@@ -1210,6 +1210,7 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
         Expectations of the naive~\eqref{eq:simple_estimator} and improved~\eqref{eq:improved_estimator_gle} estimators for generalized Langevin dynamics
         and associated confidence $99.7\%$ intervals,
         estimated from $5000$ trajectories.
+        The left panel is for $\gamma = 10^{-4}$ and the right panel is for $\gamma = 10^{-5}$.
     }
     \label{fig:effective_diffusion_time_gle}
 \end{figure}
@@ -1304,6 +1305,7 @@ The associated norm is given by
 \]
 where  $\nabla^j f$ is the tensor containing the $j$-th order derivatives of $f$ and $\norm{\dummy}$ is the norm of~$L^2(\pi)$,
 generalized to tensors in the usual manner.
+% (in particular, $\norm*{\nabla^2 f}$ is the Frobenius norm of the Hessian matrix  of $f$).
 We also define $H^{i}_0(\pi) = H^i(\pi) \cap L^2_0(\pi)$,
 and we recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
 \begin{equation}
@@ -1319,15 +1321,20 @@ and note that these operators are formally the $L^2(\mu)$ adjoints of $\nabla_q$
 Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ and $\partial_p^* = \beta p - \partial_p$.
 The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
+
+\textcolor{red}{We now use this only for $\mathcal L_{\rm ovd}^{W} = \mathcal L_{\rm FD}$,
+so we could simplify this result a bit.}
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
     Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
-    and let $W: \mathcal X \to \real$ be a smooth potential such that the probability measure
+    and let $W: \mathcal X \to \real$ be a smooth potential that is either quadratic if $\mathcal X = \real^d$
+    or periodic if $\mathcal X = \torus^d$.
+    In particular the probability measure
     \[
         \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
     \]
     satisfies~\eqref{eq:poincare}.
-    Let also $\mathcal L_{\rm ovd}^W = - W'(p) \partial_p + \beta^{-1} \partial_p^2$ denote the generator of overdamped Langevin dynamics in potential~$W$.
+    Let also $\mathcal L_{\rm ovd}^W = - \grad W(p) \cdot \grad + \beta^{-1} \Delta$ denote the generator of overdamped Langevin dynamics in potential~$W$.
     If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
     then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
     \[
@@ -1338,22 +1345,19 @@ concerns the exponential convergence of the derivatives of the overdamped Langev
     For simplicity, we consider only the case where $\mathcal X = \torus^d$,
     so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}^W} f \in H^i_0(\torus^d)$ because
     the state space is compact and $\e^{t \mathcal L_{\rm ovd}^W} f \in C^{\infty}(\torus^d)$ by ellipticity.
-    To lighten notations,
-    we also confine ourselves to the one-dimensional setting $d = 1$,
-    but the proof carries over \emph{mutatis mutandis} to the multi-dimensional case.
 
     We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
      $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
     Since $\mathcal L_{\rm ovd}^W$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
-    it holds that
+    it holds for any $j$ that
     \[
         \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd}^W)^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
     \]
-    Introducing $\partial_x^* = \beta W' - \partial_x$
-    and noting that $\mathcal L_{\rm ovd}^W = - \partial_x^* \partial_x$,
+    Introducing $\grad^* = \beta \grad W - \grad$
+    and noting that $\mathcal L_{\rm ovd}^W = - \grad^* \cdot \grad$,
     we obtain
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\partial_x (-\mathcal L_{\rm ovd}^W)^{j/2} u}.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\grad (-\mathcal L_{\rm ovd}^W)^{j/2} u}^2.
     \]
     Since $(-\mathcal L_{\rm ovd}^W)^{j/2} u \in L^2_0(\pi)$,
     we can apply Poincar\'e's inequality~\eqref{eq:poincare},
@@ -1367,27 +1371,28 @@ concerns the exponential convergence of the derivatives of the overdamped Langev
         \forall t \geq 0, \qquad
         \seminorm{u(t)}_j \leq \e^{- 2 R t} \seminorm{u(0)}_j.
     \end{equation}
-    Applying this estimate with $j = 0$ gives the usual convergence estimate for the norm $\norm{u}$.
+    This estimate with $j = 0$ is the usual convergence estimate for the norm $\norm{u}$.
     Since it holds for sufficiently regular $h$ that
     \[
-        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \beta^{-1} \norm{\partial_x h},
+        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \beta^{-1} \norm{\grad h},
     \]
-    equation~\eqref{eq:exponential_convergence} for $j = 1$ implies the exponential convergence of $\norm{\partial_x u}$.
-    For $j = 2$, we calculate using the commutator relation $\commut{\partial_x}{\partial_x^*} = \beta V''$ that
+    equation~\eqref{eq:exponential_convergence} for $j = 1$ implies the exponential convergence of $\norm{\grad u}$.
+    For $j = 2$, we calculate using the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$ that
     \[
         \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
-        = \beta^{-2} \ip{\partial_x^* \partial_x h}{\partial_x^* \partial_x h}
-        = \beta^{-2} \norm*{\partial_x^2 h}^2 + \beta^{-1} \ip{V'' \partial_x h}{\partial_x h}.
+        = \beta^{-2} \ip{\grad^* \cdot \grad h}{\grad^* \cdot \grad h}
+        = \beta^{-2} \norm*{\grad^2 h}^2 + \beta^{-1} \ip{\hess W \grad h}{\grad h}.
     \]
+    where $\grad^2$ is the Hessian operator.
     Therefore~\eqref{eq:exponential_convergence} implies that
     \begin{align*}
-        \norm*{\partial_x^2 u}^2
-        &\leq \beta \abs{\ip{V'' \partial_x u}{\partial_x u}} + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \beta \ip{V'' \partial_x u(0)}{\partial_x u(0)} \bigr) \\
-        &\leq \beta \norm*{V''}_{\infty} \norm{\partial_x u}^2 + \e^{-4Rt} \bigl( \norm{\partial_x^2 u(0)}^2 + \beta \norm*{V''}_{\infty} \norm*{\partial_x u(0)}^2 \bigr),
+        \norm*{\hess u(t)}^2
+        &\leq \beta \abs{\ip{\hess W \grad u}{\grad u}} + \e^{-4Rt} \bigl( \norm{\grad^2 u(0)}^2 + \beta \ip{\grad^2 W \grad u(0)}{\grad u(0)} \bigr) \\
+        &\leq \beta \norm*{\grad^2 W}_{\infty} \norm{\grad u}^2 + \e^{-4Rt} \bigl( \norm{\grad^2 u(0)}^2 + \beta \norm*{\grad^2 W}_{\infty} \norm*{\grad u(0)}^2 \bigr),
     \end{align*}
     and using the exponential convergence of the first term on the right-hand side,
     which was proved in the previous step,
-    allows to conclude that $\norm*{\partial_x^2 u} \leq K \e^{-2 Rt} \norm*{u}[2]$ for some appropriate constant $K \geq 1$.
+    allows to conclude that $\norm*{\grad^2 u} \leq K \e^{-2 Rt} \norm*{u}[2]$ for some appropriate constant~$K \geq 1$.
     This procedure can then be repeated in order to deduce the statement.
 \end{proof}
 
@@ -1411,27 +1416,27 @@ concerns the exponential convergence of the derivatives of the overdamped Langev
 % \end{remark}
 
 For large times,
-the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial conditions.
-We include the proof here for convenience.
+the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial condition.
+We include the proof of this standard result here for the reader's convenience.
 \begin{lemma}
     [Elliptic regularization]
     \label{lemma:elliptic_reg}
-    Let $(i,j) \in \nat^2$ with $j \leq i$.
-    There exists a constant~$C_{ij}$ such that
+    For any $(i,j) \in \nat^2$ with $j \leq i$,
+    there exists a constant~$C_{ij}$ such that
     \[
         \forall t \in (0, 1], \qquad
-        \norm*{\partial_x^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C_{ij}}{t^{\frac{i-j}{2}}} \norm*{f}[j]
+        \norm*{\grad^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C_{ij}}{t^{\frac{i-j}{2}}} \norm*{f}[j]
     \]
 \end{lemma}
 \begin{proof}
     Let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
-    We will show the existence of constants $C_i$ such that
+    We will show the existence of constants $C_{ij}$ such that
     \[
         \forall t \in (0, 1], \qquad
         \ip{(-\mathcal L)^i u(t)}{u(t)}
         \leq \frac{C_i}{t^{\frac{i-j}2}} \ip{(-\mathcal L)^j f}{f},
     \]
-    after which the statement follows easily from the expression $\mathcal L = - \partial_x^* \partial_x$ and using commutations.
+    after which the statement follows easily from the expression $\mathcal L = - \grad^* \cdot \grad$ and using commutator relations.
     Defining the Lyapunov functional
     \[
         N(t) = \sum_{n=j}^{i} \frac{t^{n-j}}{(n-j)!} \, \ip{(-\mathcal L)^n u(t)}{u(t)} ,
@@ -1541,9 +1546,12 @@ We include the proof here for convenience.
 The next lemma provides an intermediate result for proving~\cref{proposition:semigroup_meanzero_observable}.
 The result proved here is sharper than what would be obtained from a simple application of~\eqref{eq:decay_semigroup_general},
 but not yet sufficient for obtaining optimal estimates for the bias of estimator~\eqref{eq:simple_estimator}.
+To lighten notations,
+we confine ourselves from now to the one-dimensional setting in the proofs,
+but these carry over \emph{mutatis mutandis} to the multi-dimensional case.
 \begin{lemma}
     \label{lemma:initial_lemma}
-    Assume that $f \in H^2(\mu)$ is a smooth function such that
+    Assume that $f \in L^2(\mu)$ is a smooth function such that $\grad_q f \in L^2(\mu)$ and
     \begin{equation}
         \label{eq:assumption_f}
         \int f(q, p) \, \kappa(\d p) = 0.
@@ -1563,7 +1571,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         \label{eq:expansion}
         f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
     \end{equation}
-    where $G_i = {\rm Re}(\e^{ix})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
+    where $G_i = {\rm Re}(\e^{iq})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
     The space of functions of this form is dense in $(\id - \Pi_p) H^1(\mu)$,
     so the general result follows by density.
 
@@ -1574,9 +1582,9 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     %     + \gamma \left( - p \derivative{1}{p} + \beta^{-1} \derivative{2}{p^2} \right)
     %     =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
     % \]
-    Let $v(t) = \e^{t \mathcal L} f(q, p) - \e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$,
+    Let $v(t) = \e^{t \mathcal L} f(q, p) - \e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$,
     where the operator $\mathcal L_{\rm FD}$ is defined in~\eqref{eq:decomposition_generator}.
-    In the expression $\e^{- t \gamma \mathcal L_{\rm FD}} f(q, p)$,
+    In the expression $\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$,
     the variable $q$ should should be viewed as a parameter.
     The function~$v$ satisfies the initial value problem
     \[
@@ -1584,13 +1592,13 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     \]
     Using Duhamel's formula, we have
     \[
-        v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s,
+        v(t) = \int_{0}^{t} \e^{(t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s,
     \]
     and therefore
     \begin{equation}
         \label{eq:intermediate_decay_correlation}
         \e^{t \mathcal L} f =  \e^{t \gamma \mathcal L_{\rm FD}} f
-        + \int_{0}^{t} \e^{- (t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s.
+        + \int_{0}^{t} \e^{(t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s.
     \end{equation}
     By~\eqref{eq:assumption_f} and with the notation $\norm{\dummy}[\kappa]$ for the norm of $L^2(\kappa)$,
     the first term is bounded as
@@ -1625,7 +1633,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
     \end{align}
     Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
     Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
-    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal F_{\rm FD}}$.
+    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal L_{\rm FD}}$.
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
     From \cref{lemma:overdamped_langevin_decay_derivatives}, the fact that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{1}{2}$,
@@ -1637,7 +1645,7 @@ but not yet sufficient for obtaining optimal estimates for the bias of estimator
         &\leq C \left( \frac{\e^{-\gamma t}}{\sqrt{1 \wedge \gamma t}} \right) \bigl( \norm{f} + \norm{\partial_q f} \bigr).
     \end{align}
     Going back to~\eqref{eq:intermediate_decay_correlation} and using~\eqref{eq:decay_semigroup_general},
-    we obtain
+    we have
     \begin{align*}
         \norm*{ \e^{t \mathcal L} f}
         &\leq  \e^{-\gamma t} \norm{f}
@@ -1686,7 +1694,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     we employ the fact that \cref{lemma:initial_lemma} is valid also with $\mathcal L^*$ substituted for $\mathcal L$,
     and so
     \[
-        \forall \gamma > 1, \qquad
+        \forall \gamma > 1, \quad
         \forall t \geq 0, \qquad
         \norm*{\e^{(t-s)\mathcal L^*} h}
         \leq C \bigl( \norm{h} + \norm{\partial_q h} \bigr)

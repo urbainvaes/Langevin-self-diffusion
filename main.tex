@@ -203,7 +203,7 @@ reads after appropriate non-dimensionalization~\cite[Section 2.2.4]{MR2681239}
 Here $q_t \in \torus^d$ and $p_t \in \real^d$ are the position and velocity variables,
 with~$\torus^d = \real^d / 2\pi \integer^d$ the $d$-dimensional torus with period $2 \pi$.
 The parameter $\gamma$ is a dimensionless parameter we call the friction,
-$V$ is periodic potential
+$V$ is a periodic potential
 and~$\vect W_t$ is a standard $d$-dimensional Brownian motion.
 % $M$ is the mass matrix,
 % For simplicity we assume that $M = m I_d$,
@@ -1257,8 +1257,28 @@ for $i \in \{1, 2\}$.
 Notice that $\phi_1(q, p) = \phi(q_1, p_1)$ when $\delta = 0$,
 where $\phi$ is the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
 Therefore, it is natural to use $\phi(q_1, p_1)$, or an approximation thereof,
-as the function $\psi$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
+as the function $\psi_1(q, t)$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
+Note that $d_{\psi}$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
+which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
+In particular $d_{\psi}$ takes different values than in the one-dimensional setting:
+denoting by $\psi$ an approximation of $\phi$,
+and assuming that the selected approximate solution to the Poisson equation is $\psi_1(q,p) = \psi(q_1, p_1)$,
+we have
+\[
+    d_{\psi_1}
+    = \int_{\torus^d \times \real^d} \abs{\grad_p \psi_1}^2 \, \d \mu_{\delta}
+    = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
+\]
 
+\Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for different values of $\delta$.
+It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
+with an exponent $\sigma$ that decreases as $\delta$ increases (at least for sufficiently small values of $\delta$).
+The variance of the estimators obtained using the approach described above,
+where $\psi_1$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
+is presented in~\cref{fig:time_bias_deviation_2d}.
+We observe that, unless $\delta = 0$ in which we recover the one-dimensional case,
+there is for every $\delta > 0$ and for each of the two choices of $\psi$,
+a threshold value of $\gamma$ below which the control variate ceases to be useful.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/diffusion.pdf}
@@ -1272,7 +1292,11 @@ as the function $\psi$ in the definition of the control variate~\eqref{eq:defini
     \centering
     \includegraphics[width=0.49\linewidth]{figures/var-delta-galerkin.pdf}
     \includegraphics[width=0.49\linewidth]{figures/var-delta-underdamped.pdf}
-    \caption{Relative standard deviation of the estimator $v(T)$.}%
+    \caption{
+        Relative standard deviation of the estimator $v(T)$ for two-dimensional Langevin dynamics,
+        when the approximate solution to the Poisson equation is constructed by tensorization from the solution of the one-dimensional equation.
+    }%
+    \label{fig:time_bias_deviation_2d}
 \end{figure}
 
 \section{Conclusions and perspectives for future work}%
@@ -1290,6 +1314,12 @@ we demonstrate the efficiency of control variates
 The latter approach, in particular,
 leads to a variance reduction by a factor more than 10 for Monte Carlo methods in the very small friction regime $\gamma \leq 10^{-3}$,
 in which purely deterministic Galerkin methods are typically inaccurate.
+
+The two-dimensional setting is much more challenging because of the high dimensionality of the state space of the dynamics
+and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
+Nevertheless, the control variates developed in for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
+and we show by means of numerical experiments that
+they lead to estimators with reduced variance provided that the non-separable part of the potential is small with respect to \textcolor{red}{$\gamma$}.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
@@ -1323,7 +1353,9 @@ The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 
 \textcolor{red}{We now use this only for $\mathcal L_{\rm ovd}^{W} = \mathcal L_{\rm FD}$,
-so we could simplify this result a bit.}
+so we could simplify the presentation a bit.
+The motivation for the generality was that we were using this result also for studying the overdamped limit,
+which we no longer need.}
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
     Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
@@ -1334,32 +1366,32 @@ so we could simplify this result a bit.}
         \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
     \]
     satisfies~\eqref{eq:poincare}.
-    Let also $\mathcal L_{\rm ovd}^W = - \grad W(p) \cdot \grad + \beta^{-1} \Delta$ denote the generator of overdamped Langevin dynamics in potential~$W$.
+    Let also $\mathcal L_{\rm ovd} = - \grad W(p) \cdot \grad + \beta^{-1} \Delta$ denote the generator of overdamped Langevin dynamics in potential~$W$.
     If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
     then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
     \[
-        \norm*{\e^{t \mathcal L_{\rm ovd}^W} f}_i \leq K \e^{- 2 R t} \norm*{f}_i.
+        \norm*{\e^{t \mathcal L_{\rm ovd}} f}_i \leq K \e^{- 2 R t} \norm*{f}_i.
     \]
 \end{lemma}
 \begin{proof}
     For simplicity, we consider only the case where $\mathcal X = \torus^d$,
-    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}^W} f \in H^i_0(\torus^d)$ because
-    the state space is compact and $\e^{t \mathcal L_{\rm ovd}^W} f \in C^{\infty}(\torus^d)$ by ellipticity.
+    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\torus^d)$ because
+    the state space is compact and $\e^{t \mathcal L_{\rm ovd}} f \in C^{\infty}(\torus^d)$ by ellipticity.
 
-    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}^W} f$ and
-     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd}^W)^{j/2} h}$ for $j \geq 0$.
-    Since $\mathcal L_{\rm ovd}^W$ commutes with~$(-\mathcal L_{\rm ovd}^W)^{i/2}$,
+    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}} f$ and
+     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd})^{j/2} h}$ for $j \geq 0$.
+    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd})^{i/2}$,
     it holds for any $j$ that
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd}^W (-\mathcal L_{\rm ovd}^W)^{j/2} u}{(- \mathcal L_{\rm ovd}^W)^{j/2} u}.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd} (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd})^{j/2} u}.
     \]
     Introducing $\grad^* = \beta \grad W - \grad$
-    and noting that $\mathcal L_{\rm ovd}^W = - \grad^* \cdot \grad$,
+    and noting that $\mathcal L_{\rm ovd} = - \grad^* \cdot \grad$,
     we obtain
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\grad (-\mathcal L_{\rm ovd}^W)^{j/2} u}^2.
+        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \norm*{\grad (-\mathcal L_{\rm ovd})^{j/2} u}^2.
     \]
-    Since $(-\mathcal L_{\rm ovd}^W)^{j/2} u \in L^2_0(\pi)$,
+    Since $(-\mathcal L_{\rm ovd})^{j/2} u \in L^2_0(\pi)$,
     we can apply Poincar\'e's inequality~\eqref{eq:poincare},
     which gives
     \[
@@ -1374,12 +1406,12 @@ so we could simplify this result a bit.}
     This estimate with $j = 0$ is the usual convergence estimate for the norm $\norm{u}$.
     Since it holds for sufficiently regular $h$ that
     \[
-        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd}^W)^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd}^W h}{h}} = \beta^{-1} \norm{\grad h},
+        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd})^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd} h}{h}} = \beta^{-1} \norm{\grad h},
     \]
     equation~\eqref{eq:exponential_convergence} for $j = 1$ implies the exponential convergence of $\norm{\grad u}$.
     For $j = 2$, we calculate using the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$ that
     \[
-        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}^Wf}^2
+        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}f}^2
         = \beta^{-2} \ip{\grad^* \cdot \grad h}{\grad^* \cdot \grad h}
         = \beta^{-2} \norm*{\grad^2 h}^2 + \beta^{-1} \ip{\hess W \grad h}{\grad h}.
     \]
@@ -1422,30 +1454,30 @@ We include the proof of this standard result here for the reader's convenience.
     [Elliptic regularization]
     \label{lemma:elliptic_reg}
     For any $(i,j) \in \nat^2$ with $j \leq i$,
-    there exists a constant~$C_{ij}$ such that
+    there exists a constant~$C = C(i, j)$ such that
     \[
         \forall t \in (0, 1], \qquad
-        \norm*{\grad^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C_{ij}}{t^{\frac{i-j}{2}}} \norm*{f}[j]
+        \norm*{\grad^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C}{t^{\frac{i-j}{2}}} \norm*{f}[j]
     \]
 \end{lemma}
 \begin{proof}
     Let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
-    We will show the existence of constants $C_{ij}$ such that
+    We will show the existence of a constant $C$ such that
     \[
         \forall t \in (0, 1], \qquad
-        \ip{(-\mathcal L)^i u(t)}{u(t)}
-        \leq \frac{C_i}{t^{\frac{i-j}2}} \ip{(-\mathcal L)^j f}{f},
+        \ip{(-\mathcal L_{\rm ovd})^i u(t)}{u(t)}
+        \leq \frac{C}{t^{i-j}} \ip{(-\mathcal L_{\rm ovd})^j f}{f},
     \]
-    after which the statement follows easily from the expression $\mathcal L = - \grad^* \cdot \grad$ and using commutator relations.
+    after which the statement follows easily from the expression of $\mathcal L_{\rm ovd} = - \grad^* \cdot \grad$ and using commutator relations.
     Defining the Lyapunov functional
     \[
-        N(t) = \sum_{n=j}^{i} \frac{t^{n-j}}{(n-j)!} \, \ip{(-\mathcal L)^n u(t)}{u(t)} ,
+        N(t) = \sum_{n=j}^{i} \frac{(2t)^{n-j}}{(n-j)!} \, \ip{(-\mathcal L_{\rm ovd})^n u(t)}{u(t)} ,
     \]
     we calculate
     \[
-        N'(t) =  - \frac{t^{i-j}}{(i-j)!} \ip{(- \mathcal L)^{i+1} u(t)}{u(t)} \leq 0,
+        N'(t) =  - \frac{2(2t)^{i-j}}{(i-j)!} \ip{(- \mathcal L_{\rm ovd})^{i+1} u(t)}{u(t)} \leq 0,
     \]
-    which gives the statement since $N(0) = \norm{f}$.
+    which enables to conclude since $N(0) = \ip{(- \mathcal L_{\rm ovd})^j f}{f}$.
 \end{proof}
 
 % The next lemma provides an estimate on the convergence of the solution to the backward Kolmogorov equation for Langevin dynamics
@@ -1547,7 +1579,7 @@ The next lemma provides an intermediate result for proving~\cref{proposition:sem
 The result proved here is sharper than what would be obtained from a simple application of~\eqref{eq:decay_semigroup_general},
 but not yet sufficient for obtaining optimal estimates for the bias of estimator~\eqref{eq:simple_estimator}.
 To lighten notations,
-we confine ourselves from now to the one-dimensional setting in the proofs,
+we confine ourselves from now on to the one-dimensional setting in the proofs,
 but these carry over \emph{mutatis mutandis} to the multi-dimensional case.
 \begin{lemma}
     \label{lemma:initial_lemma}
@@ -1572,7 +1604,8 @@ but these carry over \emph{mutatis mutandis} to the multi-dimensional case.
         f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
     \end{equation}
     where $G_i = {\rm Re}(\e^{iq})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
-    The space of functions of this form is dense in $(\id - \Pi_p) H^1(\mu)$,
+    The space of functions of this form is dense in $\bigl\{u \in (\id - \Pi_p) L^2(\mu): \partial_q u \in L^2(\mu) \bigr\}$
+    with the norm $\norm{u}_{1_q} := \norm{u} + \norm{\partial_q u}$,
     so the general result follows by density.
 
     % We consider the following decomposition of the generator:
@@ -1679,7 +1712,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 \begin{proof}
     [Proof of \cref{proposition:semigroup_meanzero_observable}]
     We again show the result for functions of the form~\eqref{eq:expansion},
-    noting that the general result follows by density of functions of this type in $\Pi_p^{\perp} L^2(\mu)$.
+    noting that the general result follows by density of functions of this type.
     From~\eqref{eq:intermediate_decay_correlation}, we obtain
     \begin{align}
         \notag

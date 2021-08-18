@@ -732,7 +732,7 @@ The bound~\eqref{eq:refined_bound} is then obtained using the same reasoning as 
 We now obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
 It is difficult to obtain bounds that scale well both as $\gamma \to 0$ and $\gamma \to \infty$,
 so here we aim to obtain bounds with a good scaling in the underdamped regime only,
-as this is the interesting regime for the mobility.
+as this is the regime we are most interested in.
 
 \begin{proposition}
     There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
@@ -764,7 +764,7 @@ as this is the interesting regime for the mobility.
         \var \bigl(v(T)\bigr)
         \leq C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2.
     \end{equation}
-    For an integration time $T$ scaling $\gamma^{-1}$,
+    For an integration time $T$ scaling as $\gamma^{-1}$,
     which is required in order to control the bias,
     we find that the variance scales as $\gamma^{-2}$,
     hence the relative standard deviation scales as $\mathcal O(1)$.
@@ -1255,8 +1255,11 @@ with $L_i = p_i \partial_{q_i} - v'(q_i) \, \partial_{p_i} + \gamma \left(- p_i 
 for $i \in \{1, 2\}$.
 Notice that $\phi_\delta(q, p) = \phi(q_1, p_1)$ when $\delta = 0$,
 where $\phi$ is the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
-Therefore, it is natural to use $\phi(q_1, p_1)$, or an approximation thereof,
-as the function $\psi_{\vect e}(q, t)$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
+In other words, it holds $\phi_0 = \phi \otimes 1$,
+where for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \torus \times \real \rightarrow \real$
+the notation $f_1 \otimes f_2$ denotes the function $(q,p) \mapsto f_1(q_1,p_1) \, f_2(q_2,p_2)$.
+For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
+as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
 Note that $d_{\psi}$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
 In particular $d_{\psi}$ takes different values than in the one-dimensional setting:
@@ -1275,7 +1278,7 @@ we have
 It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
 with an exponent $\sigma$ that decreases as $\delta$ increases (at least for sufficiently small values of~$\delta$, since for~$\delta \to \infty$ a separable potential is recovered).
 The variance of the estimators obtained using the approach described above,
-where $\psi_1$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
+where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
 We observe that, unless $\delta = 0$ in which case we recover the one-dimensional case,
 there is for every $\delta > 0$ and for each of the two choices of $\psi$,
@@ -1283,8 +1286,6 @@ a threshold value of $\gamma$ below which the control variate ceases to be usefu
 This is not surprising since,
 as the following result establishes,
 it holds $\phi_\delta \to \phi \otimes 1$ in the limit as $\delta \to 0$.
-Here $f_1 \otimes f_2$ denotes the function $(q,p) \mapsto f_1(q_1,p_1) \otimes f_2(q_2,p_2)$,
-for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \torus \times \real \rightarrow \real$.
 % Additionally, we denote the function $x \mapsto 1$ by just $1$.
 \begin{proposition}
     Let again $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L_{\delta} \phi_{\delta} = p_1$
@@ -1362,7 +1363,7 @@ for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \torus 
         \gamma \beta^{-1} \norm*{\grad_p \phi_\delta - \grad_p \phi_0^{\delta}}[L^2(\mu_{\delta})]
         \leq C \delta \norm*{\grad_p \phi_0^{\delta}}[L^2(\mu_{\delta})],
     \end{equation}
-    which gives the result
+    which gives the result since $\grad_p \phi_0^{\delta} = \grad_p \phi_0$.
 \end{proof}
 \begin{remark}
     Combining~\eqref{eq:bound_gradient_of_difference} with the upper bound in~\cref{proposition:asymptotic_variance},

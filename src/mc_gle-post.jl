@@ -12,16 +12,12 @@ include("lib_underdamped.jl")
 # PARAMETERS {{{1
 
 # Parse arguments
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1e-4;
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1e-5;
 ν = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : 2.;
 control_type = "gle"
 
 # Inverse temperature
 β = 1  # β always 1!
-
-# Control
-Dc, dz_ψ = Underdamped.get_controls_gle(γ, ν, false);
-_, ψ, _ = Underdamped.get_controls(γ, false);
 
 # Parse the files
 clusterdir = "cluster/"
@@ -31,6 +27,10 @@ datadir = (is_cluster ? "" : clusterdir) * localdir
 if !isdir(datadir); exit(-1); end
 readdlm = DelimitedFiles.readdlm
 writedlm = DelimitedFiles.writedlm
+
+# Control
+Dc, dz_ψ = Underdamped.get_controls_gle(γ, ν, false);
+_, ψ, _ = Underdamped.get_controls(γ, false);
 
 function datafiles(batchdir)
 
@@ -75,7 +75,7 @@ data = map(datafiles, batchdirs);
 Δt = parse(Float64, match(r"Δt=([^-]+)", data[1]["qfiles"][1]).captures[1]);
 
 nsteps = maximum(length(d["indices"]) for d in data)
-nsteps = min(nsteps, 220) # FIXME: change later!
+# nsteps = min(nsteps, 220) # FIXME: change later!
 ts = zeros(nsteps);
 D = zeros(nsteps);
 σ = zeros(nsteps);
@@ -84,7 +84,7 @@ D_control = zeros(nsteps);
 n_particles = zeros(nsteps);
 
 # Calculate diffusion coefficients
-for i in 1:nsteps
+for i in 1:10:nsteps
 
     index = maximum(map(d -> i <= length(d["qfiles"]) ? d["indices"][i] : 0, data))
     ts[i] = index*Δt;
@@ -108,8 +108,8 @@ for i in 1:nsteps
     D_control[i] = Statistics.mean(to_average_2);
     σ_control[i] = Statistics.std(to_average_2);
     n_particles[i] = length(q)
-    println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
-                            D[i], D_control[i], σ[i], σ_control[i]));
+    println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E, np = %d",
+                            D[i], D_control[i], σ[i], σ_control[i], n_particles[i]));
 end
 
 data_array = [ts D σ D_control σ_control n_particles]

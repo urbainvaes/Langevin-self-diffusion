@@ -420,7 +420,9 @@ the following estimator of $D_{\vect e}$ is better than $u(T)$ provided that $\p
     \label{eq:improved_estimator}
     v(T) = d_{\psi}+ \frac{1}{2T} \left( \abs{\vect e^\t(q_T - q_0)}^2 - \abs{\xi_T}^2\right),
 \end{equation}
-where $d_{\psi} := \gamma \beta^{-1} \int \abs{\grad_p \psi_{\vect e}}^2 \, \d \mu$ and
+where $d_{\psi} := \gamma \beta^{-1} \int \abs{\grad_p \psi_{\vect e}}^2 \, \d \mu$ and $\xi_T$,
+which we refer to as the \emph{control variate} throughout this note,
+is given by
 \begin{align}
     \label{eq:definition_control_variate}
     \xi_T = \psi_{\vect e}(q_T, p_T) - \psi_{\vect e}(q_0, p_0) - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_p \psi_{\vect e}(q_t, p_t) \cdot \d \vect W_t.
@@ -1368,9 +1370,9 @@ it holds $\phi_\delta \to \phi \otimes 1$ in the limit as $\delta \to 0$.
 \begin{remark}
     Combining~\eqref{eq:bound_gradient_of_difference} with the upper bound in~\cref{proposition:asymptotic_variance},
     we deduce that,
-    assuming the exact solution to the Poisson equation in one spatial dimension is employed in the control variate,
+    assuming the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
     the asymptotic variance is bounded from above by $C \delta^2 \gamma^{-4}$,
-    which suggests an asymptotic scaling as $\delta/\gamma$ for the asymptotic relative standard deviation
+    which suggests a scaling as $\delta/\gamma$ for the asymptotic relative standard deviation
     (relative to the limit as $\delta \to 0$).
     \textcolor{red}
     {This still needs improvements. Can we show, for example, that if we take $\delta \propto 1/\gamma$,
@@ -1417,7 +1419,7 @@ The two-dimensional setting is much more challenging because of the high dimensi
 and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
 Nevertheless, the control variates developed in for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
 and we show by means of numerical experiments that
-they lead to estimators with reduced variance provided that the non-separable part of the potential is small with respect to \textcolor{red}{$\gamma$}.
+they lead to estimators with reduced variance provided that the non-separable part of the potential is small with respect to \textcolor{red}{$\gamma$ (or a power of $\gamma$?)}.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
@@ -1450,7 +1452,7 @@ Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ a
 The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 
-\textcolor{red}{We now use this only for $\mathcal L_{\rm ovd}^{W} = \mathcal L_{\rm FD}$,
+\textcolor{red}{We now use the following result only for $\mathcal L_{\rm ovd}^{W} = \mathcal L_{\rm FD}$,
 so we could simplify the presentation a bit.
 The motivation for the generality was that we were using this result also for studying the overdamped limit,
 which we no longer need.}

@@ -941,7 +941,7 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
         \leq \lim_{T \to \infty} \var \bigl(v(T)\bigr)
         % &\leq (d[\phi_{\vect e}] - d[\psi_{\vect e}])^2 + \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]) \\
         % \notag
-        &\leq 3 \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]).
+        &\leq 4 \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]).
     \end{align}
 \end{proposition}
 \begin{remark}
@@ -987,10 +987,21 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
     \end{align*}
     Using this inequality with $a = \grad_{\vect p} \phi_{\vect e}$ and $b = \grad_{\vect p} \psi_{\vect e}$ in the Hilbert space $L^2(\mu)$,
     we deduce that
+    \begin{align*}
+        \lim_{T \to \infty} \var \bigl(v(T)\bigr)
+        &\leq \bigl(d[\phi_{\vect e}] - d[\psi_{\vect e}]\bigr)^2 +
+        2\gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]).
+    \end{align*}
+    The triangle inequality enables to bound the first term as
+    \begin{align*}
+        \bigl\lvert d[\phi_{\vect e}] - d[\psi_{\vect e}] \bigr\rvert
+        &= \gamma \beta^{-1} \left( \norm{\grad_{\vect p} \phi_{\vect e}}^2 - \norm{\grad_{\vect p} \psi_{\vect e}}^2 \right)
+        \leq \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}} \bigl( \norm{\grad_{\vect p} \phi_{\vect e}} + \norm{\grad_{\vect p} \psi_{\vect e}} \bigr)
+    \end{align*}
+    and so
     \[
         \lim_{T \to \infty} \var \bigl(v(T)\bigr)
-        \leq \bigl(d[\phi_{\vect e}] - d[\psi_{\vect e}]\bigr)^2 + 
-        2\gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]),
+        \leq  4\gamma \beta^{-1}  \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]),
     \]
     which is the required upper bound.
 \end{proof}

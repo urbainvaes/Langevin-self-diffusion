@@ -521,12 +521,15 @@ the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$:
 
 In the rest of this section,
 we obtain more precise results on the bias and variance of the estimator $v(T)$.
-We begin by showing that the bias behaves as~$\frac{1}{T}$ in the limit as~$T \to \infty$
-and by obtaining estimates on the prefactors in terms of $\gamma$ and $\psi_{\vect e}$.
-We then obtain estimates on the variance of $v(T)$,
-first for finite $T$ and then asymptotically as $T \to \infty$.
+We begin,
+in \cref{sub:bias},
+by showing that the bias behaves as~$\frac{1}{T}$ in the limit as~$T \to \infty$
+and obtaining estimates on the prefactors in terms of $\gamma$ and $\psi_{\vect e}$.
+We then obtain estimates on the variance of $v(T)$ in \cref{sub:variance},
+first for finite $T$ and then asymptotically as~$T \to \infty$.
 
 \subsection{Bias of the improved estimators}%
+\label{sub:bias}
 We begin by studying the bias of $u(T)$ which,
 as mentioned above, coincides with $v(T)$ when~$\psi_{\vect e} = 0$.
 Since the initial conditions are assumed statistically stationary,~$(q_0, p_0) \sim \mu$,
@@ -832,6 +835,8 @@ The bound~\eqref{eq:refined_bound} is then obtained by repeating verbatim the re
 % \end{remark}
 
 \subsection{Variance of the estimators}%
+\label{sub:variance}
+
 In this section, we obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
 Since it is difficult to obtain bounds that scale well both as $\gamma \to 0$ and $\gamma \to \infty$,
 we aim here to obtain bounds with a good scaling in the underdamped regime only,
@@ -1017,39 +1022,48 @@ We now quantify more precisely the asymptotic variance of $v(T)$ as $T \to \inft
 \section{Application to one-dimensional Langevin-type dynamics}%
 \label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
-As mentioned in the introduction,
-we consider in this section two different approaches for constructing a control variate $\psi$:
-through a Fourier/Hermite Galerkin method and,
-in the underdamped regime,
-through formal asymptotic expansions.
+We consider in this section two different approaches for constructing the approximate solution~$\psi$ to the Poisson equation~\eqref{eq:poisson_equation}:
+through a Fourier/Hermite Galerkin method in \cref{sub:galerkin_approach} and,
+through formal asymptotic expansions for the underdamped regime in \cref{sub:underdamped_approach}.
+We then present numerical results in \cref{sub:numerical_results}
+and discuss an extension of our approach to generalized Langevin-type dynamics in \cref{sub:generalization_to_generalized_langevin_dynamics}.
 
 \subsection{Fourier/Hermite spectral method}%
 \label{sub:galerkin_approach}
 We employ the non-conformal Galerkin method developed and analyzed in~\cite{roussel2018spectral}.
-Specifically, we calculate an approximate solution to~\eqref{eq:poisson_equation} through the saddle point formulation:
+Specifically, we calculate an approximate solution to~\eqref{eq:poisson_equation} through the following saddle point formulation:
+find~$\Psi_N \in V_N$ such that
 \begin{align}
   \label{eq:saddle_point_formutation}
   \left\{
     \begin{aligned}
-       & - \Pi_N \, \mathcal L \, \Pi_N \Phi_N + \alpha_N u_N = \Pi_N p, \\
-       & \Phi_N^\t u_N = 0,
+       & - \mathscr P_N \, \mathcal L \, \mathscr P_N \Psi_N + \alpha_N u_N = \mathscr P_N p, \\
+       & \Psi_N^\t u_N = 0,
     \end{aligned}
   \right.
 \end{align}
 where $V_N$ is a finite-dimensional approximation space,
-$\Pi_N$ is the $\lp{2}{\mu}$ projection operator on~$V_N$,
-% satisfying $\ip{\Pi_N u - u}{v_N} = 0$ for all functions $v_N \in V_N$,
-$u_N = \Pi_N 1 / \norm{\Pi_N 1} \in V_N$
+$\mathscr P_N$ is the $\lp{2}{\mu}$ projection operator on~$V_N$,
+% satisfying $\ip{\mathscr P_N u - u}{v_N} = 0$ for all functions $v_N \in V_N$,
+$u_N = \mathscr P_N 1 / \norm{\mathscr P_N 1} \in V_N$
 and $\alpha_N$ is a Lagrange multiplier.
 As above,
 $\ip{\cdot}{\cdot}$ and $\norm{\cdot}$ denote respectively the standard inner product and norm of $\lp{2}{\mu}$.
+The formulation~\eqref{eq:saddle_point_formutation} ensures
+that the system is well-conditioned at the finite dimensional level.
+% with a solution satisfying the centering constraint $\ip{\Psi_N}{1} = 0$.
+The solution $\Psi_N$ to~\eqref{eq:saddle_point_formutation} also solves
+\[
+    - \mathcal P_N \, \mathcal L \, \mathcal P_N \Psi_N = \mathcal P_N p,
+\]
+where now $\mathcal P_N$ is the $L^2(\mu)$ projection on $\{\phi - \ip{u_N}{\phi} u_N : \phi \in V_N\}$.
 As in~\cite{roussel2018spectral},
 we choose $V_N$ to be the subspace of $\lp{2}{\mu}$ spanned by the basis functions
-\begin{equation*}
+\begin{equation}
   \label{eq:basis_functions}
-  e_{i,j} = Z^{1/2} \, \e^{\frac{\beta}{2} \left( H(q,p) + \frac{z^2}{2} \right)}
+  e_{i,j} = Z^{1/2} \, \e^{\frac{\beta}{2} H(q,p)}
   \, G_i(q) \, H_j(p), \qquad 0 \leq i,j \leq N,
-\end{equation*}
+\end{equation}
 where $G_i$ are trigonometric functions,
 \begin{equation}
   \label{eq:definition_trigonometric_functions}
@@ -1057,7 +1071,7 @@ where $G_i$ are trigonometric functions,
   \left\{ \begin{aligned}
     (2 \pi)^{-1/2}, \quad & \text{if}~i = 0, \\
     \pi^{-1/2} \sin\left(\frac{i + 1}{2}q\right), \quad & \text{if}~i~\text{is odd}, \\
-    \pi^{-1/2} \cos\left(\frac{i}{2}q\right), \quad & \text{if}~i~\text{is even}, i > 0. \\
+    \pi^{-1/2} \cos\left(\frac{i}{2}q\right), \quad & \text{if}~i~\text{is even}, i \geq 2. \\
   \end{aligned} \right.
 \end{equation}
 and $H_j$ are rescaled normalized Hermite functions,
@@ -1067,21 +1081,32 @@ and $H_j$ are rescaled normalized Hermite functions,
   \qquad \psi_j (p) := (2 \pi)^{-\frac{1}{4}} \frac{(-1)^j}{\sqrt{j!}} \e^{\frac{p^2}{4}} \, \derivative*{j}{p^j} \, \Bigl( \e^{- \frac{p^2}{2}} \Bigr).
 \end{equation}
 The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
-which is a scaling parameter that can be adjusted to better resolve $\Phi_N$.
+which is a scaling parameter that can be adjusted to better resolve $\Psi_N$.
 
-In practice, since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally expensive,
-the approximate solution $\Phi_N$ is pre-calculated over a Cartesian grid with vertices
+In practice, 
+we discretize $\Psi_N$ in the Fourier/Hermite basis~\eqref{eq:basis_functions}.
+At the continuous-time level,
+calculating the control variate $\xi_T$ in~\eqref{eq:definition_control_variate} requires to evaluate $\psi(q_t, p_t)$
+at times 0 and $T$,
+and the gradient $\partial_p \psi( q_t,  p_t)$ along the full trajectory $\bigl(( q_t,  p_t)\bigr)_{0\leq t\leq T}$.
+In practice, when $\psi = \Psi_N$ is given by a series expansion
+
+Therefore, at the discrete-time level (see \cref{sub:numerical_results} below for more details),
+the control variate is calculated from a finite number of time steps.
+
+since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally expensive,
+the approximate solution $\Psi_N$ is pre-calculated over a Cartesian grid with vertices
 \[
     (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
 \]
-From the values of $\Phi_N$ at these points,
-a bilinear interpolant $\widehat \Phi_N$ is defined over the domain $[-\pi, \pi] \times [-L_p, L_p]$.
-That is, given $(q, p)$, the function evaluation $\Phi_N(q, p)$ is approximated by
+From the values of $\Psi_N$ at these points,
+a bilinear interpolant $\widehat \Psi_N$ is defined over the domain $[-\pi, \pi] \times [-L_p, L_p]$.
+That is, given $(q, p)$, the function evaluation $\Psi_N(q, p)$ is approximated by
 \begin{align*}
-    \widehat \Phi_N(q, p)
-    &= \Phi_N(q_i,p_j) + \frac{\Phi_N(q_{i+1}, p_j) - \Phi_N(q_i, p_j)}{q_{i+1} - q_i} (q - q_i)
-    +\frac{\Phi_N(q_{i}, p_{j+1}) - \Phi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
-    &\quad + \frac{\Phi_N(q_{i+1}, p_{j+1}) - \Phi_N(q_{i+1}, p_{j}) - \Phi_N(q_{i}, p_{j+1}) + \Phi_N(q_{i}, p_{j})}{(q_{i+1} - q_i)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
+    \widehat \Psi_N(q, p)
+    &= \Psi_N(q_i,p_j) + \frac{\Psi_N(q_{i+1}, p_j) - \Psi_N(q_i, p_j)}{q_{i+1} - q_i} (q - q_i)
+    +\frac{\Psi_N(q_{i}, p_{j+1}) - \Psi_N(q_{i}, p_{j})}{p_{j+1} - p_j} (p - p_j) \\
+    &\quad + \frac{\Psi_N(q_{i+1}, p_{j+1}) - \Psi_N(q_{i+1}, p_{j}) - \Psi_N(q_{i}, p_{j+1}) + \Psi_N(q_{i}, p_{j})}{(q_{i+1} - q_i)(p_{j+1} - p_j)}  (q-q_i)(p-p_j),
 \end{align*}
 where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$, and $q_i = i \Delta q$, $p_j = j \Delta p$.
@@ -1143,6 +1168,7 @@ and in general it can be calculated efficiently by numerical quadrature.
 In practice, given an implementation of $S_{\rm und}(\cdot)$ we calculate $\psi_0$ using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations}.
 
 \subsection{Numerical results}%
+\label{sub:numerical_results}
 We discretize the Langevin dynamics using the geometric Langevin algorithm studied in~\cite{MR2608370} which,
 in the general multi-dimensional case, is based on the iteration
 \begin{align*}
@@ -1222,7 +1248,7 @@ but the benefits decrease as $\gamma$ increases.
         with $\psi$ obtained using the approaches of~\cref{sub:galerkin_approach} and~\cref{sub:underdamped_approach},
         respectively.
         Finally, the curve labeled ``Galerkin'' is the approximate diffusion coefficient obtained by the Galerkin method,
-        which is given by $\ip*{\widehat \Phi_N}{p}$ in the notation of \cref{sub:galerkin_approach}.
+        which is given by $\ip*{\widehat \Psi_N}{p}$ in the notation of \cref{sub:galerkin_approach}.
     }%
     \label{fig:effective_diffusion_langevin}
 \end{figure}
@@ -1360,8 +1386,24 @@ We consider in this work a non-separable potential even simpler than~\eqref{eq:p
     V(q) =  v(q_1) + v(q_2) + \delta w(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
 \end{align}
 In view of the symmetry of this potential,
-the diffusion tensor is a multiple of the identity,
-so we can focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector $\vect e = (1, 0)^\t$,
+the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identity.
+Indeed, it is clear that $D^{\gamma}_{11} = D^{\gamma}_{22}$,
+and $D^{\gamma}_{12} = 0$ because if $\bigl((q_t, p_t)\bigr)_{t \geq 0}$ is a weak solution to~\eqref{eq:langevin},
+then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
+and thus
+\begin{align*}
+    D^{\gamma}_{12} 
+    &= \frac{1}{2T} \lim_{\tau \to \infty} 
+    \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
+    &= - \frac{1}{2T} \lim_{\tau \to \infty} 
+    \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
+    = - D^{\gamma}_{12}
+\end{align*}
+with $\vect e = (1, 0)^\t$ and $\vect f = (0, 1)^\t$,
+and where the first and last equalities follow from the definition~\eqref{eq:einsteins_formula} of the effective diffusion coefficient.
+Note that this can also be shown at the level of~\eqref{eq:effective_diffusion_poisson}.
+Since $\mat D^{\gamma}$ is a multiple of the identity,
+we can focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector $\vect e_1 = (1, 0)^\t$,
 which simplifies the discussion.
 Let $\phi_\delta(q, p)$ denote the solution to the Poisson equation $- \mathcal L_{\delta} \phi_\delta = p_1$,
 where the generator~$\mathcal L_{\delta}$ of the dynamics now reads

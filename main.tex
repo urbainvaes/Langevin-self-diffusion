@@ -1401,7 +1401,7 @@ In this section we discuss alternative approaches.
 We consider in this work a non-separable potential even simpler than~\eqref{eq:potential_julien}:
 \begin{align}
     \label{eq:potential_simple}
-    V(q) =  v(q_1) + v(q_2) + \delta w(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
+    V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
 \end{align}
 In view of the symmetry of this potential,
 the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identity.
@@ -1423,103 +1423,135 @@ Note that this can also be shown at the level of~\eqref{eq:effective_diffusion_p
 Since $\mat D^{\gamma}$ is a multiple of the identity,
 we can focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector $\vect e_1 = (1, 0)^\t$,
 which simplifies the discussion.
-Let $\phi_\delta(q, p)$ denote the solution to the Poisson equation $- \mathcal L_{\delta} \phi_\delta = p_1$,
-where the generator~$\mathcal L_{\delta}$ of the dynamics now reads
+Let $\phi_\delta(q, p)$ denote the solution to the Poisson equation $- \mathcal L^{\delta} \phi_\delta = p_1$,
+where the generator~$\mathcal L^{\delta}$ of the dynamics now reads
 \begin{align}
     \label{eq:generator}
-    \mathcal L_{\delta} = \mathcal L_0 + \delta \mathcal L_1
+    \mathcal L^{\delta} = \mathcal L_0 + \delta \mathcal L_1
     := L_1 + L_2
-    - \delta \grad w \cdot \grad_{\vect p},
+    - \delta \grad \mathcal W \cdot \grad_{\vect p},
 \end{align}
-with $L_i = p_i \partial_{q_i} - v'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$,
+with $L_i = p_i \partial_{q_i} - \mathcal V'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$,
 for $i \in \{1, 2\}$.
 Notice that $\phi_\delta(q, p) = \phi(q_1, p_1)$ when $\delta = 0$,
 where $\phi$ is the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
 In other words, it holds $\phi_0 = \phi \otimes 1$,
 where for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \torus \times \real \rightarrow \real$
-the notation $f_1 \otimes f_2$ denotes the function $(q,p) \mapsto f_1(q_1,p_1) \, f_2(q_2,p_2)$.
+the notation $f_1 \otimes f_2$ denotes the function $(\vect q, \vect p) \mapsto f_1(q_1,p_1) \, f_2(q_2,p_2)$.
 For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
-Note that $d[\psi]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
+Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
-In particular $d[\psi]$ takes different values than in the one-dimensional setting:
-denoting by $\psi$ an approximation of $\phi$,
-and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
-used in the control variate~\eqref{eq:definition_control_variate},
-is given by $\psi_{\vect e}(q,p) = \psi(q_1, p_1)$,
-we have
-\[
-    d[\psi_{\vect e}]
-    = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
-    = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
-\]
+% In particular $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
+% denoting by $\psi$ an approximation of $\phi$,
+% and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
+% used in the control variate~\eqref{eq:definition_control_variate},
+% is given by $\psi_{\vect e}(q,p) = \psi(q_1, p_1)$,
+% we have
+% \[
+%     d[\psi_{\vect e}]
+%     = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
+%     = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
+% \]
 
 \Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for different values of $\delta$.
 It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
-with an exponent $\sigma$ that decreases as $\delta$ increases (at least for sufficiently small values of~$\delta$, since for~$\delta \to \infty$ a separable potential is recovered).
+with an exponent $\sigma$ that decreases as $\delta$ increases (at least for sufficiently small values of~$\delta$).
 The variance of the estimators obtained using the approach described above,
 where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
 We observe that, unless $\delta = 0$ in which case we recover the one-dimensional case,
-there is for every $\delta > 0$ and for each of the two choices of $\psi$,
+there is for every $\delta > 0$ and for each of the two choices of $\psi_{\vect e}$,
 a threshold value of $\gamma$ below which the control variate ceases to be useful.
-This is not surprising since,
-as the following result establishes,
-it holds $\phi_\delta \to \phi \otimes 1$ in the limit as $\delta \to 0$.
-% Additionally, we denote the function $x \mapsto 1$ by just $1$.
+This result establishes that~$\phi_\delta \to \phi_0$ in the limit as~$\delta \to 0$.
 \begin{proposition}
-    Let again $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L_{\delta} \phi_{\delta} = p_1$
+    Let $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L^{\delta} \phi_{\delta} = p_1$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
     in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
+    Then there exists $C$ independent of $\delta$ and $\gamma$ such that 
+    \begin{equation}
+        \label{eq:convergence_mobility_delta}
+        \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
+        = C \delta \gamma^{-2}
+    \end{equation}
     % and denote
     % \[
     %     d^{\delta}_{\phi_\delta} = \int \abs{\grad \phi_\delta}^2 \, \d \mu_{\delta},
     %     \qquad
     %     d^{\delta}_{\phi_0} = \int \abs{\grad \phi_0}^2 \, \d \mu_{\delta}.
     % \]
-    It holds that
-    \begin{equation}
-        \label{eq:convergence_solution_delta}
-        \phi_\delta \xrightarrow [\delta \to 0] {L^2(\mu_0)} \phi_0,
-    \end{equation}
-    and additionally
-    \begin{equation}
-        \label{eq:convergence_mobility_delta}
-        \grad_{\vect p} \phi_\delta \xrightarrow [\delta \to 0] {L^2(\mu_0)} \grad_{\vect p} \phi_0.
-    \end{equation}
 \end{proposition}
 \begin{proof}
-    Note that $\phi_0 = \phi \otimes 1$ with again $\phi$ the solution to the Poisson equation in spatial dimension 1 and potential $v$.
-    We consider the decomposition~\eqref{eq:generator} of the generator and denote this by $\mathcal L_{\delta}$
-    in order to emphasize the dependence on $\delta$.
-    It is clear that
+    As mentioned after~\eqref{eq:generator},
+    it holds that $\phi_0 = \phi \otimes 1$ with $\phi$ the solution to the Poisson equation in spatial dimension 1 and potential $\mathcal V$.
+    We consider the decomposition~\eqref{eq:generator} of the generator and note that
     \begin{equation}
         \label{eq:remainder_expansion}
-        \mathcal L_{\delta}(\phi_\delta - \phi_0)
+        \mathcal L^{\delta}(\phi_\delta - \phi_0)
         = - \delta \, \mathcal L_1 \phi_0
-        = \delta \, \partial_{q_1} w(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1).
+        = \delta \, \partial_{q_1} \mathcal W(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1).
     \end{equation}
-    Let $\phi_0^{\delta}$ denote the orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
+    Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
+    Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
+    we obtain
+    \begin{align*}
+        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]^2
+        &\leq \delta \norm*{\partial_{q_1} \mathcal W(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
+        &\leq C \delta \norm*{\partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+    \end{align*}
+    for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$. 
+    Throughout this proof, $C$ denotes a constant independent of $\gamma$ and $\delta$,
+    whose value can change from occurrence to occurrence.
+    Since the $\vect q$ marginal of $\mu_{\delta}$ is equivalent to the Lebesgue measure on $\torus^d$,
+    with a smooth positive density that can be bounded, both from below by a strictly positive constant and from above, independently of $\delta$ for all $\delta \in [-1, 1]$,
+    there exists a constant $C_P > 0$ such that $\mu_{\delta}$ satisfies the Poincaré inequality uniformly: 
+    \begin{align}
+        \label{eq:poincare_for_mudelta}
+        \forall \delta \in [-1, 1], \qquad
+        \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \leq C_P \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})].
+    \end{align}
+    Therefore, it holds that
+    \begin{equation}
+        \label{eq:bound_gradient_of_difference}
+        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]
+        \leq C \delta \norm*{\grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]
+        = C \delta \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
+    \end{equation}
+    Now since $\phi_0$ solves $- \mathcal L_0 \phi_0 = p_1$,
+    we have
+    \[
+        \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_0)]^2
+        = - \ip{\phi_0}{\mathcal L \phi_0}[L^2(\mu_0)] = \ip{\phi_0}{p}[L^2(\mu_0)] 
+        \leq \beta^{-1/2} \norm{\phi_0}[L^2(\mu_0)] 
+        \leq C_P \beta^{-1/2} \norm{\grad_{\vect p} \phi_0}
+    \]
+    and so we deduce~\eqref{eq:convergence_mobility_delta}.
+\end{proof}
+\begin{remark}
+    which gives the result since $\grad_{\vect p} \phi_0^{\delta} = \grad_{\vect p} \phi_0$.
+    Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
     It follows from~\eqref{eq:remainder_expansion} that
     \[
         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
-        \leq \delta \norm{\mathcal L_{\delta}^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)] \norm{\partial_{q_1} w(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{\delta})].
+        \leq \delta \norm*{(\mathcal L^{\delta})^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)] \norm{\partial_{q_1} \mathcal W(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{\delta})].
     \]
-    The resolvent norm on the right-hand side is uniformly bounded from above for $\delta \in [0, 1]$ using standard results,
+    The resolvent norm on the right-hand side is uniformly bounded from above for $\delta \in [1, 1]$ using standard results,
     and it is clear that
-    $\norm{\dummy}[L^2(\mu_{\delta})] \leq \norm{\dummy}[L^2(\mu_0)] \leq c_2 \norm{\dummy}[L^2(\mu_{\delta})]$
-    for appropriate constants $c_1, c_2 > 0$ and all $\delta \in [0, 1]$.
+    \(
+        c_1 \norm{\dummy}[L^2(\mu_{\delta})] \leq \norm{\dummy}[L^2(\mu_0)] \leq c_2 \norm{\dummy}[L^2(\mu_{\delta})]
+    \)
+    for appropriate constants $c_1, c_2 > 0$ and all $\delta \in [-1, 1]$.
     Therefore, we have
     \begin{equation}
         \label{eq:intermediate_expansion_delta}
-        \forall (\gamma, \delta) \in (0, 1] \times [0, 1], \qquad
+        \forall (\gamma, \delta) \in (0, 1] \times [-1, 1], \qquad
         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
         \leq C \delta \gamma^{-1} \, \norm{\partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{0})]
         \leq C \delta \gamma^{-2},
     \end{equation}
     because the norm on the right-hand side of the first inequality is the mobility of one-dimensional Langevin dynamics,
     which scales as $\bigo{\gamma^{-1}}$.
-    Now since $\d \mu_{\delta} / \d \mu_0  = 1 + \delta f_{\delta}(q_1, q_2)$ for some appropriate function $f_{\delta}$ that is uniformly bounded from above over $(\delta, q_1, q_2) \in [0, 1] \times \torus \times \torus$,
+    Now since $\d \mu_{\delta} / \d \mu_0  = 1 + \delta f_{\delta}(q_1, q_2)$ for some appropriate function $f_{\delta}$ that is uniformly bounded from above over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$,
     we deduce
     \[
         \norm*{\phi_0^\delta - \phi_0} [L^2(\mu_\delta)]
@@ -1528,23 +1560,7 @@ it holds $\phi_\delta \to \phi \otimes 1$ in the limit as $\delta \to 0$.
         \leq C \delta \norm{\phi_0}[L^2(\mu_0)] \leq C \delta \gamma^{-1},
     \]
     which combined with~\eqref{eq:intermediate_expansion_delta} gives~\eqref{eq:convergence_solution_delta}.
-
-    In order to obtain~\eqref{eq:convergence_mobility_delta},
-    we take the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
-    which gives
-    \[
-        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]^2
-        \leq \norm*{\delta \, \partial_{q_1} w(q_1, q_2) \, \partial_{p_1} \phi(q_1, p_1)}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})].
-    \]
-    Using the Poincaré inequality,
-    we have
-    \begin{equation}
-        \label{eq:bound_gradient_of_difference}
-        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]
-        \leq C \delta \norm*{\grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})],
-    \end{equation}
-    which gives the result since $\grad_{\vect p} \phi_0^{\delta} = \grad_{\vect p} \phi_0$.
-\end{proof}
+\end{remark}
 \begin{remark}
     Combining~\eqref{eq:bound_gradient_of_difference} with the upper bound in~\cref{proposition:asymptotic_variance},
     we deduce that,

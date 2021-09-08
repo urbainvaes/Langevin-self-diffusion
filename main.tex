@@ -1083,7 +1083,7 @@ and $H_j$ are rescaled normalized Hermite functions,
 The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
 which is a scaling parameter that can be adjusted to better resolve $\Psi_N$.
 
-In practice, 
+In practice,
 we discretize $\Psi_N$ in the Fourier/Hermite basis~\eqref{eq:basis_functions}.
 At the continuous-time level,
 calculating the control variate $\xi_T$ in~\eqref{eq:definition_control_variate} requires to evaluate $\psi(q_t, p_t)$
@@ -1111,7 +1111,7 @@ That is, given $(q, p)$, the function evaluation $\Psi_N(q, p)$ is approximated 
 where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$, and $q_i = i \Delta q$, $p_j = j \Delta p$.
 The parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
-The approximate effective diffusion coefficient $d_\psi$,
+The approximate effective diffusion coefficient $d[\psi]$,
 which enters in the definition~\eqref{eq:improved_estimator} of the estimator~$v(T)$,
 is calculated based on this interpolant by direct Monte Carlo simulation.
 The parameters employed for the construction of the control variate are summarized in~\cref{table:parameters_employed_for_the_construction_of_the_control_variate}.
@@ -1129,7 +1129,7 @@ The parameters employed for the construction of the control variate are summariz
         \hline
         Truncation size of domain & $L_p$ & 9 \\
         \hline
-        \# samples for the calculation of $D_{\psi}$ & & $10^7$ \\
+        \# samples for the calculation of $d[\psi]$ & & $10^7$ \\
         \hline
     \end{tabular}
     \caption{Parameters employed for the construction of the control variate.}
@@ -1142,12 +1142,15 @@ In one dimension,
 the underdamped limit of Langevin dynamics is well understood.
 Specifically, it is possible to show that the solution to the Poisson equation~\eqref{eq:poisson_equation},
 when multiplied by $\gamma$,
-converges as $\gamma \to 0$ to a limit $\phi_0$ in $L^2(\mu)$ which can be calculated simply using one-dimensional numerical integration.
-More precisely,
-the limiting solution reads $\phi_0(q,p) = \sign(p) \, \psi_0\bigl(H(q,p)\bigr)$,
+converges as $\gamma \to 0$ to a limit $\phi_0$ in $L^2(\mu)$ which can be calculated simply using one-dimensional numerical integration;
+see~\cite[Lemma 3.4]{MR2394704} and~\cite[Proposition 4.1]{roussel_thesis}
+for proofs of the convergence to $\phi_0$ in $L^2(\mu)$ using probabilistic and analysis arguments,
+respectively,
+and~\cite{MR2427108} for explicit calculations of $\phi_0$.
+The limiting solution reads $\phi_0(q,p) = \sign(p) \, \varphi_0\bigl(H(q,p)\bigr)$,
 where
 \[
-    \psi_0(E) = 2 \pi \int_{E_0}^{E \vee E_0} \frac{1}{S_{\rm und}(\mathcal E)} \, \d \mathcal E,
+    \varphi_0(E) = 2 \pi \int_{E_0}^{\max\{E_0, E\}} \frac{1}{S_{\rm und}(\mathcal E)} \, \d \mathcal E,
     \qquad S_{\rm und}(\mathcal E) = \int_{-\pi}^{\pi} P(q, \mathcal E) \, \d q, \qquad P(q, \mathcal E) = \sqrt {2 \bigl(\mathcal E - V(q)\bigr)},
 \]
 and $E_0 = \min_{q \in \torus} V(q)$.
@@ -1155,59 +1158,67 @@ In particular $\phi_0(q,p) = 0$ if $H(q,p) \leq E_0$,
 and
 \[
     \partial_p \phi_0(q, p)
-    = \sign(p) \, \psi_0'\bigl(H(q,p)\bigr) \, \partial_p H(q,p)
+    = \sign(p) \, \varphi_0'\bigl(H(q,p)\bigr) \, \partial_p H(q,p)
     =
     \begin{cases}
         0 & \text{ if $H(q,p) < E_0$}, \\
-        \frac{2 \pi \abs{p}}{S_{\rm und}\bigl(H(q,p)\bigr)} & \text{ if $H(q,p) > E_0$}.
+        \displaystyle \frac{2 \pi \abs{p}}{S_{\rm und}\bigl(H(q,p)\bigr)} & \text{ if $H(q,p) > E_0$}.
     \end{cases}
 \]
-For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in this section,
-the function $S(\cdot)$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108},
-and in general it can be calculated efficiently by numerical quadrature.
-In practice, given an implementation of $S_{\rm und}(\cdot)$ we calculate $\psi_0$ using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations}.
+For certain potentials,
+the function $S_{\rm und}(\dummy)$ can be calculated explicitly,
+and in general it can be approximated accurately by numerical quadrature.
+For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in~\cref{sub:numerical_results},
+for example, $S_{\rm und}(\dummy)$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108}.
+In practice, given an explicit expression or implementation of~$S_{\rm und}(\dummy)$,
+we calculate~$\varphi_0$ over a large interval $[0, E_{\max}]$ with $E_{\max} = 100$
+using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations} with default parameters.
+This returns an object containing an approximation of $\varphi_0$ at discrete values of $E$ automatically selected in order to meet a default accuracy threshold.
+Conveniently, this object can be evaluated at any $E \in [0, E_{\max}]$,
+in which case returns an approximation $\varphi_0(E)$ automatically obtained by high-dimensional interpolation from the discrete solution.
 
 \subsection{Numerical results}%
 \label{sub:numerical_results}
-We discretize the Langevin dynamics using the geometric Langevin algorithm studied in~\cite{MR2608370} which,
+We discretize the Langevin dynamics using the geometric Langevin algorithm introduced in~\cite{MR2608370} which,
 in the general multi-dimensional case, is based on the iteration
 \begin{align*}
-    & p_{n+1/2} = p_n - \left(\frac{\Delta t}{2}\right) \grad V(q_n),
-    \qquad q_{n+1/2} = q_n + \Delta t \, p_n,
-    \qquad \widetilde p_{n+1} = p_{n+1/2} - \left(\frac{\Delta t}{2}\right) \grad V(q_{n+1}), \\
-    & p_{n+1} = \exp \left(- \gamma \Delta t \right) \widetilde p_{n+1}
-    + \sqrt{2 \gamma \beta^{-1}} G_n, \qquad G_n = \int_{n \Delta t}^{(n+1)\Delta t} \e^{-\gamma \bigl((n+1)\Delta t-s\bigr)} \, \d \vect W_s,
+    & \vect p^{n+1/2} = \vect p^n - \left(\frac{\Delta t}{2}\right) \grad V(\vect q^n),
+    \quad \vect q^{n+1/2} = \vect q^n + \Delta t \, \vect p^n,
+    \quad \widetilde {\vect p}^{n+1} = \vect p^{n+1/2} - \left(\frac{\Delta t}{2}\right) \grad V(\vect q^{n+1}), \\
+    & \vect p^{n+1} = \exp \left(- \gamma \Delta t \right) \widetilde {\vect p}^{n+1}
+    + \sqrt{2 \gamma \beta^{-1}} \vect g^n, \qquad \vect g^n = \int_{n \Delta t}^{(n+1)\Delta t} \e^{-\gamma \bigl((n+1)\Delta t-s\bigr)} \, \d \vect w_s,
 \end{align*}
-% where $(G_n)_{n \geq 0}$ are independent $\mathcal N(0, I_d)$ random variables.
+supplemented with the initial condition $(\vect q^0, \vect p^0) \sim \mu$.
+The resulting discrete-time process $(\vect q^n, \vect p^n)_{n \in \nat}$ is an approximation of $(\vect q_{n \Delta t}, \vect p_{n \Delta t})_{n \in \nat}$.
 The first line can be viewed as a Strang splitting of the Hamiltonian part of the dynamics,
-while the second line is an exact discretization of the fluctuation/dissipation part.
-We write the terms~$(G_n)_{n\geq0}$ as stochastic integrals, instead of giving only their law,
+while the second line is an analytical integration of the fluctuation/dissipation part.
+We write the terms~$(\vect g^n)_{n\geq0}$ as stochastic integrals, instead of giving only their law,
 because they are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
 Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
 \[
-    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_{\vect p} \psi(q^{n}, p^{n}) \cdot
-    \widetilde {\vect G}_n, \qquad \widetilde {\vect G}_n = \vect W_{t_{n+1}} - \vect W_{t_n}.
+    I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_{\vect p} \psi(\vect q^{n}, \vect p^{n}) \cdot
+    \widetilde {\vect g}^n, \qquad \widetilde {\vect g}^n = \vect w_{t_{n+1}} - \vect w_{t_n},
 \]
-where $(\widetilde {\vect G}_n)_{n \geq 0}$ are $\mathcal N(0, I_d)$ random vectors correlated with $(\vect G_n)_{n \geq 0}$
-and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_{\vect p} \psi_{\vect e}(q_t, p_t) \cdot \d \vect W_t$.
-An explicit calculation using It\^o's isometry shows that the distribution of the vectors $(\vect G_n, \widetilde {\vect G}_n)_{n \geq 0}$,
-which are independent and identically distributed for different values of $n$, is given by
+where $(\widetilde {\vect g}^n)_{n \geq 0}$ are $d$-dimensional standard Gaussian random variables correlated with $(\vect g^n)_{n \geq 0}$
+and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_{\vect p} \psi_{\vect e}(q_t, p_t) \cdot \d \vect w_t$.
+An explicit calculation using It\^o's isometry shows that the vectors $\bigl((\vect g^n, \widetilde {\vect g}^n)\bigr)_{n \geq 0}$,
+which are independent and identically distributed for different values of $n$,
+are normally distributed with mean 0 and covariance matrix
 \[
-    \mathcal N
-    \left(\vect 0,
-        \begin{pmatrix}
-            \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) \mat I_d & \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\
-            \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d & \Delta t \, \mat I_d
-        \end{pmatrix}
-    \right).
+    \begin{pmatrix}
+        \displaystyle \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) \mat I_d
+        & \displaystyle \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\
+        \displaystyle  \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d
+        & \displaystyle \Delta t \, \mat I_d
+    \end{pmatrix}.
 \]
 
 % The correlation is obtained from It\^o's isometry:
 % \[
-%     \expect \bigl(G_n \widetilde G_n\bigr) = \expect \left( W_{\Delta t} \int_{0}^{\Delta t} \e^{-\gamma (\Delta t - s)} \, \d W_t \right)
+%     \expect \bigl(g_n \widetilde g_n\bigr) = \expect \left( w_{\Delta t} \int_{0}^{\Delta t} \e^{-\gamma (\Delta t - s)} \, \d w_t \right)
 %     = \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr).
 % \]
-% Therefore the covariance matrix the mean-zero normally distributed random vectors $(G_n, \widetilde G_n)_{n \geq 0}$,
+% Therefore the covariance matrix the mean-zero normally distributed random vectors $(g_n, \widetilde g_n)_{n \geq 0}$,
 % which are independent, is given by
 
 We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $J$ of trajectories.
@@ -1245,10 +1256,10 @@ but the benefits decrease as $\gamma$ increases.
         The data labeled ``MC/No control'' correspond to Monte Carlo simulations without a control variate,
         i.e.\ to the estimator $u(T)$ given in~\eqref{eq:simple_estimator}.
         The data labeled ``MC/Galerkin'' and ``MC/Underdamped'' correspond to the improved estimator~\eqref{eq:definition_control_variate},
-        with $\psi$ obtained using the approaches of~\cref{sub:galerkin_approach} and~\cref{sub:underdamped_approach},
+        with $\psi$ obtained using the approaches of~\cref{sub:galerkin_approach,sub:underdamped_approach},
         respectively.
-        Finally, the curve labeled ``Galerkin'' is the approximate diffusion coefficient obtained by the Galerkin method,
-        which is given by $\ip*{\widehat \Psi_N}{p}$ in the notation of \cref{sub:galerkin_approach}.
+        Finally, the curve labeled ``Galerkin'' is the approximate diffusion coefficient obtained by the Galerkin method alone,
+        which is given by~$\ip*{\widehat \Psi_N}{p}$ in the notation of \cref{sub:galerkin_approach}.
     }%
     \label{fig:effective_diffusion_langevin}
 \end{figure}
@@ -1265,7 +1276,7 @@ have a much smaller variance than~$u(t)$ throughout the simulation.
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
     \caption{
         Sample mean and sample standard deviation of the estimators $u(t)$ and $v(t)$,
-        for the friction parameter $\gamma = 10^{-4}$.
+        for the friction parameter $\gamma = 10^{-3}$.
         The approximate solution to the Poisson equation used for constructing the control variate appearing in $v(t)$ here
         is that given in \cref{sub:underdamped_approach}.
     }%
@@ -1286,10 +1297,11 @@ which is studied in~\cite{MR2793823,GPGSUV21}:
       & \d q_t = p_t \, \d t, \\
       & \d p_t = - V'(q_t) \, \d t + \frac{\sqrt{\gamma}}{\nu} \, z_t \, \d t, \\
       & \d z_t = - \frac{\sqrt{\gamma}}{\nu} \, p_t  \, \d t
-       -   \frac{1}{\nu^2} \, z_t \, \d t + \sqrt{\frac{2\beta^{-1}}{\nu^2}} \, \d W_t.
+       -   \frac{1}{\nu^2} \, z_t \, \d t + \sqrt{\frac{2\beta^{-1}}{\nu^2}} \, \d w_t,
   \end{aligned}
 \right.
 \end{equation}
+where $z_t \in \real$.
 A functional central limit theorem applies also to this dynamics:
 the diffusively rescaled position process $(\varepsilon q_{t/\varepsilon^2})_{t \geq 0}$ converges in distribution,
 in the Banach space of continuous functions over a bounded time interval,
@@ -1302,7 +1314,7 @@ and to assess in this way the validity of the asymptotic scaling of $D^{\gamma,\
 An application of It\^o's formula gives
 \[
     q_T - q_0 = \int_{0}^{T} p_t \, \d t
-    = \phi(q_0, p_0) - \phi(q_t, p_t) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \phi(q_t, p_t) \, \d t,
+    = \phi(q_0, p_0, z_0) - \phi(q_T, p_T, z_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \phi(q_t, p_t, z_t) \, \d t,
 \]
 where $\phi$ is now the solution to the Poisson equation $- \mathcal L_{\rm GLE} \phi = p$,
 with $\mathcal L_{\rm GLE}$ the generator of~\eqref{eq:gle}.
@@ -1310,16 +1322,20 @@ This suggests using the following estimator for the mobility:
 \begin{subequations}
 \begin{equation}
     \label{eq:improved_estimator_gle}
-    v(T) = d_{\psi}+ \frac{1}{2T} \left( \abs*{q_T - q_0}^2 - \abs{\xi_T}^2\right),
+    v(T) = d[\psi] + \frac{1}{2T} \left( \abs*{q_T - q_0}^2 - \abs{\xi_T}^2\right),
+    \qquad d[\psi] := \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int \abs{\partial_z \psi}^2 \, \d \mu_{\rm GLE}.
 \end{equation}
-where $d_{\psi} := \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int \abs{\partial_z \psi}^2 \, \d \mu_{\rm GLE}$ and
+where
 \begin{align}
     \label{eq:definition_control_variate_gle}
-    \xi_T = \psi(q_0, p_0) - \psi(q_T, p_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \psi(q_t, p_t) \, \d W_t,
+    \xi_T = \psi(q_0, p_0, z_0) - \psi(q_T, p_T, z_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \psi(q_t, p_t, z_t) \, \d w_t,
 \end{align}
 \end{subequations}
-for an approximate solution $\psi$ to the Poisson equation.
-Here $\mu_{\rm GLE}(\d x) \propto \exp \left( - H(q,p) + \frac{z^2}{2}\right) \, \d x$ is the invariant probability distribution of~\eqref{eq:gle}.
+for an approximate solution $\psi$ to the Poisson equation,
+and with $\mu_{\rm GLE}$ the invariant probability distribution of~\eqref{eq:gle}:
+\[
+    \mu_{\rm GLE}(\d q \, \d p \, \d z) \propto \exp \biggl( - \beta \left( H(q,p) + \frac{z^2}{2} \right) \biggr) \, \d q \, \d p \, \d z.
+\]
 
 In~\cite{GPGSUV21},
 we employ an asymptotic expansion of the form
@@ -1330,16 +1346,18 @@ in order to study the underdamped limit
 and we derive expressions for $\phi_0$ and $\phi_1$
 which enable to show formally that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
 with a prefactor that can be calculated efficiently and is different from $D_{\rm und}$.
-Although the assumed asymptotic expansion is shown to be invalid in~\cite{MR1088478},
-our numerical results in this section demonstrate that this expansion can be leveraged for constructing an efficient control variate in~\eqref{eq:definition_control_variate_gle}.
+Although the assumed asymptotic expansion is shown to be invalid in~\cite{GPGSUV21}
+because $\mathcal L_{\rm GLE} \phi_1 \notin \lp{2}{\mu}$,
+our numerical results in this section demonstrate that this expansion can still be leveraged for constructing an efficient control variate $\xi_T$ in~\eqref{eq:definition_control_variate_gle}.
 Specifically,
-we obtain a considerable variance reduction by letting $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
-We refer to~\cite{GPGSUV21} for the expressions of the $\phi_0$ and $\phi_1$.
+we obtain a considerable reduction in variance by choosing in~\eqref{eq:definition_control_variate_gle} as $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
+We refer to~\cite[Section~4.3.2] {GPGSUV21} for the expressions of the functions $\phi_0$ and $\phi_1$.
 
 \Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect u(t)$ and $\expect v(t)$ with respect to time,
 for a value of~$\nu = 2$ that is sufficiently large to observe a different asymptotic behavior than that of standard Langevin dynamics.
-These expectations are estimated from 5000 trajectories,
-and the associated $99.7\%$ confidence intervals (assuming Gaussianity) are depicted.
+These expectations are estimated from 5000 independent trajectories,
+and the associated $[m - 3 s, m + 3 s]$ confidence intervals (corresponding to a confidence of approximately $99.7\%$ assuming Gaussianity) are depicted,
+where $m$ and $s$ are the sample mean and sample standard deviation.
 It is evident from the figures that the control variate enables considerable improvements,
 both in terms of bias and variance.
 Furthermore, we observe that the effective diffusion coefficient for $\gamma = 10^{-5}$
@@ -1351,7 +1369,7 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
     \includegraphics[width=0.495\linewidth]{figures/time-gle-5.pdf}
     \caption{%
         Expectations of the naive~\eqref{eq:simple_estimator} and improved~\eqref{eq:improved_estimator_gle} estimators for generalized Langevin dynamics
-        and associated confidence $99.7\%$ intervals,
+        and associated ``$m \pm 3 s$'' confidence intervals,
         estimated from $5000$ trajectories.
         The left panel is for $\gamma = 10^{-4}$ and the right panel is for $\gamma = 10^{-5}$.
     }
@@ -1361,7 +1379,7 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
     \centering
     \includegraphics[width=0.75\linewidth]{figures/mobility_gle.pdf}
     \caption{%
-        Expectation and $99.7\%$ confidence intervals for $v(T)$ in the underdamped limit,
+        Expectation and ``$m \pm 3 s$'' confidence intervals for $v(T)$ in the underdamped limit,
         in the case of generalized Langevin dynamics with $\nu = 2$.
         Since $T$ scales as $1/\gamma$ with a large prefactor,
         it is expected that $\expect v(T) \approx D^{\gamma,\nu}$.
@@ -1392,10 +1410,10 @@ and $D^{\gamma}_{12} = 0$ because if $\bigl((q_t, p_t)\bigr)_{t \geq 0}$ is a we
 then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
 and thus
 \begin{align*}
-    D^{\gamma}_{12} 
-    &= \frac{1}{2T} \lim_{\tau \to \infty} 
+    D^{\gamma}_{12}
+    &= \frac{1}{2T} \lim_{\tau \to \infty}
     \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
-    &= - \frac{1}{2T} \lim_{\tau \to \infty} 
+    &= - \frac{1}{2T} \lim_{\tau \to \infty}
     \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
     = - D^{\gamma}_{12}
 \end{align*}
@@ -1422,16 +1440,16 @@ where for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \
 the notation $f_1 \otimes f_2$ denotes the function $(q,p) \mapsto f_1(q_1,p_1) \, f_2(q_2,p_2)$.
 For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
-Note that $d_{\psi}$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
+Note that $d[\psi]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
-In particular $d_{\psi}$ takes different values than in the one-dimensional setting:
+In particular $d[\psi]$ takes different values than in the one-dimensional setting:
 denoting by $\psi$ an approximation of $\phi$,
 and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
 used in the control variate~\eqref{eq:definition_control_variate},
 is given by $\psi_{\vect e}(q,p) = \psi(q_1, p_1)$,
 we have
 \[
-    d_{\psi_{\vect e}}
+    d[\psi_{\vect e}]
     = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
     = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
 \]
@@ -2020,10 +2038,10 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 %     Let $\vect e$ be a unit vector,
 %     and let $(p^{\vect e}_t)$ be a solution to
 %     \begin{align*}
-%         \d p^{\vect e}_t &= \norm{\grad V}[\infty] \vect e \, \d t - \gamma \, p^{\vect e}_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
+%         \d p^{\vect e}_t &= \norm{\grad V}[\infty] \vect e \, \d t - \gamma \, p^{\vect e}_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d w_t,
 %         \qquad p^{\vect e}_0 = p_0.
 %     \end{align*}
-%     where $W_t$ is the same Brownian motion as in~\eqref{eq:langevin_p}.
+%     where $w_t$ is the same Brownian motion as in~\eqref{eq:langevin_p}.
 %     Then we have
 %     \begin{align}
 %         \notag
@@ -2038,7 +2056,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 %     Letting $p_{\infty} = \frac{1}{\gamma}\norm{V}[\infty] \vect e$,
 %     we rewrite the equation for $p^{\vect e}_t$ as
 %     \begin{align*}
-%         \d \left( p^{\vect e}_t - p_{\infty} \right) = - \gamma \, (p^{\vect e}_t - p_{\infty}) \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d W_t,
+%         \d \left( p^{\vect e}_t - p_{\infty} \right) = - \gamma \, (p^{\vect e}_t - p_{\infty}) \, \d t + \sqrt{2 \gamma \beta^{-1}} \, \d w_t,
 %         \qquad p^{\vect e}_0 = p_0,
 %     \end{align*}
 %     the solution of which is an Ornstein--Uhlenbeck (OU) process

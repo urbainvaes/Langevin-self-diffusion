@@ -391,13 +391,13 @@ which enables to circumvent regularity issues encountered in~\cite{roussel_thesi
 % is that their variance does not vanish as the simulation time increases,
 % and so a large number of independent replicas are required in order to reduce statistical errors.
 
-Yet another possible approach for estimating the mobility is to rely on a numerical approximation of the Green--Kubo formalism;
+Yet another possible approach for estimating the mobility is to rely on a numerical approximation of the Green--Kubo formula;
 see \cite[Section 5.1.3]{MR3509213} for background information on this subject.
 The bias associated with this approach is studied carefully in~\cite{LMS16},
 and bounds on the variance are obtained in~\cite{PSW21}.
-The main difficulty of this method is that it leads to estimators
-with a variance that increases linearly with the integration time.
-\textcolor{red}{Add more motivations}
+While more general, in that it applies to all transport coefficients,
+this method leads to estimators with a variance that increases linearly with the integration time.
+\textcolor{red}{Add more motivations?}
 
 The control variate based on an approximate solution to~\eqref{eq:poisson_equation} is a building block of the methodology we propose for improving Monte Carlo estimators based on~\eqref{eq:naive_estimator},
 but the converse viewpoint can also be adopted:
@@ -1442,7 +1442,7 @@ For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
 Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
-The following result result establishes that~$\phi_\delta \to \phi_0$ in $H^1(\mu_0)$ as~$\delta \to 0$.
+The following result result establishes that~$\grad_{\vect p} \phi_\delta \to \grad_{\vect p} \phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
 % In particular $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
 % denoting by $\psi$ an approximation of $\phi$,
 % and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
@@ -1456,16 +1456,28 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $H^1(\m
 % \]
 
 \begin{proposition}
+    \label{proposition:convergence_gradient}
     Let $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L^{\delta} \phi_{\delta} = p_1$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
     in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
     Then there exists $C$ independent of $\delta$ and $\gamma$ such that
-    \begin{equation}
-        \label{eq:convergence_mobility_delta}
-        \forall (\gamma, \delta) \in (0, \infty) \times [-1, 1], \qquad
-        \norm*{\phi_\delta - \phi_0}[H^1(\mu_{0})]
-        \leq C \delta \gamma^{-2}.
-    \end{equation}
+    \begin{align}
+        \label{eq:convergence_delta}
+        \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
+        \norm*{\phi_\delta - \phi_0}[L^2(\mu_{\delta})]
+        \leq C\lvert \delta \rvert \left(
+              \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
+            + \norm{\phi_0}[L^2(\mu_{\delta})]
+        \right)
+    \end{align}
+    and
+    \begin{align}
+        \label{eq:convergence_gradient}
+        \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
+        % &\norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+        \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
+        \leq C \lvert \delta \rvert  \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] .
+    \end{align}
     % and denote
     % \[
     %     d^{\delta}_{\phi_\delta} = \int \abs{\grad \phi_\delta}^2 \, \d \mu_{\delta},
@@ -1473,128 +1485,103 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $H^1(\m
     %     d^{\delta}_{\phi_0} = \int \abs{\grad \phi_0}^2 \, \d \mu_{\delta}.
     % \]
 \end{proposition}
+\begin{remark}
+    There exist appropriate constants $c_1, c_2 > 0$ such that
+    \[
+        \forall \delta \in [-1, 1], \qquad
+        c_1 \norm{\dummy}[L^2(\mu_{\delta})] \leq \norm{\dummy}[L^2(\mu_0)] \leq c_2 \norm{\dummy}[L^2(\mu_{\delta})],
+    \]
+    and so the inequalities~\eqref{eq:convergence_delta} and~\eqref{eq:convergence_gradient} are valid also with~$\norm{\dummy}[L^2(\mu_{\delta})]$ replaced by $\norm{\dummy}[L^2(\mu_{0})]$.
+\end{remark}
 \begin{proof}
+    Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
     We consider the decomposition~\eqref{eq:generator} of the generator and note that
     \begin{equation}
         \label{eq:remainder_expansion}
-        \mathcal L^{\delta}(\phi_\delta - \phi_0)
+        \mathcal L^{\delta}(\phi_\delta - \phi_0^{\delta})
         = - \delta \, \mathcal L_1 \phi_0
         = \delta \, \grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0.
     \end{equation}
-    Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
-    Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
-    we obtain
-    \begin{align}
-        \notag
-        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]^2
-        &\leq \delta \norm*{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
-        \label{eq:intermediate_delta}
-        &\leq C \delta \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
-    \end{align}
-    for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$.
-    Throughout this proof, $C$ denotes a constant independent of $\gamma$ and $\delta$,
+    It follows from~\eqref{eq:remainder_expansion} that
+     \begin{align*}
+         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+         &\leq \lvert \delta \rvert \norm*{(\mathcal L^{\delta})^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)]
+         \norm{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
+     \end{align*}
+     Theorem 1 in \cite{roussel2018spectral} establishes that $\norm*{(\mathcal L^{\delta})^{-1}}[\mathcal B \left( L^2_{0}(\mu_{\delta})\right)] $ is bounded from above by $K(\delta) \max\{\gamma, \gamma^{-1}\}$ for all~$\gamma \in (0, \infty)$.
+     An inspection of the proof of this result reveals that $K(\delta)$ depends on $\delta$ only through the Poincaré constant of $\mu_{\delta}$,
+     and that $\sup \{K(\delta): -1 \leq \delta \leq 1\} < \infty$.
+     Therefore, we obtain that
+     \begin{align}
+         \label{eq:convergence_l2}
+         \forall (\gamma, \delta) \in (0, \infty) \times [-1, 1], \qquad
+         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+         &\leq C \lvert \delta \rvert \max\{\gamma, \gamma^{-1}\}
+         \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
+     \end{align}
+    Here and throughout this proof, $C$ denotes a constant independent of $\gamma$ and $\delta$,
     whose value can change from occurrence to occurrence.
-    Since the $\vect q$ marginal of~$\mu_{\delta}$ is equivalent to the Lebesgue measure on $\torus^d$,
-    with a smooth positive density that can be bounded, both from below by a strictly positive constant and from above, independently of $\delta$ for all $\delta \in [-1, 1]$,
-    we deduce that there exists a constant $C_P > 0$ such that $\mu_{\delta}$ satisfies the Poincaré inequality uniformly:
-    \begin{align}
-        \label{eq:poincare_for_mudelta}
-        \forall \delta \in [-1, 1], \qquad
-        \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \leq C_P \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})].
-    \end{align}
-    Therefore, going back to~\eqref{eq:intermediate_delta},
-    we have
-    \begin{equation}
-        \label{eq:bound_gradient_of_difference}
-        \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0^{\delta}}[L^2(\mu_{\delta})]
-        \leq C \delta \gamma^{-1} \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
-    \end{equation}
-    There exist appropriate constants $c_1, c_2 > 0$ such that
-    \(
-        c_1 \norm{\dummy}[L^2(\mu_{\delta})] \leq \norm{\dummy}[L^2(\mu_0)] \leq c_2 \norm{\dummy}[L^2(\mu_{\delta})]
-    \)
-    for all $\delta \in [-1, 1]$,
-    and so $\norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \leq C \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{0})]$.
-    Since $\phi_0$ solves $- \mathcal L_0 \phi_0 = p_1$,
-    we have
-    \begin{align}
-        \notag
-        \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_0)]^2
-        = - \ip{\phi_0}{\mathcal L \phi_0}[L^2(\mu_0)] = \ip{\phi_0}{p}[L^2(\mu_0)]
-        \leq \beta^{-1/2} \norm{\phi_0}[L^2(\mu_0)]
-        \label{eq:bound_above_effective_diffusion}
-    \end{align}
-    Therefore,
-    the right-hand side of~\eqref{eq:bound_gradient_of_difference} is bounded from above by $C \delta \gamma^{-2}$.
-    (A bound like~\eqref{eq:bound_above_effective_diffusion}, but with a slightly better constant on the right-hand side,
-    could in fact be obtained by employing the inequality~$\gamma D^{\gamma}_{\vect e} \leq D^{\rm ovd}_{\vect e}$ discussed in the introduction,
-    but this is not necessary for our purposes.)
-
-    In order to complete the proof~\eqref{eq:convergence_mobility_delta},
-    it remains to show $\norm{\phi_{\delta} - \phi_0}[L^2(\mu_{0})] \leq C \delta \gamma^{-2}$.
-    By the triangle inequality,
-    it holds that
-    \[
-        \norm{\phi_{\delta} - \phi_0}[L^2(\mu_{\delta})]
-        \leq
-        \norm*{\phi_{\delta} - \phi^{\delta}_0}[L^2(\mu_{\delta})]
-        + \norm*{\phi^{\delta}_0 - \phi_{0}}[L^2(\mu_{\delta})].
-    \]
-    The first term can be bounded by using~\eqref{eq:poincare_for_mudelta}.
-    For the second term, note that since
+    In order to show~\eqref{eq:convergence_delta},
+    it remains to bound $\norm*{\phi_0^{\delta}- \phi_0}$;
+    the result then follows from the triangle inequality.
+    Since
     \(
         \d \mu_{\delta} / \d \mu_0  = 1 + \delta f_{\delta}(q_1, q_2)
     \)
     for some appropriate smooth function~$f_{\delta}$ that is uniformly bounded from above over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$,
-    and so
+    we can write
     \[
         \norm*{\phi_0^\delta - \phi_0} [L^2(\mu_\delta)]
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \, \d \mu_{\delta} }
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \,\bigl( 1 + \delta f_{\delta}(q_1, q_2) \bigr)\d \mu_{0}}
-        \leq C \delta \norm{\phi_0}[L^2(\mu_0)] \leq C \delta \gamma^{-1},
+        \leq C \lvert \delta \rvert \norm{\phi_0}[L^2(\mu_0)].
     \]
-    which concludes the proof.
+
+    We now show~\eqref{eq:convergence_gradient}.
+    Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
+    noting that $\grad_{\vect p} \phi_0^{\delta} = \grad_{\vect p} \phi_0$
+    and using~\eqref{eq:convergence_l2},
+    we obtain
+    \begin{align*}
+        \notag
+        \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2
+        &\leq \lvert \delta \rvert \norm*{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
+        \label{eq:intermediate_delta}
+        &\leq C \lvert \delta \rvert \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
+        &\leq  C \delta^2 \max\{\gamma, \gamma^{-1}\} \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2.
+    \end{align*}
+    for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$,
+    which is the claimed result.
 \end{proof}
 
-Using~\eqref{eq:bound_gradient_of_difference},
+Using~\cref{proposition:convergence_gradient},
 we deduce that
 \[
-    \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}} 
+    \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
     \leq C \delta \gamma^{-1}
     \Rightarrow
-    \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]} 
+    \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]}
     \leq  C \delta \gamma^{-1} (2 + C \delta \gamma^{-1}),
 \]
-for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$,
+for all $(\gamma, \delta) \in (0, 1) \times [-1, 1]$,
 since if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$.
-In particular, there exists $D_{} > 0$ such that
-\[
-    \forall (\gamma, \delta) \in (0, \infty) \times [-k, k], \qquad
-    d[\phi_{\delta}] \geq 
-\]
+In particular, for $\gamma/\delta$ fixed and sufficiently small,
+it holds that $\liminf_{\gamma \to 0} \gamma D^{\gamma}_{\vect e} > 0$;
+that is, the effective diffusion coefficient scales as $\gamma^{-1}$.
 
-it holds that $\gamma d[\phi_{\delta}] \to 0$ in the limit as $\gamma \to 0$ provided that.
-
-Combining the upper bound in~\cref{proposition:asymptotic_variance} with~\eqref{eq:bound_gradient_of_difference},
-we deduce that,
-
-if~$\psi_{\vect e} = \phi_0$ in the control variate~\eqref{eq:definition_control_variate},
-then
+In addition, if the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
+i.e.\ if $\psi_{\vect e} = \phi_0$ in the control variate~\eqref{eq:definition_control_variate},
+then by~\cref{proposition:asymptotic_variance} and~\eqref{eq:convergence_gradient}
+we have
 \begin{align*}
     \lim_{T \to \infty} \var \bigl(v(T)\bigr)
-    &\leq 4 \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}])
-    \leq C \delta^2 \gamma^{-4}
+    &\leq 4 \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\delta} - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2 (d[\phi_{\delta}] + d[\phi_0]) \\
+    &\leq 4 C \delta^2 \gamma^{-1} \beta^{-1} \norm{\grad_{\vect p} \psi_{0}}^2 (d[\phi_{\delta}] + d[\phi_0])
+    = 4 C \delta^2 \gamma^{-2} d[\phi_{0}] (d[\phi_{\delta}] + d[\phi_0]),
 \end{align*}
-for an appropriate constant $C$.
-Given that $\expect \bigl( v(T) \bigr)$
-
-assuming the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
-the asymptotic variance is bounded from above by $C \delta^2 \gamma^{-4}$,
-which suggests a scaling as $\delta/\gamma$ for the asymptotic relative standard deviation
-(relative to the limit as $\delta \to 0$).
-\textcolor{red}
-{This still needs improvements. Can we show, for example, that if we take $\delta \propto 1/\gamma$,
-the relative standard deviation remains bounded from above as $\gamma \to 0$?}
+which shows that the relative standard deviation scales at least as by $\lvert \delta \rvert / \gamma$ (but possibly faster)
+in the limit as $\lvert \delta \rvert/\gamma \to 0$,
+provided that $\delta \to [-1, 1]$ and $\gamma \in (0, 1)$.
 
 \Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for different values of $\delta$.
 It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,

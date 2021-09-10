@@ -505,6 +505,14 @@ the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$:
     &= d[\psi_{\vect e}] + \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu \\
     &= \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu = D_{\vect e}^{\gamma}.
 \end{align*}
+
+\begin{remark}
+    \label{remark:cost_control_variate}
+    Notice that calculating the control variate $\xi_T$ in~\eqref{eq:definition_control_variate} requires
+    to evaluate $\psi(q_t, p_t)$ at times 0 and $T$ and the gradient $\grad_{\vect p} \psi(\vect q_t, \vect p_t)$ along the full trajectory $\bigl((\vect q_t, \vect p_t)\bigr)_{0\leq t\leq T}$.
+    It is therefore important for efficiency that $\grad_{\vect p} \psi$ is not computationally expensive to evaluate.
+\end{remark}
+
 \begin{remark}
     In view of~\eqref{eq:ito_control_variate},
     it would have been equivalent, in the case where $\psi_{\vect e}$ is smooth,
@@ -1027,6 +1035,8 @@ through a Fourier/Hermite Galerkin method in \cref{sub:galerkin_approach} and,
 through formal asymptotic expansions for the underdamped regime in \cref{sub:underdamped_approach}.
 We then present numerical results in \cref{sub:numerical_results}
 and discuss an extension of our approach to generalized Langevin-type dynamics in \cref{sub:generalization_to_generalized_langevin_dynamics}.
+Since we are concerned only with one-dimensional dynamics in this section,
+we employ the scalar notation $q, p, \phi, \psi, D^{\gamma}$ in place of $\vect q, \vect p, \phi_{\vect e}, \psi_{\vect e}, D^{\gamma}_{\vect e}$.
 
 \subsection{Fourier/Hermite spectral method}%
 \label{sub:galerkin_approach}
@@ -1081,25 +1091,23 @@ and $H_j$ are rescaled normalized Hermite functions,
   \qquad \psi_j (p) := (2 \pi)^{-\frac{1}{4}} \frac{(-1)^j}{\sqrt{j!}} \e^{\frac{p^2}{4}} \, \derivative*{j}{p^j} \, \Bigl( \e^{- \frac{p^2}{2}} \Bigr).
 \end{equation}
 The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
-which is a scaling parameter that can be adjusted to better resolve $\Psi_N$.
+which is a scaling parameter that can be adjusted in order to better resolve $\Psi_N$.
+% At the numerical level,
+% the function $\Psi_N$ is stored as an array of Fourier/Hermite coefficients for the basis~\eqref{eq:basis_functions}.
 
-In practice,
-we discretize $\Psi_N$ in the Fourier/Hermite basis~\eqref{eq:basis_functions}.
-At the continuous-time level,
-calculating the control variate $\xi_T$ in~\eqref{eq:definition_control_variate} requires to evaluate $\psi(q_t, p_t)$
-at times 0 and $T$,
-and the gradient $\partial_p \psi( q_t,  p_t)$ along the full trajectory $\bigl(( q_t,  p_t)\bigr)_{0\leq t\leq T}$.
-In practice, when $\psi = \Psi_N$ is given by a series expansion
-
-Therefore, at the discrete-time level (see \cref{sub:numerical_results} below for more details),
-the control variate is calculated from a finite number of time steps.
-
-since evaluating Fourier/Hermite series as part of a Monte Carlo method is too computationally expensive,
-the approximate solution $\Psi_N$ is pre-calculated over a Cartesian grid with vertices
+As mentioned in \cref{remark:cost_control_variate},
+calculating realizations of the control variate requires to evaluate the derivative $\partial_p \psi(q_t, p_t)$ along full paths of the solution to Langevin dynamics.
+If $\psi_{\vect e} = \Psi_N$ and its gradient are stored as arrays of Fourier/Hermite coefficients,
+this is computationally expensive,
+because an evaluation of either function at a configuration $(q, p)$ requires to evaluate all the basis functions~\eqref{eq:basis_functions} at this configuration.
+Therefore, in practice the approximate solution~$\Psi_N$ and its gradient are discretized, in a preprocessing step,
+over a Cartesian grid with vertices
 \[
     (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
 \]
-From the values of $\Psi_N$ at these points,
+The domain in the $p$ direction is truncated at $-L_p$ and $L_p$,
+and the parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
+From the values of~$\Psi_N$ at these points,
 a bilinear interpolant $\widehat \Psi_N$ is defined over the domain $[-\pi, \pi] \times [-L_p, L_p]$.
 That is, given $(q, p)$, the function evaluation $\Psi_N(q, p)$ is approximated by
 \begin{align*}
@@ -1110,7 +1118,10 @@ That is, given $(q, p)$, the function evaluation $\Psi_N(q, p)$ is approximated 
 \end{align*}
 where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$, and $q_i = i \Delta q$, $p_j = j \Delta p$.
-The parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
+We emphasize that,
+since accessing an array element in an operation with time complexity~$\mathcal O(1)$ with respect to the length of the array,
+the computational cost of evaluating~$\widehat \Psi_N$ at a point is independent of $N_q$ and $N_p$.
+
 The approximate effective diffusion coefficient $d[\psi]$,
 which enters in the definition~\eqref{eq:improved_estimator} of the estimator~$v(T)$,
 is calculated based on this interpolant by direct Monte Carlo simulation.
@@ -1127,7 +1138,7 @@ The parameters employed for the construction of the control variate are summariz
         \hline
         \# discretization points in $p$ & $N_p$ & 500 \\
         \hline
-        Truncation size of domain & $L_p$ & 9 \\
+        Truncation size of domain & $L_p$ & $9 \sqrt{\beta}$\\
         \hline
         \# samples for the calculation of $d[\psi]$ & & $10^7$ \\
         \hline
@@ -1245,7 +1256,11 @@ The two control variate approaches yield computational benefits in different reg
 the control variate constructed from the Fourier/Hermite approximation of the solution to Poisson equation~\eqref{eq:poisson_equation}
 enables a variance reduction by a factor more than 100 for $\gamma \geq 10^{-2}$,
 but this factor decreases as $\gamma \to 0$.
-In contrast, the control variate constructed using the ``underdamped'' strategy presented in \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered ($10^{-5}$),
+This is not surprising since,
+if the basis~\eqref{eq:basis_functions} is fixed with respect to $\gamma$,
+then the accuracy of the Galerkin method~\eqref{eq:saddle_point_formutation} becomes worse and worse as $\gamma \to 0$;
+see~\cite{roussel2018spectral}.
+In contrast, the control variate constructed using the ``underdamped'' strategy of \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered ($10^{-5}$),
 but the benefits decrease as $\gamma$ increases.
 
 \begin{figure}[ht]
@@ -1632,9 +1647,10 @@ in which purely deterministic Galerkin methods are typically inaccurate.
 
 The two-dimensional setting is much more challenging because of the high dimensionality of the state space of the dynamics
 and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
-Nevertheless, the control variates developed in for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
+Nevertheless, the control variates developed for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
 and we show by means of numerical experiments that
-they lead to estimators with reduced variance provided that the non-separable part of the potential is small with respect to \textcolor{red}{$\gamma$ (or a power of $\gamma$?)}.
+they lead to estimators with reduced variance provided that
+the parameter multiplying the non-separable part of the potential is small with respect to $\gamma$.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%

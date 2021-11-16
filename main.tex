@@ -18,9 +18,13 @@
 \usepackage[colorlinks=true,citecolor=blue]{hyperref}
 \usepackage[nameinlink,capitalise]{cleveref}
 
-\usepackage[style=trad-abbrv,doi=false,url=false,isbn=false,backend=biber]{biblatex}
+\usepackage[style=trad-abbrv,doi=true,url=false,isbn=false,backend=biber]{biblatex}
 \DeclareFieldFormat{volume}{volume \textbf{#1}}
 \DeclareFieldFormat[article]{volume}{\textbf{#1}}
+\DeclareFieldFormat[book]{note}{}
+\DeclareFieldFormat[book]{pages}{}
+\renewcommand*{\bibfont}{\footnotesize}
+% \AtEveryBibitem{\clearfield{volume}\clearfield{issue}\clearfield{pages}\clearfield{series}\clearfield{number}}
 \addbibresource{main.bib}
 
 \usepackage{tikz}
@@ -184,7 +188,8 @@
     first in simple one-dimensional settings
     and then for two-dimensional Langevin dynamics.
     Our results corroborate previous numerical evidence that
-    the mobility scales as~$\gamma^{-\alpha}$ in the low friction regime for a simple non-separable potential.
+    the mobility scales as~$\gamma^{-\\sigma}$, with $0 < \sigma \leq 1$,
+    in the low friction regime for a simple non-separable potential.
 \end{abstract}
 
 \section{Introduction}%
@@ -217,7 +222,7 @@ and~$\vect w_t$ is a standard $d$-dimensional Brownian motion.
 % keeping in mind that asymptotic results for the case $m \neq 1$ can be deduced from this transformation;
 % see~\cite[Section 2.2.4]{MR2681239} for a more detailed motivation of this simplification.
 % keeping in mind that results obtained in the limit;
-We recall that the dynamics~\eqref{eq:langevin} is ergodic with respect to the Boltzmann--Gibbs measure
+The dynamics~\eqref{eq:langevin} is ergodic with respect to the Boltzmann--Gibbs probability measure
 \begin{equation}
     \label{eq:invariant_measure}
     \mu(\d \vect q \, \d \vect p) = \frac{1}{Z} \exp \bigl( - \beta H(\vect q, \vect p)  \bigr) \, \d \vect q \, \d \vect p,
@@ -227,11 +232,12 @@ with $Z$ the normalization constant.
 It will be convenient to also introduce the marginal densities
 \begin{equation}
     \label{eq:definition_prob_measures}
-    \nu(\d \vect q) = \frac{\e^{- \beta V(\vect q)} \, \d \vect q}{\int_{\torus^d}\e^{-\beta V(\widetilde {\vect q})} \d \widetilde {\vect q}},
+    \nu(\d \vect q) = \frac{\e^{- \beta V(\vect q)} \, \d \vect q}{\int_{\torus^d}\e^{-\beta V}},
     \qquad \kappa(\d \vect p) = \left( \frac{\beta}{2 \pi} \right)^{d/2}\exp \biggl( - \beta \frac{\abs*{\vect p}^2}{2} \biggr) \d \vect p.
 \end{equation}
 
-The mobility in direction $\vect e$ for dynamics~\eqref{eq:langevin} provides information on the behavior of the system
+The mobility in direction $\vect e \in \real^d$ (with $|e| = 1$)
+for the dynamics~\eqref{eq:langevin} provides information on the behavior of the system
 in response to an external forcing $\eta \vect e$ with magnitude~$\eta$ on the velocity process.
 By analogy with macroscopic laws,
 it is defined as the proportionality constant,
@@ -245,9 +251,21 @@ the mobility in direction $\vect e$ is defined mathematically as
 \end{equation}
 where $\mu_{\eta}$ is the invariant probability distribution of~\eqref{eq:langevin} when
 an additional drift term $\eta \vect e$ is present on the right-hand side of~\eqref{eq:langevin_p}.
-Except when $\eta = 0$ in which case we recover~\eqref{eq:invariant_measure},
+Except when $\eta = 0$, in which case we recover~\eqref{eq:invariant_measure},
 the measure~$\mu_{\eta}$ is not known explicitly,
 and so $M_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
+Interestingly,
+the mobility coincides
+(up to the factor $\beta$)
+with the so-called effective diffusion coefficient associated with the equilibrium dynamics~\eqref{eq:langevin},
+which opens the door to a simple Monte Carlo approach for its estimation.
+This link is made precise in the next paragraph, 
+where we also define the effective diffusion coefficient.
+The equation relating mobility and diffusion is called Einstein's relation,
+and its derivation in simple settings dates back to Sutherland~\cite{sutherland1905lxxv}, Einstein~\cite{einstein1905molekularkinetischen} and Smoluchowski~\cite{von1906kinetischen} in the early 1900s.
+For a rigorous justification of the relation in the specific setting of the Langevin dynamics~\eqref{eq:langevin},
+we refer to~\cite[Section 5.2]{MR3509213}; see also \cite[Section 3]{LMS16} and~\cite[Chapter 9]{pavliotis2011applied}.
+
 % It can be shown, using the characterization in terms of the solution to a Poisson equation
 % that the function $\vect e \mapsto M^{\gamma}_{\vect e}$ is a quadratic function of $
 % Employing an expansion of~$\mu_{\eta}$ in powers of~$\eta$,
@@ -262,14 +280,49 @@ and so $M_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration
 %     = M^{\gamma}_{\vect e_1 + \vect e_2} - M^{\gamma}_{\vect e_1 - \vect e_2}.
 % \]
 
-It can be shown that the mobility coincides with the so-called effective diffusion coefficient associated with the equilibrium dynamics~\eqref{eq:langevin},
-up to the factor $\beta$.
-More precisely,
+It can be shown that a functional central limit theorem holds for the equilibrium Langevin dynamics~\eqref{eq:langevin},
 the diffusively rescaled position process $(\varepsilon \vect q_{t/\varepsilon^2})_{t\geq0}$ converges as $\varepsilon \to 0$,
 weakly in the space of continuous functions over compact time intervals,
-to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamma}}$,
+to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamma}}$ -- the effective diffusion tensor --
 whose entries are related to the mobility by the equation $D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}$.
-It follows from the definition of $\mat D^{\gamma}$ that, for any $t > 0$,
+The first claim, on convergence of the rescaled position process to a Brownian motion,
+may be obtained using the homogenization technique pioneered by Bhattacharya in~\cite{MR663900},
+which hinges on the functional central limit theorem for martingales~\cite{MR668684};
+see also~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
+and~\cite[Theorem 2.5]{MR2793823} for a full homogenization proof for the generalized Langevin equation.
+The effective diffusion coefficient
+can be expressed in terms of the solution to a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
+which is given by
+\begin{equation}
+    \label{eq:decomposition_generator}
+    \mathcal L
+    = \vect p \cdot \grad_{\vect q} - \grad V \cdot \grad_{\vect p} + \gamma \left( - \vect p \cdot \grad_{\vect p} + \beta^{-1} \laplacian_{\vect p} \right)
+    =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
+\end{equation}
+Specifically, it is possible to show~\cite{MR663900} that
+\begin{equation}
+    \label{eq:effective_diffusion_poisson}
+    D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p},
+\end{equation}
+where $\phi_{\vect e}$ denotes the unique solution to the Poisson equation
+\begin{equation}
+    \label{eq:poisson_equation}
+    - \mathcal L \phi_{\vect e} = \vect e^\t \vect p,
+    \qquad \phi_{\vect e} \in L^2_0(\mu) := \bigl\{ u \in L^2(\mu): \ip{u}{1} = 0 \bigr\}.
+\end{equation}
+Throughout this note,
+$\ip{\dummy}{\dummy}$ and $\norm{\dummy}$ denote respectively the inner product and norm of $\lp{2}{\mu}$
+unless otherwise specified.
+Several techniques can be employed in order to show that~\eqref{eq:poisson_equation} admits a unique solution in $L^2_0(\mu)$
+for any right-hand side in $L^2_0(\mu)$:
+one may use the approach employed in~\cite[Proposition 5.1]{MR2793823},
+which is itself inspired from~\cite[Lemma 2.1]{MR812349},
+or obtain well-posedness as a corollary of the exponential decay in $L^2(\mu)$ of the Markov semigroup associated with the dynamics;
+the latter approach is discussed in, for example,~\cite[Corollary 1]{roussel2018spectral}.
+
+
+
+It follows from the definition of~$\mat D^{\gamma}$ that, for any $t > 0$,
 % , by the continuous mapping theorem,
 \begin{equation}
     \label{eq:einsteins_formula}
@@ -277,60 +330,37 @@ It follows from the definition of $\mat D^{\gamma}$ that, for any $t > 0$,
     =\lim_{\varepsilon \to 0} \frac{\expect\bigl\lvert \vect e^\t (\varepsilon \vect q_{t/\varepsilon^2} - \varepsilon \vect q_0) \bigr\rvert^2}{2 t}
     =\lim_{\tau \to \infty} \frac{\expect \bigl\lvert \vect e^\t (\vect q_\tau - \vect q_0) \bigr\rvert^2}{2\tau},
 \end{equation}
-suggesting that this coefficient can be calculated by
+suggesting that this coefficient may be calculated by
 estimating the mean square displacement at a sufficiently large time of the equilibrium dynamics~\eqref{eq:langevin}
 using Monte Carlo simulation,
 which is one of the approaches taken in~\cite{MR2427108}.
 Specifically, given a number $J$ of realizations of the dynamics~\eqref{eq:langevin} over a sufficiently long time interval $[0, T]$,
-the effective diffusion coefficient in direction $\vect e$ can be estimated as
+the effective diffusion coefficient in direction $\vect e$ may be estimated as
 \begin{equation}
     \label{eq:naive_estimator}
     \widehat D^{\gamma}_{\vect e}
     = \frac{1}{J} \sum_{j=1}^{J} \frac{\bigl\lvert \vect e^\t (q^{(j)}_T - q^{(j)}_0) \bigr\rvert^2}{2T},
 \end{equation}
-where $\bigl((q_t^{(j)}, p_t^{(j)})\bigr)_{t \geq 0}$ are independent realizations of the solution to the Langevin equation~\eqref{eq:langevin}.
+where $(q_t^{(j)}, p_t^{(j)})_{t \geq 0}$, for $1 \leq j \leq J$,
+are independent realizations of the solution to the Langevin equation~\eqref{eq:langevin}.
 The variance reduction approach we propose in the next section aims at reducing the mean square error of estimators of this type.
 
-The mobility (or effective diffusion coefficient)
-is also related to the solution of a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
-which is given by
-\begin{equation}
-    \label{eq:decomposition_generator}
-    \mathcal L
-    = p \cdot \grad_q - \grad V \cdot \grad_{\vect p} + \gamma \left( - p \cdot \grad_{\vect p} + \laplacian_p \right)
-    =: \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}.
-\end{equation}
-Specifically, it is possible to  show~\cite{pavliotis2008multiscale,MR3509213} that
-\begin{equation}
-    \label{eq:effective_diffusion_poisson}
-    D^{\gamma}_{\vect e} = \ip{\phi_{\vect e}}{\vect e^\t p},
-\end{equation}
-where $\phi_{\vect e}$ denotes
-the solution to the Poisson equation
-\begin{equation}
-    \label{eq:poisson_equation}
-    - \mathcal L \phi_{\vect e} = \vect e^\t \vect p,
-    \qquad \phi_{\vect e} \in L^2_0 := \bigl\{ u \in L_2(\mu): \ip{u}{1} = 0 \bigr\}.
-\end{equation}
-Throughout this note,
-$\ip{\dummy}{\dummy}$ and $\norm{\dummy}$ denote respectively the inner product and norm of $\lp{2}{\mu}$
-unless otherwise specified.
 
-The behavior of Langevin dynamics~\eqref{eq:langevin} depends on the value of the friction parameter~$\gamma$.
+The behavior of the Langevin dynamics~\eqref{eq:langevin} depends on the value of the friction parameter~$\gamma$.
 The overdamped limit $\gamma \to \infty$ is well understood;
 in this limit, the rescaled position process $(q_{\gamma t})_{t \geq 0}$
 converges, weakly in the space of continuous functions~\cite{MR4054345}
-and uniformly for $t$ in compact subintervals of $[0, \infty)$ almost surely~\cite{MR0214150},
+and almost surely uniformly over compact subintervals of $[0, \infty)$~\cite[Theorem 10.1]{MR0214150},
 to the solution of the overdamped Langevin equation
 \begin{equation}
     \label{eq:overdamped_langevin}
-    \d \vect q_t = - \grad V(\vect q_t) + \sqrt{2 \beta^{-1}} \, \d \vect w_t.
+    \d \vect q_t = - \grad V(\vect q_t) \, \d t + \sqrt{2 \beta^{-1}} \, \d \vect w_t.
 \end{equation}
 It is also possible to prove that $\gamma \mat D^{\gamma} = \mat D^{\rm ovd} + \bigo{\gamma^{-2}}$ as $\gamma \to \infty$,
 where~$\mat D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
 and to derive explicit expressions for the correction terms by asymptotic analysis~\cite{MR2394704}.
 The diffusion coefficient in the overdamped limit is given by $D^{\rm ovd}_{\vect e} = \norm{\vect e + \grad \chi_{\vect e}}[\nu]^2$,
-where $\chi_{\vect e}$ is the solution in~$L^2_0(\nu)$ of the Poisson equation
+where $\chi_{\vect e}$ is the unique solution in~$L^2_0(\nu)$ to the Poisson equation
 \[
     - \mathcal L_{\rm ovd} \chi_{\vect e} = \vect e^\t \grad V(q), \qquad \mathcal L_{\rm ovd} = - \grad V \cdot \grad + \beta^{-1} \laplacian,
 \]
@@ -341,24 +371,24 @@ shows that~$D^{\rm ovd}_{\vect e}$ is in fact an upper bound for $\gamma D^{\gam
 
 The underdamped limit is much more difficult to analyze,
 especially in the multi-dimensional setting.
-In spatial dimension one, it was shown in~\cite{MR2394704} that $\gamma D^{\gamma} \to D^{\rm und}$ as $\gamma \to \infty$ for some limit~$D^{\rm und}$
+In spatial dimension one, it was shown in~\cite{MR2394704} that $\gamma D^{\gamma} \to D^{\rm und}$ as $\gamma \to 0$ for some limit~$D^{\rm und}$
 that is also a lower bound for $\gamma D^{\gamma}$ for all $\gamma > 0$.
 It is also possible~\cite[Lemma 3.4]{MR2394704}, in this case,
 to show that the solution to the Poisson equation~\eqref{eq:poisson_equation},
-when multiplied by $\gamma$, converges in~$\lp{2}{\mu}$ to a limit as $\gamma \to 0$
+when multiplied by $\gamma$, converges in~$\lp{2}{\mu}$ as $\gamma \to 0$ to a limit
 which can be calculated explicitly in simple settings~\cite{MR2427108}.
 Despite the existence of an asymptotic result,
 calculating the mobility for small $\gamma$ is challenging.
 Indeed, it can be shown that the spectral gap in $L^2(\mu)$ of the generator $\mathcal L$ behaves as $\mathcal O(\gamma)$ in the limit as $\gamma \to 0$~\cite{MR2394704},
 and so deterministic methods for solving the Poisson equation~\eqref{eq:poisson_equation} are ill-conditioned in this limit,
 while Monte Carlo based methods are very slow to converge,
-as discussed \cref{sec:method}.
+as discussed in \cref{sec:method}.
 
 The aforementioned asymptotic result for the underdamped limit extends to the multi-dimensional setting only when the potential is separable,
-that is when $V$ can be decomposed as $V(\vect q) = \sum_i V_i(q_i)$,
+that is when $V$ can be decomposed as $V(\vect q) = \sum_{i=1}^d V_i(q_i)$,
 but no theoretical results exist in the non-separable case,
 which was explored mostly by means of numerical experiments.
-Early numerical results in~\cite{chen1996surface} are obtained from Einstein's formula~\eqref{eq:einsteins_formula} and
+Early numerical results in~\cite{chen1996surface}, obtained from Einstein's formula~\eqref{eq:einsteins_formula},
 suggest that the effective diffusion coefficient scales as~$\gamma^{-1/2}$ in the underdamped regime for a particular case of a non-separable periodic potential.
 Later, in~\cite{Braun02},
 different authors note that this behavior as~$\gamma^{-1/2}$ is valid only when $\gamma \in [0.01, 0.1]$,
@@ -366,7 +396,7 @@ but not for smaller values of the damping coefficient.
 They conclude from simulation results that the effective diffusion coefficient scales as~$\gamma^{-\sigma}$ with $0 \leq \sigma \leq 1/3$ in the underdamped regime,
 and suggest that $\sigma$ could be zero for all non-separable potentials.
 More recently, in his doctoral thesis~\cite{roussel_thesis},
-Roussel calculates the mobility of Langevin dynamics using a control variates approach for linear response,
+Roussel calculates the mobility of Langevin dynamics using a control variate approach for linear response,
 relying on~\eqref{eq:relation_mobility_diffusion}.
 The control variate he employs is constructed from an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}.
 His results demonstrate clearly that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$
@@ -381,7 +411,8 @@ with an exponent $\sigma \in [0, 1]$ that depends on the degree $\delta$ of non-
 Another possible approach for estimating the mobility is to rely on a numerical approximation of the Green--Kubo formula;
 see \cite[Section 5.1.3]{MR3509213} for general background information on this subject.
 The bias associated with this approach is studied carefully in~\cite{LMS16},
-and bounds on the variance are obtained in~\cite{PSW21}.
+and bounds on the variance are obtained in~\cite{PSW21},
+showing that the variance increases linearly with the integration time.
 While more general than approaches based on~\eqref{eq:einsteins_formula},
 in that it applies to all transport coefficients,
 this method leads to estimators with a variance that increases linearly with the integration time.
@@ -402,13 +433,13 @@ which enables to circumvent regularity issues encountered in~\cite{roussel_thesi
 % is that their variance does not vanish as the simulation time increases,
 % and so a large number of independent replicas are required in order to reduce statistical errors.
 
-The control variate based on an approximate solution to~\eqref{eq:poisson_equation} is a building block of the methodology we propose for improving Monte Carlo estimators based on~\eqref{eq:naive_estimator},
-but the converse viewpoint can also be adopted:
-with our approach or that used in \cite{roussel_thesis},
-Monte Carlo simulations enable to refine the estimation of the effective diffusion coefficient associated with the approximate solution through~\eqref{eq:effective_diffusion_poisson}.
-That is, approximate solutions to the Poisson equation~\eqref{eq:poisson_equation},
-obtained for example through a Galerkin method,
-can be leveraged even if they are inaccurate.
+% The control variate based on an approximate solution to~\eqref{eq:poisson_equation} is a building block of the methodology we propose for improving Monte Carlo estimators based on~\eqref{eq:naive_estimator},
+% but the converse viewpoint can also be adopted:
+% with our approach or that used in \cite{roussel_thesis},
+% Monte Carlo simulations enable to refine the estimation of the effective diffusion coefficient associated with the approximate solution through~\eqref{eq:effective_diffusion_poisson}.
+% That is, approximate solutions to the Poisson equation~\eqref{eq:poisson_equation},
+% obtained for example through a Galerkin method,
+% can be leveraged even if they are inaccurate.
 
 Our contributions in this note are the following.
 \begin{itemize}
@@ -455,9 +486,9 @@ Throughout this section,
 we focus on the Langevin dynamics~\eqref{eq:langevin} for simplicity,
 but the approach we present can be applied to other Langevin-type dynamics.
 A few of the results and arguments we present, however,
-are tailored specifically for Langevin dynamics and would have to be modified for more other dynamics.
+are tailored specifically for Langevin dynamics and would have to be modified for other dynamics.
 We also assume throughout the section that $\bigl((\vect q_t, \vect p_t)\bigr)_{t\geq 0}$ is a solution of~\eqref{eq:langevin} with statistically stationary initial condition~$(\vect q_0, \vect p_0) \sim \mu$ independent of the Brownian motion $(\vect w)_{t \geq 0}$.
-In our setting, this is not a restrictive assumption,
+This is not a restrictive assumption in our setting,
 as the probability measure $\mu$,
 being defined explicitly on the low-dimensional space $\torus^d \times \real^d$,
 can be sampled efficiently using standard methods,
@@ -465,7 +496,7 @@ for instance by rejection sampling.
 
 Let us fix a direction $\vect e$ and denote again by $\phi_{\vect e}$ the solution to the Poisson equation~\eqref{eq:poisson_equation}.
 Since the number of independent realizations in Monte Carlo estimators
-appears only as a divisor in the variance,
+appears only as a factor in the variance,
 we study estimators based on one realization only.
 That is, instead of~\eqref{eq:naive_estimator} we take as point of comparison the naive estimator
 \begin{equation}
@@ -500,14 +531,20 @@ it holds by It\^o's formula that
     = - \int_0^T \vect e^\t p_t \, \d t = \vect e^\t (\vect q_0 - \vect q_T)
 \end{equation}
 and $d[\psi_{\vect e}] = d[\phi_{\vect e}] = D_{\vect e}^{\gamma}$.
-In addition, using It\^o's isometry we verify formally that,
-whatever the choice of $\psi_{\vect e}$,
-the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$:
+
+\begin{lemma}
+    Independently of the choice of $\psi_{\vect e}$,
+    the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$.
+\end{lemma}
+\begin{proof}
+Using It\^o's isometry,
+we obtain
 \begin{align*}
     \lim_{T \to \infty} \expect \bigl( v(T) \bigr)
     &= d[\psi_{\vect e}] + \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu \\
     &= \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu = D_{\vect e}^{\gamma}.
 \end{align*}
+\end{proof}
 
 \begin{remark}
     \label{remark:cost_control_variate}
@@ -524,8 +561,8 @@ the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$:
         \xi_T = \int_{0}^{T} \mathcal L \phi_{\vect e}(\vect q_t, \vect p_t) \, \d t
     \)
     from the beginning.
-    However, the definition~\eqref{eq:definition_control_variate} makes sense even if $\psi_{\vect e}$ is differentiable only once,
-    and is therefore more widely applicable,
+    However, the definition~\eqref{eq:definition_control_variate} makes sense even if $\psi_{\vect e}$ is differentiable only once
+    and is, therefore, more widely applicable,
     although our results in this section focus on the case where $\psi_{\vect e}$ is at least twice differentiable for simplicity.
     % but in~\cref{sec:application_to_one_dimensional_langevin_type_dynamics} we will employ approximations $\psi_{\vect e}$ which are differentiable only once.
 \end{remark}
@@ -539,7 +576,7 @@ and obtaining estimates on the prefactors in terms of $\gamma$ and $\psi_{\vect 
 We then obtain estimates on the variance of $v(T)$ in \cref{sub:variance},
 first for finite $T$ and then asymptotically in the limit as~$T \to \infty$.
 
-\subsection{Bias of the improved estimators}%
+\subsection{Bias of the estimators for the effective diffusion coefficient}%
 \label{sub:bias}
 We begin by studying the bias of $u(T)$ which,
 as mentioned above, coincides with $v(T)$ when~$\psi_{\vect e} = 0$.
@@ -550,11 +587,11 @@ it holds that
 \begin{aligned}
     \expect \bigl(u(T)\bigr)
     &= \frac{1}{2T} \expect \left( \int_{0}^{T} \vect e^\t \vect p_{t} \, \d t \int_{0}^{T} \vect e^\t \vect p_s \, \d s \right)
-    = \frac{1}{2t} \left( \int_{0}^{T} \!\! \int_{0}^{T} \expect \bigl((\vect e^\t \vect p_t) (\vect e^\t \vect p_s)\bigr) \, \d s \, \d t \right) \\
-    &= \frac{1}{2t} \left( \int_{0}^{T} \!\! \int_{0}^{T} \ip{\e^{\abs{t - s} \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p} \, \d s \, \d t \right)
-    =  \int_{0}^{T} \ip{\e^{t \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \left(1 - \frac{\theta}{T}\right) \d \theta  \\
+    = \frac{1}{2T}  \int_{0}^{T} \!\! \int_{0}^{T} \expect \bigl((\vect e^\t \vect p_t) (\vect e^\t \vect p_s)\bigr) \, \d s \, \d t  \\
+    &= \frac{1}{2T}  \int_{0}^{T} \!\! \int_{0}^{T} \ip{\e^{\abs{t - s} \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p} \, \d s \, \d t
+    =  \int_{0}^{T} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \left(1 - \frac{\theta}{T}\right) \d \theta  \\
     &= \int_{0}^{\infty} \ip{\e^{\theta \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p}  \d \theta
-    - \int_{0}^{T} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \min\left\{1, \frac{\theta}{T}\right\} \, \d \theta.
+    - \int_{0}^{\infty} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \min\left\{1, \frac{\theta}{T}\right\} \, \d \theta.
     % D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
 \end{aligned}
 \end{equation}
@@ -587,7 +624,7 @@ which leads to the following estimate on the bias:
 Since the effective diffusion coefficient scales as $\gamma^{-1}$ in both the underdamped ($\gamma \to 0$) and overdamped limits ($\gamma \to \infty$)~\cite{MR2394704,MR2427108},
 this estimate suggests that the relative bias of the estimator scales as $\max\{\gamma^{-1}, \gamma^3\} T^{-1}$ and that,
 consequently, the integration time $T$ should scale proportionally to $\max\{\gamma^{-1}, \gamma^3\}$ in order to achieve a given relative accuracy.
-It turns out that the estimate~\eqref{eq:bias} is in fact not optimal.
+It turns out that the estimate~\eqref{eq:bias} is in fact not optimal in the overdamped regime.
 We derive a sharper estimate from the following result.
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
@@ -650,8 +687,8 @@ constant potential and quadratic potential.
     \begin{align*}
         % \expect \bigl( u(T) \bigr)
         \frac{\expect \abs{q_T - q_0}^2}{2T}
-        &= \gamma^{-2} \beta^{-1} (\e^{-\gamma T} - 1)^2
-        + 2 \gamma^{-1} \beta^{-1} \left(T - 2 \gamma^{-1} (1 - \e^{-\gamma T}) + (2 \gamma)^{-1} (1 - \e^{-2 \gamma T})\right) \\
+        &= \frac{1}{2T} \Bigl( \gamma^{-2} \beta^{-1} (\e^{-\gamma T} - 1)^2
+            + 2 \gamma^{-1} \beta^{-1} \left(T - 2 \gamma^{-1} (1 - \e^{-\gamma T}) + (2 \gamma)^{-1} (1 - \e^{-2 \gamma T})\right) \Bigr) \\
         &= \gamma^{-1} \beta^{-1} \left( 1 + \frac{1}{T \gamma} \left(\e^{-\gamma T} - 1\right) \right) =: \sigma_T^2.
     \end{align*}
     This equation implies that the effective diffusion coefficient in this example is $D^{\gamma} = \gamma^{-1} \beta^{-1}$,
@@ -1664,7 +1701,7 @@ the parameter multiplying the non-separable part of the potential is small with 
 \label{sec:auxiliary_technical_results}
 
 The proof is based on several lemmata.
-In order to state the results, we first introduce some notation.
+We introduce some notation.
 For a measure $\pi$, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
 of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
@@ -1675,22 +1712,28 @@ where we use the standard multi-index notation
 and $\norm{\dummy}$ is the norm of~$L^2(\pi)$.
 % generalized to tensors in the usual manner.
 % (in particular, $\norm*{\nabla^2 f}$ is the Frobenius norm of the Hessian matrix  of $f$).
-We also define $H^{i}_0(\pi) = H^i(\pi) \cap L^2_0(\pi)$,
-and we recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
+We recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
 \begin{equation}
     \label{eq:poincare}
     \tag{P$_R$}
-    \forall f \in H^1_0(\pi), \qquad
+    \forall f \in H^1_0(\pi) \cap L^2_0(\pi), \qquad
     \norm*{f}^2 \leq \frac{1}{2R} \norm{\grad f}^2.
 \end{equation}
+
+The operator $\mathcal L_{\rm FD}$,
+viewed as an operator over $H^1_0(\kappa)$,
+admits a compact self-adjoint resolvent.
+Therefore, there exist $\{\lambda_i\}_{i\in \nat}$ and
+\[
+    \e^{t \mathcal L_{\rm FD}} f
+    = \sum_{i=0}^{\infty} \e^{- \lambda_i t} \ip{f}{e_i} e_i.
+\]
 
 The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
 \begin{lemma}
     \label{lemma:overdamped_langevin_decay_derivatives}
-    Let $\mathcal X = \real^d$ or $\mathcal X = \torus^d$,
-    and let $W: \mathcal X \to \real$ be a smooth potential that is either quadratic if $\mathcal X = \real^d$
-    or periodic if $\mathcal X = \torus^d$.
+    Let $\mathcal X = \real^d$ and let $W: \mathcal X \to \real$ be a quadratic potential.
     In particular the probability measure
     \[
         \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
@@ -2202,5 +2245,6 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 % \bibliographystyle{abbrv}
 % \bibliography{main}
 % \bibliographystyle{trad-abbrv}
+
 \printbibliography
 \end{document}

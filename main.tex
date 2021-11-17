@@ -254,17 +254,19 @@ an additional drift term $\eta \vect e$ is present on the right-hand side of~\eq
 Except when $\eta = 0$, in which case we recover~\eqref{eq:invariant_measure},
 the measure~$\mu_{\eta}$ is not known explicitly,
 and so $M_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
-Interestingly,
-the mobility coincides
+It is well known,
+based on the pioneering work of Sutherland~\cite{sutherland1905lxxv}, Einstein~\cite{einstein1905molekularkinetischen} and Smoluchowski~\cite{von1906kinetischen},
+that the mobility coincides
 (up to the factor $\beta$)
-with the so-called effective diffusion coefficient associated with the equilibrium dynamics~\eqref{eq:langevin},
-which opens the door to a simple Monte Carlo approach for its estimation.
-This link is made precise in the next paragraph, 
-where we also define the effective diffusion coefficient.
-The equation relating mobility and diffusion is called Einstein's relation,
-and its derivation in simple settings dates back to Sutherland~\cite{sutherland1905lxxv}, Einstein~\cite{einstein1905molekularkinetischen} and Smoluchowski~\cite{von1906kinetischen} in the early 1900s.
-For a rigorous justification of the relation in the specific setting of the Langevin dynamics~\eqref{eq:langevin},
-we refer to~\cite[Section 5.2]{MR3509213}; see also \cite[Section 3]{LMS16} and~\cite[Chapter 9]{pavliotis2011applied}.
+with the so-called effective diffusion coefficient associated with the dynamics,
+which opens the door to the simple Monte Carlo approach presented below in~\eqref{eq:naive_estimator} for its estimation.
+This link between mobility and diffusion,
+known Eisntein's relation,
+is made precise in the next paragraph,
+where we also define the effective diffusion coefficient precisely.
+% The equation relating mobility and diffusion is called Einstein's relation,
+For a rigorous justification of Einstein's relation in the specific setting of the Langevin dynamics~\eqref{eq:langevin},
+we refer to~\cite[Section~5.2]{MR3509213}; see also \cite[Section~3]{LMS16} and~\cite[Chapter~9]{pavliotis2011applied}.
 
 % It can be shown, using the characterization in terms of the solution to a Poisson equation
 % that the function $\vect e \mapsto M^{\gamma}_{\vect e}$ is a quadratic function of $
@@ -280,16 +282,18 @@ we refer to~\cite[Section 5.2]{MR3509213}; see also \cite[Section 3]{LMS16} and~
 %     = M^{\gamma}_{\vect e_1 + \vect e_2} - M^{\gamma}_{\vect e_1 - \vect e_2}.
 % \]
 
-It can be shown that a functional central limit theorem holds for the equilibrium Langevin dynamics~\eqref{eq:langevin},
+Effective diffusion, for the Langevin dynamics~\eqref{eq:langevin},
+refers to the following functional central limit theorem:
 the diffusively rescaled position process $(\varepsilon \vect q_{t/\varepsilon^2})_{t\geq0}$ converges as $\varepsilon \to 0$,
 weakly in the space of continuous functions over compact time intervals,
-to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamma}}$ -- the effective diffusion tensor --
-whose entries are related to the mobility by the equation $D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}$.
-The first claim, on convergence of the rescaled position process to a Brownian motion,
-may be obtained using the homogenization technique pioneered by Bhattacharya in~\cite{MR663900},
+to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamma}}$.
+The matrix $\mat D^{\gamma}$ is known as the effective diffusion matrix associated with the dynamics.
+This result may be obtained by using the homogenization technique pioneered by Bhattacharya in~\cite{MR663900},
 which hinges on the functional central limit theorem for martingales~\cite{MR668684};
 see also~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
 and~\cite[Theorem 2.5]{MR2793823} for a full homogenization proof for the generalized Langevin equation.
+The precise formulation of Einstein's relation is then $D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}$.
+
 The effective diffusion coefficient
 can be expressed in terms of the solution to a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
 which is given by
@@ -317,13 +321,19 @@ Several techniques can be employed in order to show that~\eqref{eq:poisson_equat
 for any right-hand side in $L^2_0(\mu)$:
 one may use the approach employed in~\cite[Proposition 5.1]{MR2793823},
 which is itself inspired from~\cite[Lemma 2.1]{MR812349},
-or obtain well-posedness as a corollary of the exponential decay in $L^2(\mu)$ of the Markov semigroup associated with the dynamics;
-the latter approach is discussed in, for example,~\cite[Corollary 1]{roussel2018spectral}.
+or obtain well-posedness as a corollary of the exponential decay in $L^2(\mu)$ of the Markov semigroup associated with the dynamics,
+as in~\cite[Corollary 1]{roussel2018spectral}.
 
-
-
+In spatial dimension 1,
+it is possible to obtain an accurate estimation of the effective diffusion coefficient by solving the Poisson equation~\eqref{eq:poisson_equation} using a deterministic method~\cite{roussel2018spectral},
+but this approach is generally too computationally expensive in higher dimensions.
+In spatial dimension~2, for example,
+a spectral discretization of~\eqref{eq:poisson_equation} based on tensorized basis functions,
+with say~$N$ degrees of freedom per dimension of the state space $\torus^2 \times \real^2$, leads to a linear systems with~$N^4$ unknowns,
+% (because the dimension of the state space for $(\vect q, \vect p)$ is~4),
+which is computationally intractable for large values of $N$.
+In this setting, probabilistic methods are an attractive alternative.
 It follows from the definition of~$\mat D^{\gamma}$ that, for any $t > 0$,
-% , by the continuous mapping theorem,
 \begin{equation}
     \label{eq:einsteins_formula}
     D^{\gamma}_{\vect e}
@@ -339,9 +349,9 @@ the effective diffusion coefficient in direction $\vect e$ may be estimated as
 \begin{equation}
     \label{eq:naive_estimator}
     \widehat D^{\gamma}_{\vect e}
-    = \frac{1}{J} \sum_{j=1}^{J} \frac{\bigl\lvert \vect e^\t (q^{(j)}_T - q^{(j)}_0) \bigr\rvert^2}{2T},
+    = \frac{1}{J} \sum_{j=1}^{J} \frac{\bigl\lvert \vect e^\t (\vect q^{(j)}_T - \vect q^{(j)}_0) \bigr\rvert^2}{2T},
 \end{equation}
-where $(q_t^{(j)}, p_t^{(j)})_{t \geq 0}$, for $1 \leq j \leq J$,
+where $(\vect q_t^{(j)}, \vect p_t^{(j)})_{t \geq 0}$, for $1 \leq j \leq J$,
 are independent realizations of the solution to the Langevin equation~\eqref{eq:langevin}.
 The variance reduction approach we propose in the next section aims at reducing the mean square error of estimators of this type.
 
@@ -412,11 +422,13 @@ Another possible approach for estimating the mobility is to rely on a numerical 
 see \cite[Section 5.1.3]{MR3509213} for general background information on this subject.
 The bias associated with this approach is studied carefully in~\cite{LMS16},
 and bounds on the variance are obtained in~\cite{PSW21},
-showing that the variance increases linearly with the integration time.
-While more general than approaches based on~\eqref{eq:einsteins_formula},
-in that it applies to all transport coefficients,
-this method leads to estimators with a variance that increases linearly with the integration time.
-\textcolor{red}{Add more motivations?}
+showing that the variance increases linearly with the integration time over which correlations are computed.
+In practice, choosing the integration time is a delicate task: 
+this needs to be sufficiently large to ensure that the systematic bias is small,
+but not too large, or else the variance of the resulting estimator is large. 
+The technical challenges impeding adoption of the Green--Kubo formalism, 
+as well as some solutions to overcome these in the context of heat transport,
+are discussed extensively in~\cite{ercole2017accurate,2018arXiv180208006B}.
 
 In this note,
 we propose a new variance reduction methodology for calculating the mobility of Langevin-type dynamics.

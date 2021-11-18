@@ -520,14 +520,13 @@ That is, instead of~\eqref{eq:naive_estimator} we take as point of comparison th
 This section is divided in three parts.
 In \cref{sub:construction_of_an_improved_estimator},
 we construct a Monte Carlo estimator for the effective diffusion coefficient that improves on~\eqref{eq:simple_estimator}.
-We then demonstrate in \cref{sub:bias} and \cref{sub:variance} that
-this estimator has better properties than~\eqref{eq:simple_estimator},
+We then demonstrate in \cref{sub:bias} and \cref{sub:variance} that,
 at least in certain parameter regimes,
-in term of bias and variance, respectively.
+this estimator has better properties than~\eqref{eq:simple_estimator} in term of bias and variance, respectively.
 
 \subsection{Construction of an improved estimator}%
 \label{sub:construction_of_an_improved_estimator}
-In order to motivate the construction of an improved estimator,
+In order to motivate the construction of an improved estimator for $D^{\gamma}_{\vect e}$,
 we apply It\^o's formula to the solution $\phi_{\vect e}$ to the Poisson equation~\eqref{eq:poisson_equation},
 which gives
 \[
@@ -536,11 +535,12 @@ which gives
 \]
 Rearranging the terms,
 we obtain
-\[
+\begin{equation}
+    \label{eq:ito_for_phi}
     \vect e^\t(\vect q_T - \vect q_0) =
     \phi_{\vect e}(\vect q_0, \vect p_0) - \phi_{\vect e}(\vect q_T, \vect p_T)
-    + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \phi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
-\]
+    + \sqrt{2 \gnamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \phi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
+\end{equation}
 % Let us assume that $\psi_{\vect e}$ is an approximation of $\phi_{\vect e}$,
 The estimator we propose requires the knowledge of an approximation $\psi_{\vect e}$ of the solution $\phi_{\vect e}$ to the Poisson equation~\eqref{eq:poisson_equation}.
 Two concrete methods for obtaining such an approximation in the small $\gamma$ regime are presented in \cref{sec:application_to_one_dimensional_langevin_type_dynamics},
@@ -568,95 +568,119 @@ the covariance between $u(T)$ and $\widehat u(T)$,
 but for simplicity of the analysis we consider only the case $\alpha = 1$.
 This is the variance-minimizing choice when~$\widehat u(T) = u(T)$,
 and we demonstrate below that it yields good results so long as $\widehat u(T)$ is a good approximation of~$u(T)$.
-The estimator~\eqref{eq:simple_estimator_improvement_1} can be further modified by replacing the expectation \eqref{eq:simple_estimator_improvement_1} by its value in the limit as $T \to \infty$;
+The estimator can be further modified by replacing the expectation in~\eqref{eq:simple_estimator_improvement_1} by its value in the limit as $T \to \infty$;
 that is, we define
 \begin{equation}
     \label{eq:improved_estimator}
     v(T) =  \frac{\bigl\lvert \vect e^\t(\vect q_T - \vect q_0) \bigr\rvert^2}{2T} - \frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl(\frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T}\biggr),
 \end{equation}
-The expectation of $v(T)$ is now different from that of $u(T)$,
+Note that $v(T) = u(T)$ if $\psi_{\vect e} = 0$.
+The expectation of $v(T)$ is different from that of $u(T)$,
 but the two expectations coincide asymptotically as $T \to \infty$.
-Furthermore, the limit in~\eqref{eq:improved_estimator} can be calculated explicitly,
-and, unlike $u(T)$,
-the estimator $v(T)$ is unbiased if $\psi_{\vect e} = \phi_{\vect e}$ even for finite $T$.
+Furthermore, unlike the expectation in~\eqref{eq:simple_estimator_improvement_1},
+the limit in~\eqref{eq:improved_estimator} can be calculated explicitly,
+and so the estimator $v(T)$ can be employed in practice.
 \begin{lemma}
-    It holds that
-    \[
+    \label{lemma:explicit_limit}
+    Assume that $\psi_{\vect e} \in L^2(\mu)$ and $\grad_{\vect p} \psi_{\vect e} \in L^2(\mu)$.
+    Then it holds that
+    \begin{equation}
+        \label{eq:explicit_limit}
         \lim_{T \to \infty} \expect \biggl(\frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T}\biggr) = \gamma \beta^{-1} \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu =: d[\psi_{\vect e}].
-    \]
-\end{lemma}
-
-but we expect $\widehat u(T)$ to have lower variance.
-
-In the usual control variate approach,
-one adds and subtracts a random variable of which we know the expectation
-
-
-We propose the following estimator of $D^{\gamma}_{\vect e}$ as an improvement over~\eqref{eq:simple_estimator}:
-\begin{subequations}
-\begin{equation}
-    \label{eq:improved_estimator}
-    v(T) = d[\psi_{\vect e}]+ \frac{1}{2T} \left( \abs{\vect e^\t(\vect q_T - \vect q_0)}^2 - \abs{\xi_T}^2\right),
-    \qquad d[\psi_{\vect e}] := \gamma \beta^{-1} \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu.
-\end{equation}
-The process $(\xi_t)_{t \geq 0}$,
-which we refer to as the \emph{control variate} throughout this note,
-is given by
-\begin{align}
-    \label{eq:definition_control_variate}
-    \xi_T = \psi_{\vect e}(\vect q_T, \vect p_T) - \psi_{\vect e}(\vect q_0, \vect p_0)
-    - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
-\end{align}
-\end{subequations}
-provided that $\psi_{\vect e}$ is a sufficiently good approximation of $\phi_{\vect e}$:
-Note that $v(T) = u(T)$ if $\psi_{\vect e} = 0$,
-and that $v(T) = D_{\vect e}^{\gamma}$ if $\psi_{\vect e} = \phi_{\vect e}$ since,
-in this case,
-it holds by It\^o's formula that
-\begin{equation}
-    \label{eq:ito_control_variate}
-    \xi_T = \int_{0}^{T} \mathcal L \phi_{\vect e}(\vect q_t, \vect p_t) \, \d t
-    = - \int_0^T \vect e^\t p_t \, \d t = \vect e^\t (\vect q_0 - \vect q_T)
-\end{equation}
-and $d[\psi_{\vect e}] = d[\phi_{\vect e}] = D_{\vect e}^{\gamma}$.
-
-\begin{lemma}
-    Independently of the choice of $\psi_{\vect e}$,
-    the estimator $v(T)$ is asymptotically unbiased as~$T \to \infty$.
+    \end{equation}
 \end{lemma}
 \begin{proof}
-Using It\^o's isometry,
-we obtain
-\begin{align*}
-    \lim_{T \to \infty} \expect \bigl( v(T) \bigr)
-    &= d[\psi_{\vect e}] + \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu - \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \psi_{\vect e} \rvert^2 \, \d \mu \\
-    &= \gamma \beta^{-1} \int_{\torus^d \times \real^d} \lvert \grad \phi_{\vect e} \rvert^2 \, \d \mu = D_{\vect e}^{\gamma}.
-\end{align*}
+    % By It\^o's formula we can rewrite~\eqref{eq:definition_control_variate} as $\xi_T = \int_{0}^{T} \mathcal L \psi_{\vect e}(\vect q_t, \vect p_t) \, \d t$,
+    % so~\eqref{eq:explicit_limit} follows from a central limit theorem for additive functionals of Markov diffusion processes~\cite{MR663900,MR3069369}.
+    % The idea of the proof, given here because it contains manipulations used throughout this section, is as follows.
+    Let us introduce the notation
+    \[
+        \theta_T = \psi_{\vect e}(\vect q_0, \vect p_0) - \psi_{\vect e}(\vect q_T, \vect p_T),
+        \qquad
+        M_T = \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
+    \]
+    % The central limit theorem for martingales~\cite{MR668684} implies the convergence in distribution of $M_T/\sqrt{T}$ to a mean-zero Gaussian random variable.
+    From the definition~\eqref{eq:definition_control_variate},
+    we have
+    \[
+        \frac{\lvert \xi_T \rvert^2}{2T} = \frac{\theta_T^2}{2T} + \frac{M_T^2}{2T} + \left(\frac{\theta_T}{\sqrt{T}}\right) \left(\frac{M_T}{\sqrt{T}}\right).
+    \]
+    Given that we assume stationary conditions and $\psi_{\vect e} \in L^2(\mu)$,
+    the expectation of the first term tends to 0 in the limit as $T \to 0$,
+    and the expectation of the second term can be calculated from It\^o's isometry:
+    \[
+        \expect \left( \frac{M_T^2}{2T} \right)
+        = \frac{\gamma \beta^{-1}}{T} \int_{0}^{T} \expect \Bigl(\left\lvert \grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t) \right\rvert^2\Bigr) \, \d t 
+        = d[\psi_{\vect e}].
+    \]
+    The expectation of the third term converges to zero by Cauchy--Schwarz inequality,
+    which concludes the proof of~\eqref{eq:explicit_limit}.
 \end{proof}
+
+Next, we show a preliminary result on the bias:
+\begin{lemma}
+    \label{lemma:asymptotic_bias}
+    The estimator $v(T)$ is unbiased asymptotically as $T \to \infty$,
+    that is
+    \begin{equation}
+        \label{eq:estimator_is_unbiased}
+        \lim_{T \to \infty} \expect \bigl(v(T)\bigr) 
+        = D^{\gamma}_{\vect e}.
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Given the definition of~\eqref{eq:improved_estimator},
+    it is sufficient to show that $u(T)$ is asymptotically unbiased.
+    This was already motivated in~\eqref{eq:einsteins_formula} using a central limit theorem,
+    but we include a short proof here for completeness.
+    Repeating verbatim the reasoning of~\cref{lemma:explicit_limit} with~$\phi_{\vect e}$ instead of $\psi_{\vect e}$ and $\vect e^\t (\vect q_T - \vect q_0)$ instead of $\xi_T$,
+    we obtain
+    \begin{equation}
+        \label{eq:intermediate_equation}
+        \expect \bigl(u(T)\bigr) 
+        \xrightarrow[T \to \infty]{} d[\phi_{\vect e}],
+    \end{equation}
+    so it remains to show that $d[\phi_{\vect e}]$ coincides with $D^{\gamma}_{\vect e}$ in~\eqref{eq:effective_diffusion_poisson}.
+    This is well known, 
+    and follows after integrating by parts in the formula for $d[\phi_{\vect e}]$:
+    \begin{align*}
+        d[\phi_{\vect e}] 
+        &= \gamma \beta^{-1} \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \phi_{\vect e}}^2 \, \d \mu
+        = \gamma \beta^{-1} \int_{\torus^d \times \real^d} \bigl((\beta \grad V - \grad_{\vect p}) \cdot \grad_{\vect p}\phi_{\vect e} \bigr) \phi_{\vect e} \, \d \mu  \\
+        &= -\int_{\torus^d \times \real^d} (\gamma \mathcal L_{\rm FD} \phi_{\vect e}) \phi_{\vect e} \, \d \mu 
+        = -\int_{\torus^d \times \real^d} (\mathcal L \phi_{\vect e}) \phi_{\vect e} \, \d \mu 
+        = D^{\gamma}_{\vect e}.
+    \end{align*}
+    Here we used that $\mathcal L_{\rm ham}$ is antisymmetric in $L^2(\mu)$.
+\end{proof}
+A direct corollary of~\eqref{eq:intermediate_equation} is that $v(T)$ is unbiased if $\psi_{\vect e} = \phi_{\vect e}$, even for finite $T$.
+By a slight abuse of terminology, 
+we refer to the process $(\xi_t)_{t \geq 0}$ as the \emph{control variate} in the rest of this note.
 
 \begin{remark}
     \label{remark:cost_control_variate}
     Notice that calculating the control variate $\xi_T$ in~\eqref{eq:definition_control_variate} requires
-    to evaluate $\psi(q_t, p_t)$ at times 0 and $T$ and the gradient $\grad_{\vect p} \psi(\vect q_t, \vect p_t)$ along the full trajectory $\bigl((\vect q_t, \vect p_t)\bigr)_{0\leq t\leq T}$.
-    It is therefore important for efficiency that $\grad_{\vect p} \psi$ is not computationally expensive to evaluate.
+    to evaluate $\psi(q_t, p_t)$ at times 0 and $T$ and the gradient $\grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t)$ along the full trajectory $(\vect q_t, \vect p_t)_{0\leq t\leq T}$.
+    It is therefore important for efficiency that $\grad_{\vect p} \psi_{\vect e}$ is not computationally expensive to evaluate.
 \end{remark}
 
 \begin{remark}
-    In view of~\eqref{eq:ito_control_variate},
+    By It\^o's formula,
     it would have been equivalent, in the case where $\psi_{\vect e}$ is smooth,
     to define
     \(
-        \xi_T = \int_{0}^{T} \mathcal L \phi_{\vect e}(\vect q_t, \vect p_t) \, \d t
+        \xi_T = \int_{0}^{T} \mathcal L \psi_{\vect e}(\vect q_t, \vect p_t) \, \d t
     \)
     from the beginning.
-    However, the definition~\eqref{eq:definition_control_variate} makes sense even if $\psi_{\vect e}$ is differentiable only once
-    and is, therefore, more widely applicable,
-    although our results in this section focus on the case where $\psi_{\vect e}$ is at least twice differentiable for simplicity.
+    However, the definition~\eqref{eq:definition_control_variate} makes sense even if $\psi_{\vect e}$ is differentiable only once,
+    for example for the singular approximation~$\psi_{\vect e}$ constructed in~\cref{sub:underdamped_approach}.
+    Although we leverage  we use approximations that are not twice differentiable in 
+    our results in this section focus on the case where $\psi_{\vect e}$ is at least twice differentiable for simplicity.
     % but in~\cref{sec:application_to_one_dimensional_langevin_type_dynamics} we will employ approximations $\psi_{\vect e}$ which are differentiable only once.
 \end{remark}
 
 In the rest of this section,
-we obtain more precise results on the bias and variance of the estimator $v(T)$.
+we obtain precise results on the bias and variance of the estimator $v(T)$.
 We begin,
 in \cref{sub:bias},
 by showing that the bias behaves as~$\frac{1}{T}$ in the limit as~$T \to \infty$
@@ -2326,9 +2350,6 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 %         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
 %     \]
 % \end{proof}
-
-
-
 
 % \bibliographystyle{abbrv}
 % \bibliography{main}

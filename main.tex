@@ -255,11 +255,11 @@ Except when $\eta = 0$, in which case we recover~\eqref{eq:invariant_measure},
 the measure~$\mu_{\eta}$ is not known explicitly,
 and so $M_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t p$ with respect to this measure.
 It is well known,
-based on the pioneering work of Sutherland~\cite{sutherland1905lxxv}, Einstein~\cite{einstein1905molekularkinetischen} and Smoluchowski~\cite{von1906kinetischen},
+based on the seminal works of Sutherland~\cite{sutherland1905lxxv}, Einstein~\cite{einstein1905molekularkinetischen} and Smoluchowski~\cite{von1906kinetischen} in the early 1900s,
 that the mobility coincides
 (up to the factor $\beta$)
 with the so-called effective diffusion coefficient associated with the dynamics,
-which opens the door to the simple Monte Carlo approach presented below in~\eqref{eq:naive_estimator} for its estimation.
+which opens the door to the simple Monte Carlo approach reviewed below in~\eqref{eq:naive_estimator} for its estimation.
 This link between mobility and diffusion,
 known Eisntein's relation,
 is made precise in the next paragraph,
@@ -282,7 +282,8 @@ we refer to~\cite[Section~5.2]{MR3509213}; see also \cite[Section~3]{LMS16} and~
 %     = M^{\gamma}_{\vect e_1 + \vect e_2} - M^{\gamma}_{\vect e_1 - \vect e_2}.
 % \]
 
-Effective diffusion, for the Langevin dynamics~\eqref{eq:langevin},
+The concept of effective diffusion,
+for the Langevin dynamics~\eqref{eq:langevin},
 refers to the following functional central limit theorem:
 the diffusively rescaled position process $(\varepsilon \vect q_{t/\varepsilon^2})_{t\geq0}$ converges as $\varepsilon \to 0$,
 weakly in the space of continuous functions over compact time intervals,
@@ -292,7 +293,7 @@ This result may be obtained by using the homogenization technique pioneered by B
 which hinges on the functional central limit theorem for martingales~\cite{MR668684};
 see also~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
 and~\cite[Theorem 2.5]{MR2793823} for a full homogenization proof for the generalized Langevin equation.
-The precise formulation of Einstein's relation is then $D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}$.
+The precise statement of Einstein's relation is then that $D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}$.
 
 The effective diffusion coefficient
 can be expressed in terms of the solution to a partial differential equation (PDE) involving the generator of the Markov semigroup associated with~\eqref{eq:langevin},
@@ -423,10 +424,10 @@ see \cite[Section 5.1.3]{MR3509213} for general background information on this s
 The bias associated with this approach is studied carefully in~\cite{LMS16},
 and bounds on the variance are obtained in~\cite{PSW21},
 showing that the variance increases linearly with the integration time over which correlations are computed.
-In practice, choosing the integration time is a delicate task: 
+In practice, choosing the integration time is a delicate task:
 this needs to be sufficiently large to ensure that the systematic bias is small,
-but not too large, or else the variance of the resulting estimator is large. 
-The technical challenges impeding adoption of the Green--Kubo formalism, 
+but not too large, or else the variance of the resulting estimator is large.
+The technical challenges impeding adoption of the Green--Kubo formalism,
 as well as some solutions to overcome these in the context of heat transport,
 are discussed extensively in~\cite{ercole2017accurate,2018arXiv180208006B}.
 
@@ -491,24 +492,24 @@ while the appendices contain technical results employed in~\cref{sec:application
 
 
 
-\section{Method and theoretical results}%
+\section{Improved Monte Carlo estimator for the diffusion coefficient}%
 \label{sec:method}%
 
 Throughout this section,
-we focus on the Langevin dynamics~\eqref{eq:langevin} for simplicity,
-but the approach we present can be applied to other Langevin-type dynamics.
-A few of the results and arguments we present, however,
-are tailored specifically for Langevin dynamics and would have to be modified for other dynamics.
-We also assume throughout the section that $\bigl((\vect q_t, \vect p_t)\bigr)_{t\geq 0}$ is a solution of~\eqref{eq:langevin} with statistically stationary initial condition~$(\vect q_0, \vect p_0) \sim \mu$ independent of the Brownian motion $(\vect w)_{t \geq 0}$.
-This is not a restrictive assumption in our setting,
-as the probability measure $\mu$,
+we focus on the Langevin dynamics~\eqref{eq:langevin} for simplicity.
+Although some of our arguments are tailored specifically to this dynamics,
+our approach may in principle be applied to other Langevin-type dynamics,
+such as the generalized Langevin dynamics considered in \cref{sec:applications_2d}.
+We assume throughout the section that $(\vect q_t, \vect p_t)_{t\geq 0}$ is a solution of~\eqref{eq:langevin} with statistically stationary initial condition~$(\vect q_0, \vect p_0) \sim \mu$ independent of the Brownian motion $(\vect w)_{t \geq 0}$.
+This is not a restrictive assumption in our setting as the probability measure $\mu$,
 being defined explicitly on the low-dimensional space $\torus^d \times \real^d$,
 can be sampled efficiently using standard methods,
 for instance by rejection sampling.
 
-Let us fix a direction $\vect e$ and denote again by $\phi_{\vect e}$ the solution to the Poisson equation~\eqref{eq:poisson_equation}.
+Let us fix a direction $\vect e \in \real^d$, with $|\vect e| = 1$,
+and denote again by $\phi_{\vect e}$ the corresponding solution to the Poisson equation~\eqref{eq:poisson_equation}.
 Since the number of independent realizations in Monte Carlo estimators
-appears only as a factor in the variance,
+appears only as a denominator in the variance,
 we study estimators based on one realization only.
 That is, instead of~\eqref{eq:naive_estimator} we take as point of comparison the naive estimator
 \begin{equation}
@@ -516,8 +517,82 @@ That is, instead of~\eqref{eq:naive_estimator} we take as point of comparison th
     u(T) = \frac{\abs{\vect e^\t (\vect q_T - \vect q_0)}^2}{2T},
 \end{equation}
 
-We motivate in this section that
-the following estimator of $D_{\vect e}$ is better than $u(T)$ provided that $\psi_{\vect e}$ is a sufficiently good approximation of $\phi_{\vect e}$:
+This section is divided in three parts.
+In \cref{sub:construction_of_an_improved_estimator},
+we construct a Monte Carlo estimator for the effective diffusion coefficient that improves on~\eqref{eq:simple_estimator}.
+We then demonstrate in \cref{sub:bias} and \cref{sub:variance} that
+this estimator has better properties than~\eqref{eq:simple_estimator},
+at least in certain parameter regimes,
+in term of bias and variance, respectively.
+
+\subsection{Construction of an improved estimator}%
+\label{sub:construction_of_an_improved_estimator}
+In order to motivate the construction of an improved estimator,
+we apply It\^o's formula to the solution $\phi_{\vect e}$ to the Poisson equation~\eqref{eq:poisson_equation},
+which gives
+\[
+    \phi_{\vect e}(\vect q_T, \vect p_T) - \phi_{\vect e}(\vect q_0, \vect p_0)
+    = - \int_{0}^{T} \vect e^\t \vect p_t \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \phi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
+\]
+Rearranging the terms,
+we obtain
+\[
+    \vect e^\t(\vect q_T - \vect q_0) =
+    \phi_{\vect e}(\vect q_0, \vect p_0) - \phi_{\vect e}(\vect q_T, \vect p_T)
+    + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \phi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
+\]
+% Let us assume that $\psi_{\vect e}$ is an approximation of $\phi_{\vect e}$,
+The estimator we propose requires the knowledge of an approximation $\psi_{\vect e}$ of the solution $\phi_{\vect e}$ to the Poisson equation~\eqref{eq:poisson_equation}.
+Two concrete methods for obtaining such an approximation in the small $\gamma$ regime are presented in \cref{sec:application_to_one_dimensional_langevin_type_dynamics},
+and in this section we assume that such an approximation is given.
+Let us introduce
+\begin{align}
+    \label{eq:definition_control_variate}
+    \xi_T = \psi_{\vect e}(\vect q_0, \vect p_0) - \psi_{\vect e}(\vect q_T, \vect p_T)
+    + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
+\end{align}
+Since $\xi_T$ is expected to be a good approximation of $\vect e^\t(\vect q_T - \vect q_0)$,
+in some appropriate sense,
+if~$\psi_{\vect e}$ is a good approximation of~$\phi_{\vect e}$,
+one may obtain variance reduction by using the former as a control variate for the latter.
+More precisely, we consider following estimator instead of~$u(T)$:
+\begin{equation}
+    \label{eq:simple_estimator_improvement_1}
+     \frac{\bigl\lvert \vect e^\t (\vect q_T - \vect q_0) \bigr\rvert^2}{2T}  -	\alpha  \left( \frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T} - \expect \left( \frac{\lvert \xi_T \rvert^2}{2T} \right) \right)
+    =: u(T) - \alpha \Bigl(\widehat u(T) - \expect \bigl(\widehat u(T)\bigr)\Bigr).
+\end{equation}
+Clearly, this estimator and $u(T)$ have the same expectation, and thus the same bias.
+By standard properties of control variates~\cite{kroese2013handbook},
+the value of $\alpha$ minimizing the variance can be expressed in terms of the variance of $u(T)$ and 
+the covariance between $u(T)$ and $\widehat u(T)$,
+but for simplicity of the analysis we consider only the case $\alpha = 1$.
+This is the variance-minimizing choice when~$\widehat u(T) = u(T)$,
+and we demonstrate below that it yields good results so long as $\widehat u(T)$ is a good approximation of~$u(T)$.
+The estimator~\eqref{eq:simple_estimator_improvement_1} can be further modified by replacing the expectation \eqref{eq:simple_estimator_improvement_1} by its value in the limit as $T \to \infty$;
+that is, we define
+\begin{equation}
+    \label{eq:improved_estimator}
+    v(T) =  \frac{\bigl\lvert \vect e^\t(\vect q_T - \vect q_0) \bigr\rvert^2}{2T} - \frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl(\frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T}\biggr),
+\end{equation}
+The expectation of $v(T)$ is now different from that of $u(T)$,
+but the two expectations coincide asymptotically as $T \to \infty$.
+Furthermore, the limit in~\eqref{eq:improved_estimator} can be calculated explicitly,
+and, unlike $u(T)$,
+the estimator $v(T)$ is unbiased if $\psi_{\vect e} = \phi_{\vect e}$ even for finite $T$.
+\begin{lemma}
+    It holds that
+    \[
+        \lim_{T \to \infty} \expect \biggl(\frac{\bigl\lvert \xi_T \bigr\rvert^2}{2T}\biggr) = \gamma \beta^{-1} \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu =: d[\psi_{\vect e}].
+    \]
+\end{lemma}
+
+but we expect $\widehat u(T)$ to have lower variance.
+
+In the usual control variate approach,
+one adds and subtracts a random variable of which we know the expectation
+
+
+We propose the following estimator of $D^{\gamma}_{\vect e}$ as an improvement over~\eqref{eq:simple_estimator}:
 \begin{subequations}
 \begin{equation}
     \label{eq:improved_estimator}
@@ -533,6 +608,7 @@ is given by
     - \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \grad_{\vect p} \psi_{\vect e}(\vect q_t, \vect p_t) \cdot \d \vect w_t.
 \end{align}
 \end{subequations}
+provided that $\psi_{\vect e}$ is a sufficiently good approximation of $\phi_{\vect e}$:
 Note that $v(T) = u(T)$ if $\psi_{\vect e} = 0$,
 and that $v(T) = D_{\vect e}^{\gamma}$ if $\psi_{\vect e} = \phi_{\vect e}$ since,
 in this case,

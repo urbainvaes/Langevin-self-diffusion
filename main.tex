@@ -1026,11 +1026,11 @@ then there is $C$ independent of $\psi_{\vect e}$ such that
 \end{align}
 This bound, which is proved in~\cref{sec:proof_technical_result},
 is not as satisfying as~\cref{corollary:better_bias},
-because a $\gamma^2$ factor remains in the second term on the right-hand side. 
+because a $\gamma^2$ factor remains in the second term on the right-hand side.
 \begin{remark}
     Notice that $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} = \norm{\Pi_{\vect p} (\vect e^\t \vect p + \mathcal L \psi_{\vect e})} \leq \norm{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}$,
     so the bound~\eqref{eq:refined_bound} is indeed an improvement over~\eqref{eq:basic_bound_bias} for large $\gamma$.
-    However, when $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} > 0$ the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit as $\gamma \to \infty$ 
+    However, when $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} > 0$ the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit as $\gamma \to \infty$
     than that of the simple estimator $u(T)$, see~\eqref{eq:bias}.
     Therefore, it is not clear that employing a control variate is useful in this limit.
     Since our focus in this work is on the underdamped limit $\gamma \to 0$,
@@ -1076,23 +1076,27 @@ because a $\gamma^2$ factor remains in the second term on the right-hand side.
 \subsection{Variance of the estimators}%
 \label{sub:variance}
 
-We then obtain estimates on the variance of $v(T)$ in \cref{sub:variance},
+In this section, we obtain bounds on the variance of the estimator $v(T)$,
 first for finite $T$ and then asymptotically in the limit as~$T \to \infty$.
+Since $v(T)$ and $u(T)$ coincide when $\psi_{\vect e} = 0$,
+bounds on the variance of $u(T)$ can be recovered by letting $\psi_{\vect e} = 0$ in the estimates.
 
-In this section, we obtain bounds on the variance of the estimators $u(T)$ and $v(T)$.
-Since it is difficult to obtain bounds that scale well both as $\gamma \to 0$ and $\gamma \to \infty$,
+
+Since it is difficult to obtain bounds that scale well both as $\gamma \to 0$ and as $\gamma \to \infty$,
 we aim here to obtain bounds with a good scaling in the underdamped regime only,
 as this is the regime where our approach is of practical interest.
 
 \begin{proposition}
     There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
-    \begin{align}
-        \var \bigl(v(T)\bigr)
-        \leq
-        C &\left( T^{-1} \norm{\phi_{\vect e} - \psi_{\vect e}}[L^4(\mu)]^2  + \gamma \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}[L^4(\mu)]^2 \right) \\
-        \label{eq:variance_estimate}
-          &\quad \left( T^{-1} \norm{\phi_{\vect e} + \psi_{\vect e}}[L^4(\mu)]^2  + \gamma \norm{\grad_{\vect p} \phi_{\vect e} + \grad_{\vect p} \psi_{\vect e}}[L^4(\mu)]^2 \right),
-    \end{align}
+    \begin{equation}
+        \label{eq:statement_variance}
+        \begin{aligned}[b]
+            \var \bigl(v(T)\bigr)
+            \leq
+            C &\left( T^{-1} \norm{\phi_{\vect e} - \psi_{\vect e}}[L^4(\mu)]^2  + \gamma \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}[L^4(\mu)]^2 \right) \\
+              &\quad \left( T^{-1} \norm{\phi_{\vect e} + \psi_{\vect e}}[L^4(\mu)]^2  + \gamma \norm{\grad_{\vect p} \phi_{\vect e} + \grad_{\vect p} \psi_{\vect e}}[L^4(\mu)]^2 \right),
+        \end{aligned}
+    \end{equation}
     provided that all the terms on the right-hand side are finite.
 \end{proposition}
 \begin{remark}
@@ -1101,8 +1105,8 @@ as this is the regime where our approach is of practical interest.
     the variance does not converge to zero in the limit as $T \to \infty$.
     This asymptotic behavior is in contrast with that of estimators based on linear response,
     but not unlike the behavior of estimators based on the Green-Kubo formula,
-    where in fact the variance grows linearly with the integration time.
-    We study the behavior the variance in the limit as $T \to \infty$ more precisely in \cref{proposition:asymptotic_variance} below.
+    where in fact the variance grows with the integration time~\cite{LMS16}.
+    We study the behavior of the variance in the limit as $T \to \infty$ more precisely in \cref{proposition:asymptotic_variance} below.
 \end{remark}
 \begin{remark}
     In order to assess the quality of the upper bound~\eqref{eq:variance_estimate} in the underdamped limit,
@@ -1115,13 +1119,20 @@ as this is the regime where our approach is of practical interest.
         \label{eq:variance_scaling}
         \forall \gamma \in (0, 1), \qquad
         \var \bigl(v(T)\bigr)
-        \leq \widetilde C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2.
+        \leq C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2,
     \end{equation}
+    for some constant $C$.
     For an integration time $T$ scaling as $\gamma^{-1}$,
     which is required in order to control the bias,
-    we find that the variance scales as $\gamma^{-2}$,
+    we find from this formula that the variance scales as $\gamma^{-2}$,
     and so the relative standard deviation scales as $\mathcal O(1)$.
-    In practice, this means that we can keep the number of Monte Carlo replicas constant as $\gamma \to 0$.
+    In practice, this means that we can keep the number of Monte Carlo replicas constant as $\gamma \to 0$
+    without degrading the relative width of our confidence interval.
+\end{remark}
+\begin{remark}
+    Note that we choose $a = b = 2$ in the following proof,
+    and as a result $L^4(\mu)$ norms are obtained on the right-hand side of~\eqref{eq:statement_variance}.
+    Naturally, other choices could have been considered.
 \end{remark}
 \begin{proof}
     The proof is based on the crude inequality
@@ -1135,7 +1146,7 @@ as this is the regime where our approach is of practical interest.
         {\Bigl(\expect \left[  \lvert \vect e^\t(\vect q_T - \vect q_0) - \xi_T \rvert^{2a} \right]\Bigr)^{\frac{1}{a}}} \,
         {\Bigl(\expect \left[ \lvert \vect e^\t (\vect q_T - \vect q_0) + \xi_T \rvert^{2b} \right]\Bigr)^{\frac{1}{b}}},
     \end{align}
-    for any positive $a$ and $b$ such that $\frac{1}{a} + \frac{1}{b} = 1$.
+    for any $(a, b) \in (1, \infty)^2$ such that $\frac{1}{a} + \frac{1}{b} = 1$.
     We recall that, by It\^o's formula, it holds
     \begin{align*}
         \phi_{\vect e}(\vect q_T, \vect p_T) - \phi_{\vect e}(\vect q_0, \vect p_0)
@@ -1144,15 +1155,15 @@ as this is the regime where our approach is of practical interest.
         &= \int_{0}^{T} \, \mathcal L \psi_{\vect e}(\vect q_t, \vect p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_{\vect p} \psi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t.
     \end{align*}
     Denoting the It\^o integrals in these equations by $I_{\phi}$ and $I_{\psi}$ respectively,
-    and using the short-hand notation $\chi_{s} = \chi_{\vect e}(\vect q_s, \vect p_s)$ for $\chi \in \{\phi_{\vect e}, \psi_{\vect e}\}$,
+    and using the short-hand notations $\phi_{s} = \phi_{\vect e}(\vect q_s, \vect p_s)$ and $\psi_{s} = \psi_{\vect e}(\vect q_s, \vect p_s)$,
     we bound
     \begin{align*}
-        \expect \left( |\vect e^\t(\vect q_T - \vect q_0) + \xi_T|^{2 a} \right)
+        \expect \left( |\vect e^\t(\vect q_T - \vect q_0) - \xi_T|^{2 a} \right)
         &= \expect \left( \abs{\phi_{0} - \phi_{T} - \psi_{0} + \psi_{T}  + I_{\phi} - I_{\psi}}^{2 a} \right) \\
         &\leq 3^{2 a-1} \left[ \expect \left( \abs{\phi_t - \psi_t}^{2 a} \right) + \expect \left( \abs{\phi_0 - \psi_0}^{2 a} \right) + \expect \left( \abs{I_{\psi} - I_{\phi}}^{2 a} \right) \right],
     \end{align*}
     where we employed the inequality $|x_1 + \dotsb + x_N|^{y} \leq N^{y-1} \left( |x_1|^y + \dotsb + |x_N|^y \right)$ for any $y \geq 1$,
-    which follows from Jensen's inequality.
+    which follows from the convexity of $x \mapsto \abs{x}^y$.
     The first two terms are equal to $\norm{\phi_{\vect e} - \psi_{\vect e}}_{L^{2 a}(\mu)}^{2 a}$
     given the assumption of stationary initial condition.
     Using a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366},
@@ -1161,17 +1172,17 @@ as this is the regime where our approach is of practical interest.
     \begin{align*}
         \expect \left( \abs{I_{\psi} - I_{\phi}}^{2 a} \right)
         &\leq \bigl( a(2 a - 1)\bigr)^a \, \left(2 \gamma \beta^{-1}\right)^a \,  T^{a-1} \,
-        \expect \left(\int_{0}^{t} \abs{\grad_{\vect p} \phi(\vect q_s, \vect p_s) - \grad_{\vect p} \psi(\vect q_s, \vect p_s)}^{2a} \, \d s\right) \\
-        &= \bigl(a(2a - 1)\bigr)^a \, \left(2 \gamma \beta^{-1}\right)^a \,  T^{a} \, \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \phi - \grad_{\vect p} \psi}^{2a} \d \mu.
+        \expect \left(\int_{0}^{T} \abs{\grad_{\vect p} \phi_{\vect e}(\vect q_s, \vect p_s) - \grad_{\vect p} \psi_{\vect e}(\vect q_s, \vect p_s)}^{2a} \, \d s\right) \\
+        &= \bigl(a(2a - 1)\bigr)^a \, \left(2 \gamma \beta^{-1}\right)^a \,  T^{a} \, \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}}^{2a} \d \mu.
     \end{align*}
     Likewise, the second factor in~\eqref{eq:bound_variance_two_factors} can be bounded as
     \begin{align*}
-        &\expect \left( |\vect e^\t(\vect q_T - \vect q_0) - \xi_T|^{2b} \right) \\
+        &\expect \left( |\vect e^\t(\vect q_T - \vect q_0) + \xi_T|^{2b} \right) \\
         &\qquad
         \leq 3^{2b-1} \Bigl( 2 \norm{\phi_{\vect e} + \psi_{\vect e}}[L^{2b}(\mu)]^{2b}
         + \bigl(b(2b - 1)\bigr)^b \, \left(2 \gamma \beta^{-1}\right)^b \, T^{b} \norm{\grad_{\vect p} \phi_{\vect e} + \grad_{\vect p} \psi_{\vect e}}[L^{4}(\mu)]^4 \Bigr).
     \end{align*}
-    The statement is then obtained by letting $a = 2$.
+    The statement is then obtained by choosing $a = b = 2$.
 \end{proof}
 
 To conclude this section,
@@ -1185,7 +1196,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
         \var\bigl(v(T)\bigr) \xrightarrow[T \to \infty]{}
         2 d[\phi_{\vect e}]^2 + 2 d[\psi_{\vect e}]^2 - 4 \gamma^2 \beta^{-2} \left( \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu \right)^2.
     \end{equation}
-    In particular, it holds
+    In particular,
     \begin{align}
         \label{eq:bounds_asymptotic_variance}
         2(d[\phi_{\vect e}] - d[\psi_{\vect e}])^2
@@ -1196,11 +1207,11 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
     \end{align}
 \end{proposition}
 \begin{remark}
-    This result implies that $\var\bigl(u(T)\bigr) \to 2 d[\phi_{\vect e}]^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
+    The result~\eqref{eq:asymptotic_variance} implies that $\var\bigl(u(T)\bigr) \to 2 d[\phi_{\vect e}]^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
     which is consistent with our explicit computations in \cref{example:constant} for the case of a constant potential.
 \end{remark}
 \begin{proof}
-    Using It\^o's isometry and the central limit theorem for martingales~\cite[Theorem 3.3]{pavliotis2008multiscale},
+    Using It\^o's isometry and the central limit theorem for martingales~(see, for instance, \cite{MR668684} or \cite[Theorem 3.3]{pavliotis2008multiscale}),
     we obtain that
     \[
         \frac{1}{\sqrt{2T}}
@@ -1217,7 +1228,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
             \end{pmatrix}
         \right),
     \]
-    where the domain of integration of all the integrals in th covariance matrix is $\torus^d \times \real^d$.
+    where the domain of integration of all the integrals in the covariance matrix is $\torus^d \times \real^d$.
     For a bivariate Gaussian vector $X \sim \mathcal N(0, \Sigma)$ with density $g_{\Sigma}$,
     it holds by the general formula for the higher-order moments of multivariate Gaussians (Isserlis' theorem)
     that
@@ -1234,7 +1245,8 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
         2 \norm{a}^4 + 2 \norm{b}^4 - 4\ip{a}{b}^2
         &= 2 \norm{a}^4 + 2 \norm{b}^4 - \bigl(\ip{a}{a} + \ip{b}{b} - \ip{a-b}{a-b} \bigr)^2 \\
         &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + 2 \norm{a-b}^2 \bigl(\norm{a}^2 + \norm{b}^2 \bigr) - \norm{a-b}^4 \\
-        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2.
+        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2 \\
+        &\leq \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + 2 \norm{a-b}^2 \bigl(\norm{a}^2 + \norm{b}^2\bigr).
     \end{align*}
     Using this identity with $a = \grad_{\vect p} \phi_{\vect e}$ and $b = \grad_{\vect p} \psi_{\vect e}$ in the Hilbert space $L^2(\mu)$,
     we deduce that
@@ -1247,7 +1259,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
     \begin{align*}
         \bigl\lvert d[\phi_{\vect e}] - d[\psi_{\vect e}] \bigr\rvert
         &= \gamma \beta^{-1} \left( \norm{\grad_{\vect p} \phi_{\vect e}}^2 - \norm{\grad_{\vect p} \psi_{\vect e}}^2 \right)
-        \leq \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}} \bigl( \norm{\grad_{\vect p} \phi_{\vect e}} + \norm{\grad_{\vect p} \psi_{\vect e}} \bigr)
+        \leq \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}} \bigl( \norm{\grad_{\vect p} \phi_{\vect e}} + \norm{\grad_{\vect p} \psi_{\vect e}} \bigr),
     \end{align*}
     and so
     \[
@@ -2344,7 +2356,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 
 \section{Proof of~\texorpdfstring{the bound \eqref{eq:refined_bound}}{the technical bound on the bias}}%
 \label{sec:proof_technical_result}
-In order to prove the bound~\eqref{eq:refined_bound},
+In order to prove the bound,
 we write
 \begin{align*}
     &\ip{\e^{t \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p)} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}

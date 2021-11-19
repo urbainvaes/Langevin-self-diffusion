@@ -128,10 +128,10 @@
 
 \theoremstyle{plain}
 \newtheorem{assumption}{Assumption}[section]
-\newtheorem{lemma}{Lemma}[section]
-\newtheorem{corollary}{Corollary}[section]
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{result}{Result}[section]
 \newtheorem{remark}{Remark}[section]
 \newtheorem{example}{Example}[section]
@@ -459,7 +459,7 @@ Our contributions in this note are the following.
     \item
         We derive bounds on the bias and variance of the proposed estimator for the simple case of one-dimensional Langevin dynamics,
         in terms of the error on the solution to the Poisson equation~\eqref{eq:poisson_equation}.
-        Our estimates show, in particular, that the Langevin dynamics should be integrated up to a time scaling as $\max(\gamma, \gamma^{-1})$ in order to control the bias of the estimator.
+        Our estimates show, in particular, that the Langevin dynamics should be integrated up to a time scaling as $\max(\gamma^{-1}, \gamma)$ in order to control the bias of the estimator.
     \item
         We examine the performance of the approach for two different approximate solutions to the Poisson equation:
         one is obtained through the Fourier/Hermite Galerkin method developed in~\cite{roussel2018spectral},
@@ -691,7 +691,7 @@ constant potential and quadratic potential.
 \begin{example}
     [Constant potential]
     \label{example:constant}
-    Consider the case where $V(q) = 0$ in one dimension
+    Consider the case where $V(q) = 0$ in $d = 1$ dimension
     (therefore we drop the bold notation for $q$ and $p$ and the $\vect e$ subscript).
     In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$,
     and applying Itô's formula to this function we obtain
@@ -813,24 +813,24 @@ we focus in this section on the case where $\psi_{\vect e}$ is at least twice di
 
 We first obtain in~\cref{lemma:easy_lemma} a simple bound on the bias based on standard results in the literature.
 We then motivate, with the help of~\cref{example:quadratic},
-that this result is not optimal and,
-using a novel decay estimate for correlation functions of the form $t \mapsto \ip{\e^{t \mathcal L} f}{h}$ when $f$ and $h$ are functions depending only on $p$,
+that this result is not optimal in the overdamped regime and,
+after obtaining a decay estimate for correlation functions of the form $t \mapsto \ip{\e^{t \mathcal L} f}{h}$ with $f$ and $h$ functions depending only on $p$,
 we prove a finer bound on the bias in~\cref{proposition:better_bias}.
 
 \begin{lemma}
     [Preliminary bound on the bias of the standard estimator]
     \label{lemma:easy_lemma}
-    There exist constants~$M$ and~$\lambda$ such that
+    There exist constants~$M$ and~$\ell$ such that
     \begin{equation}
         \label{eq:bias}
-        \forall \gamma \in (0, \infty), 
+        \forall \gamma \in (0, \infty),
         \quad
-        \forall T > 0, 
+        \forall T > 0,
         \qquad
         \abs{\expect \bigl(u(T)\bigr) - D_{\vect e}^{\gamma}}
-        \leq 
-        % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \lambda \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
-        \frac{L \max \{\gamma^2, \gamma^{-2}\}}{\beta \lambda^2 T}.
+        \leq
+        % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
+        \frac{L \max \{\gamma^{-2}, \gamma^2\}}{\beta \ell^2 T}.
     \end{equation}
 \end{lemma}
 
@@ -859,17 +859,21 @@ stating that
 \begin{equation}
     \label{eq:decay_semigroup_general}
     \forall \gamma > 0, \qquad \forall \theta \geq 0, \qquad
-    \norm*{ \e^{\theta \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq L \exp \bigl(- \lambda \theta \min\{\gamma, \gamma^{-1}\} \bigr)
+    \norm*{ \e^{\theta \mathcal L} }[\mathcal B \left(L^2_0\left(\mu\right) \right)] \leq L \exp \bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\} \bigr)
 \end{equation}
-for appropriate constants $L > 0$ and $\lambda > 0$.
-This result is proved in~\cite{roussel2018spectral} for $\gamma \in (0, \infty)$ using the direct $L^2(\mu)$ hypocoercivity approach pioneered in~\cite{MR2576899,MR3324910},
-and had previously been shown in~\cite{MR2394704} for $\gamma \leq 1$ and~\cite{LMS16} for $\gamma \geq 1$.
-An application of this bound gives
+for appropriate constants $L > 0$ and $\ell > 0$.
+Here $\mathcal B\left(L^2_0(\mu)\right)$ is the vector space of bounded linear operators on $L^2_0(\mu)$,
+and $\norm{\cdot}_{\mathcal B\left(L^2_0(\mu)\right)}$ is the usual associated norm.
+This result is proved in~\cite{MR2394704} for $\gamma \in (0, 1)$ using the $H^1$ hypocoercivity approach~\cite{MR2562709},
+and later in~\cite{MR3106879} for general $\gamma \in (0, \infty)$, in the Fokker--Planck setting,
+using the direct $L^2(\mu)$ hypocoercivity approach pioneered in~\cite{MR2576899,MR3324910}.
+The latter approach is revisited in the backward Kolmogorov setting in~\cite{MR3522857,roussel2018spectral}.
+An application of the bound~\eqref{eq:decay_semigroup_general} gives
 \begin{equation}
     \label{eq:initial_bound_velocity_autocorrelation}
     \left\lvert \ip{\e^{\theta \mathcal L}(\vect e^\t p)}{\vect e^\t p} \right\rvert
     \leq \norm*{\e^{\theta \mathcal L}(\vect e^\t p)} \norm*{\vect e^\t p}
-    \leq L \beta^{-1} \exp\bigl(- \lambda \theta \min\{\gamma, \gamma^{-1}\}\bigr),
+    \leq L \beta^{-1} \exp\bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\}\bigr),
 \end{equation}
 which leads to~\eqref{eq:bias}.
 \end{proof}
@@ -877,58 +881,74 @@ Since the effective diffusion coefficient scales as $\gamma^{-1}$ in both the un
 this estimate suggests that the relative bias of the estimator scales as $\max\{\gamma^{-1}, \gamma^3\} T^{-1}$ and that,
 consequently, the integration time $T$ should scale proportionally to $\max\{\gamma^{-1}, \gamma^3\}$ in order to achieve a given relative accuracy.
 It turns out that the estimate~\eqref{eq:initial_bound_velocity_autocorrelation} is not optimal in the overdamped regime,
-which is clear in the case of quadratic potential, see~\eqref{eq:velocity_autocorrelation_quadratic}.
-We derive a sharper estimate from the following result.
+which is clear in the case of quadratic potential; see~\eqref{eq:velocity_autocorrelation_quadratic} in \cref{example:quadratic}.
+We derive a sharper estimate from the following~\cref{proposition:semigroup_meanzero_observable}.
+In order to state this result, 
+we introduce the notation
+\[
+    \Pi_{\vect p}\colon \lp{2}{\mu} \rightarrow \lp{2}{\mu}; \int u(\vect q, \vect p) \, \kappa(\d \vect p),
+    \qquad  \Pi_{\vect p}^\perp = \id - \Pi_{\vect p}.
+\]
+The operators $\Pi_{\vect p}$ and $\Pi_{\vect p}$ are respectively the $L^2(\mu)$ projection operators on 
+the subspace of functions depending only on $q$,
+and the subspace of functions with average $0$ in $p$ (with respect to $\kappa$, and for almost every $q \in \torus^d$).
+We also introduce the space $H^{1,\vect q}(\mu)$ of functions in $L^2(\mu)$ with their $\vect q$-gradient also in $L^2(\mu)$,
+and the associated norm $\norm{\dummy}[1,\vect q] = \norm{\dummy} + \norm{\grad_{\vect q} \dummy}$.
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
-    Let $\Pi_{\vect p}\colon \lp{2}{\mu} \rightarrow \lp{2}{\mu}; u \mapsto  u - \int u(\vect q, \vect p) \, \kappa(\d \vect p)$ and $\Pi_{\vect p}^\perp = \id - \Pi_{\vect p}$.
-    Assume that $f$ and $h$ are smooth functions in $\Pi_{\vect p}^\perp \lp{2}{\mu}$
-    such that $\grad_{\vect q} f \in \lp{2}{\mu}$ and $\grad_{\vect q} h \in \lp{2}{\mu}$.
-    Then there exist constants $K$ and $\kappa$ independent of $f$ and $h$ such that
+    Let 
+    Assume that $f \in H^{1,\vect q}(\mu)$ and $h \in H^{1,\vect q}(\mu)$ are smooth functions in $\Pi_{\vect p}^\perp \lp{2}{\mu}$.
+    Then there exist constants $A$ and $a$ independent of $f$ and $h$ such that
     \begin{equation}
         \label{eq:optimal_decay_correlation}
         \forall \gamma \geq 1, \quad
         \forall t \geq 0, \qquad
         \abs{\ip{\e^{t \mathcal L}f}{h}}
-        \leq K \norm{f}[1,\vect q]  \norm{h}[1,\vect q] \left( \gamma^{-2} \e^{- \kappa \gamma^{-1} t} + \e^{-\kappa  \gamma t} \right),
+        \leq A \norm{f}[1,\vect q]  \norm{h}[1,\vect q] \left( \gamma^{-2} \e^{- a \gamma^{-1} t} + \e^{- a \gamma t} \right).
     \end{equation}
-    where $\norm{\dummy}[1,\vect q] = \norm{\dummy} + \norm{\grad_{\vect q} \dummy}$.
 \end{proposition}
 
-This result, the proof of which is postponed to \cref{sec:auxiliary_technical_results},
-enables to prove the following bound on the bias of $u(T)$.
-\begin{proposition}
+This result, proved in \cref{sec:auxiliary_technical_results},
+enables to show the following bound on the bias of~$u(T)$,
+which is better than~\cref{lemma:easy_lemma} in the large $\gamma$ regime.
+Roughly speaking, \cref{proposition:semigroup_meanzero_observable} states that,
+when $\gamma \gg 1$ and $f$ and $h$ are mean-zero in $p$,
+correlations of the form $\expect\bigl(f(p_t) h(p_0)\bigr)$ are $\mathcal O(\gamma^{-2})$ small after a small $\mathcal O(\gamma^{-1})$ time,
+despite the fact that their asymptotic decay rate as~$\e^{- a \gamma^{-1} t}$ is slow.
+% In other words, information on the starting $p$ is quickly forgotten.
+\begin{corollary}
     [Bias of the standard estimator]
     \label{proposition:better_bias}
-    There exist constants~$K$ and~$\kappa$ such that
+    There exist constants~$\widehat L$ and~$\widehat \ell$ such that
     \begin{equation}
         \label{eq:bias}
-        \forall \gamma \in (0, \infty), 
+        \forall \gamma \in (0, \infty),
         \quad
-        \forall T > 0, 
+        \forall T > 0,
         \qquad
         \abs{\expect \bigl(u(T)\bigr) - D_{\vect e}^{\gamma}}
-        \leq 
-        % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \lambda \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
-        \frac{K \max \{1, \gamma^{-2}\}}{\beta \kappa^2 T}.
+        \leq
+        % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
+        \frac{\widehat L \max \{\gamma^{-2}, 1\}}{\beta \widehat \ell^2 T}.
     \end{equation}
-\end{proposition}
+\end{corollary}
 \begin{proof}
-    Applying this result with $f(\vect q, \vect p) = h(\vect q, \vect p) = \vect e^\t \vect p$, we obtain
+    Applying \cref{proposition:semigroup_meanzero_observable} with $f(\vect q, \vect p) = h(\vect q, \vect p) = \vect e^\t \vect p$, we obtain
     \begin{equation}
         \label{eq:refined_bound_for_u}
-        \forall \gamma \geq 1, \qquad
-        \abs{\expect u(T) - D^{\gamma}_{\vect e}}
-        \leq \frac{K}{\beta T} \int_{0}^{\infty} \left( \gamma^{-2} \e^{- \kappa \gamma^{-1} \theta} + \e^{-\kappa  \gamma \theta} \right)  \theta \, \d \theta
-        \leq \frac{2K}{\beta \kappa^2 T},
+        \abs{\expect \bigl(u(T)\bigr) - D^{\gamma}_{\vect e}}
+        \leq \frac{A}{\beta T} \int_{0}^{\infty} \left( \gamma^{-2} \e^{- a \gamma^{-1} \theta} + \e^{-a  \gamma \theta} \right)  \theta \, \d \theta
+        \leq \frac{2A}{\beta a^2 T}.
     \end{equation}
-    showing that the relative bias in fact scales as~$\max\{\gamma^{-1}, \gamma\} T^{-1}$,
-    and so it is sufficient to take~$T \propto \gamma$ in order to control the bias in the overdamped limit.
+    Combining this inequality with \cref{lemma:easy_lemma},
+    we obtain the result.
     % Despite this improvement,
     % the computational cost of calculating the effective diffusion coefficient from Monte Carlo simulation in the overdamped regime is prohibitive,
     % because the time step must scale as $\gamma^{-1}$ in order to accurately integrate the Langevin dynamics,
     % leading to a computational cost in the overdamped limit scaling as $\gamma^2$.
 \end{proof}
+This shows that the relative bias in fact scales as~$\max\{\gamma^{-1}, \gamma\} T^{-1}$,
+and so it is sufficient to take~$T \propto \gamma$ in order to control the bias in the overdamped limit.
 
 \subsubsection{Bias of the improved estimator}%
 \label{ssub:bias_of_the_improved_estimator}
@@ -944,7 +964,7 @@ We now obtain a bound on the bias of the improved estimator $v(T)$.
         \label{eq:basic_bound_bias}
         \forall \gamma \in (0, \infty), \qquad
         \abs{\expect \bigl( v(T) \bigr) - D^{\gamma}_{\vect e}}
-                &\leq  \frac{L \max\{\gamma^2, \gamma^{-2}\}}{T \lambda^2 }  \,  \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right).
+                &\leq  \frac{L \max\{\gamma^2, \gamma^{-2}\}}{T \ell^2 }  \,  \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right).
     \end{align}
     % \item \textbf{Improved bound in the overdamped regime:}
     If in addition $\grad_{\vect q} (\mathcal L \psi_{\vect e}) \in \lp{2}{\mu}$,
@@ -995,7 +1015,7 @@ In order to obtain~\eqref{eq:basic_bound_bias}, we write
     &= \ip{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}{\e^{t \mathcal L} (\vect e^\t \vect p) - \e^{t \mathcal L^*} \mathcal  L\psi_{\vect e}} \\
     &\leq \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}
     \left( \norm*{\e^{t \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \, \norm*{\vect e^\t \vect p} + \norm*{\e^{t \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi_{\vect e}} \right) \\
-    &\leq L \e^{- \lambda \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t \vect p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
+    &\leq L \e^{- \ell \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t \vect p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
 \end{align*}
 where the first inequality is justified in view of the fact that,
 being adjoints of one another,
@@ -1016,7 +1036,7 @@ The last two terms are bounded using the general bound on the Langevin semigroup
 \[
     \abs{\ip{\e^{t \mathcal L} (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}{\Pi_{\vect p} \mathcal L \psi_{\vect e}}}
     \vee \abs{\ip{\e^{t \mathcal L} \Pi_{\vect p} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}}
-    \leq L \exp \left( - \lambda \min\{\gamma, \gamma^{-1}\} t\right) \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
+    \leq L \exp \left( - \ell \min\{\gamma, \gamma^{-1}\} t\right) \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
 \]
 where $a \vee b = \max\{a, b\}$,
 and the first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:

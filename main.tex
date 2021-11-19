@@ -815,12 +815,12 @@ We first obtain in~\cref{lemma:easy_lemma} a simple bound on the bias based on s
 We then motivate, with the help of~\cref{example:quadratic},
 that this result is not optimal in the overdamped regime and,
 after obtaining a decay estimate for correlation functions of the form $t \mapsto \ip{\e^{t \mathcal L} f}{h}$ with $f$ and $h$ functions depending only on $p$,
-we prove a finer bound on the bias in~\cref{proposition:better_bias}.
+we prove a finer bound on the bias in~\cref{corollary:better_bias}.
 
 \begin{lemma}
     [Preliminary bound on the bias of the standard estimator]
     \label{lemma:easy_lemma}
-    There exist constants~$M$ and~$\ell$ such that
+    There exists a constant~$C$such that
     \begin{equation}
         \label{eq:bias}
         \forall \gamma \in (0, \infty),
@@ -830,7 +830,7 @@ we prove a finer bound on the bias in~\cref{proposition:better_bias}.
         \abs{\expect \bigl(u(T)\bigr) - D_{\vect e}^{\gamma}}
         \leq
         % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
-        \frac{L \max \{\gamma^{-2}, \gamma^2\}}{\beta \ell^2 T}.
+        \frac{C \max \{\gamma^{-2}, \gamma^2\}}{\beta T}.
     \end{equation}
 \end{lemma}
 
@@ -918,8 +918,8 @@ despite the fact that their asymptotic decay rate as~$\e^{- a \gamma^{-1} t}$ is
 % In other words, information on the starting $p$ is quickly forgotten.
 \begin{corollary}
     [Bias of the standard estimator]
-    \label{proposition:better_bias}
-    There exist constants~$\widehat L$ and~$\widehat \ell$ such that
+    \label{corollary:better_bias}
+    There exists a constant~$\widehat C$ such that
     \begin{equation}
         \label{eq:bias}
         \forall \gamma \in (0, \infty),
@@ -929,7 +929,7 @@ despite the fact that their asymptotic decay rate as~$\e^{- a \gamma^{-1} t}$ is
         \abs{\expect \bigl(u(T)\bigr) - D_{\vect e}^{\gamma}}
         \leq
         % \frac{L}{\beta T}\int_{0}^{\infty} \exp\bigl(- \ell \theta \min\{\gamma, \gamma^{-1}\}\bigr) \theta \, \d \theta =
-        \frac{\widehat L \max \{\gamma^{-2}, 1\}}{\beta \widehat \ell^2 T}.
+        \frac{\widehat C \max \{\gamma^{-2}, 1\}}{\beta T}.
     \end{equation}
 \end{corollary}
 \begin{proof}
@@ -964,6 +964,7 @@ The following result can be viewed as a generalization of~\cref{lemma:easy_lemma
 which is recovered in the particular case when $\psi_{\vect e} = 0$.
 \begin{proposition}
     [Bias of the estimator]
+    \label{lemma:bias_improved}
     Assume that $\mathcal L \psi_{\vect e} \in \lp{2}{\mu}$.
     % \begin{itemize}
     % \item \textbf{General bound for $\gamma \in (0, \infty)$:}
@@ -976,6 +977,7 @@ which is recovered in the particular case when $\psi_{\vect e} = 0$.
                 &\leq  \frac{L \max\{\gamma^2, \gamma^{-2}\}}{T \ell^2 }  \,  \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right).
     \end{align}
 \end{proposition}
+Note that the right-hand side of~\eqref{eq:basic_bound_bias} is small when $\mathcal L \psi_{\vect e} \approx \mathcal L \phi_{\vect e} = \vect e^\t p$.
 \begin{proof}
     Using Itô's formula for $\psi_{\vect e}$,
     we have
@@ -1002,29 +1004,35 @@ which is recovered in the particular case when $\psi_{\vect e} = 0$.
     where the first inequality is justified in view of the fact that,
     being adjoints of one another,
     the operators $\e^{t \mathcal L^*}$ and $\e^{t \mathcal L}$ have the same norm.
-    % since the operator $\mathcal L^*$, which is the formal $\lp{2}{\mu}$ adjoint of $\mathcal L$,
-    % coincides with $\mathcal L$ up to the sign of the Hamiltonian part.
-    We then obtain~\eqref{eq:basic_bound_bias} by employing the reasoning that led to~\eqref{eq:bias}.
+    The constants $L$ and $\ell$ are the same as in~\eqref{eq:decay_semigroup_general}.
+    We then obtain~\eqref{eq:basic_bound_bias} by employing the reasoning leading to~\eqref{eq:bias}.
 \end{proof}
 
-Note that the right-hand side of~\eqref{eq:basic_bound_bias} is small when $\mathcal L \psi_{\vect e} \approx \mathcal L \phi_{\vect e} = \vect e^\t p$.
+\Cref{lemma:bias_improved} suffers from the same shortcoming as~\cref{lemma:easy_lemma}:
+it is not optimal in the large $\gamma$ regime.
+Employing~\cref{proposition:semigroup_meanzero_observable} is a similar manner as in~\cref{corollary:better_bias},
+it is possible to prove that,
+if $\mathcal L \psi_{\vect e} \in H^{1,\vect q}(\mu)$,
+then there is $C$ independent of $\psi_{\vect e}$ such that
+\begin{align}
+    \notag
+    \forall \gamma \geq 1, \quad
+    \forall T > 0, \qquad
+    \abs{\expect \bigl( v(T) \bigr) - D_{\vect e}^{\gamma}}
+        &\leq C T^{-1}
+        \norm*{\vect e^\t \vect p +  \mathcal L \psi_{\vect e}}[1,\vect q] \, \bigl(1 + \norm{\mathcal L \psi_{\vect e}}[1,\vect q] \bigr) \\
+        \label{eq:refined_bound}
+        &\quad + C T^{-1} \gamma^2 \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
+\end{align}
+This bound, which is proved in~\cref{sec:proof_technical_result},
+is not as satisfying as~\cref{corollary:better_bias},
+because a $\gamma^2$ factor remains in the second term on the right-hand side. 
 \begin{remark}
-    If in addition $\grad_{\vect q} (\mathcal L \psi_{\vect e}) \in \lp{2}{\mu}$,
-    a bound with a better behavior in the limit as $\gamma \to \infty$ can be obtained:
-    there exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
-    \begin{align}
-        \notag
-        \forall \gamma \geq 1, \qquad
-        \abs{\expect \bigl( v(T) \bigr) - D_{\vect e}^{\gamma}}
-            &\leq C T^{-1}
-            \norm*{\vect e^\t \vect p +  \mathcal L \psi_{\vect e}}[1,\vect q] \, \bigl(1 + \norm{\mathcal L \psi_{\vect e}}[1,\vect q] \bigr) \\
-            \label{eq:refined_bound}
-            &\quad + C T^{-1} \gamma^2 \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}}.
-    \end{align}
     Notice that $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} = \norm{\Pi_{\vect p} (\vect e^\t \vect p + \mathcal L \psi_{\vect e})} \leq \norm{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}$,
     so the bound~\eqref{eq:refined_bound} is indeed an improvement over~\eqref{eq:basic_bound_bias} for large $\gamma$.
-    However, when $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} > 0$ the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse than that of the simple estimator $u(T)$,
-    and so it is not clear that employing a control variate is useful in this limit.
+    However, when $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} > 0$ the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit as $\gamma \to \infty$ 
+    than that of the simple estimator $u(T)$, see~\eqref{eq:bias}.
+    Therefore, it is not clear that employing a control variate is useful in this limit.
     Since our focus in this work is on the underdamped limit $\gamma \to 0$,
     and since the limit $\gamma \to \infty$ is more easily studied numerically through deterministic methods anyway,
     we do not further investigate this issue.
@@ -2335,6 +2343,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 \end{proof}
 
 \section{Proof of~\texorpdfstring{the bound \eqref{eq:refined_bound}}{the technical bound on the bias}}%
+\label{sec:proof_technical_result}
 In order to prove the bound~\eqref{eq:refined_bound},
 we write
 \begin{align*}

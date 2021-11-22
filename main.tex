@@ -493,8 +493,6 @@ exhibiting a scaling as $\gamma^{-\sigma}$ of the mobility in the underdamped re
 \Cref{sec:conclusions_and_perspectives_for_future_work} is reserved for conclusions and perspectives for future work,
 while the appendices contain technical results employed in~\cref{sec:application_to_one_dimensional_langevin_type_dynamics}.
 
-
-
 \section{Improved Monte Carlo estimator for the diffusion coefficient}%
 \label{sec:method}%
 
@@ -1194,13 +1192,13 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \begin{proposition}
     [Asymptotic value of variance]
     \label{proposition:asymptotic_variance}
-    Assume that there is $\varepsilon > 0$ such that 
+    Assume that there is $\varepsilon > 0$ such that
     \begin{equation}
         \label{eq:regularity_solution}
         \phi_{\vect e} \in L^{4+\varepsilon}(\mu),
-        \qquad 
+        \qquad
         \psi_{\vect e} \in L^{4+\varepsilon}(\mu),
-        \qquad 
+        \qquad
         \grad_{\vect p} \phi_{\vect e} \in L^{4+\varepsilon}(\mu),
         \qquad
         \grad_{\vect p} \phi_{\vect e} \in L^{4+\varepsilon}(\mu).
@@ -1927,33 +1925,102 @@ the parameter multiplying the non-separable part of the potential is small with 
 \label{sec:auxiliary_technical_results}
 
 The proof is based on several lemmata.
-We introduce some notation.
-For a measure $\pi$, we define the weighted Sobolev space $H^i(\pi)$ as the subspace of $L^2(\pi)$
+Before presenting these, we introduce some notation and recall useful background material.
+For a measure $\pi$, we define the weighted Sobolev space~$H^i(\pi)$ as the subspace of $L^2(\pi)$
 of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
 \[
     \norm{u}_i^2 = \sum_{|\alpha| \leq i} \norm*{\partial^{\alpha} f}^2,
 \]
-where we use the standard multi-index notation
-and $\norm{\dummy}$ is the norm of~$L^2(\pi)$.
-% generalized to tensors in the usual manner.
-% (in particular, $\norm*{\nabla^2 f}$ is the Frobenius norm of the Hessian matrix  of $f$).
-We recall that a probability measure $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
+where we use the standard multi-index notation.
+Throughout this section, $\norm{\dummy}$ and $\ip{\dummy}{\dummy}$ are the norm and inner product of~$L^2(\pi)$.
+The probability measure $\pi$ implicit in this notation is either obvious in the context or explicitly specified.
+We recall that $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
 \begin{equation}
     \label{eq:poincare}
     \tag{P$_R$}
-    \forall f \in H^1_0(\pi) \cap L^2_0(\pi), \qquad
-    \norm*{f}^2 \leq \frac{1}{2R} \norm{\grad f}^2.
+    \forall f \in H^1(\pi) \cap L^2_0(\pi), \qquad
+    \norm*{f}^2 \leq \frac{1}{R} \norm{\grad f}^2.
 \end{equation}
+It is well-known that the Gaussian measure $\kappa$ in~\eqref{eq:definition_prob_measures} satisfies~\eqref{eq:poincare} with $R = \beta$;
+see, for example,~\cite[Lemma 2.1]{MR4071827} for a short proof.
+We also recall that $\mathcal L_{\rm FD} = - \beta^{-1} \grad_{\vect p}^* \cdot \grad_{\vect p}$ by integration by parts,
+at least formally in the sense that
+\begin{equation}
+    \label{eq:symmetry_Lfd}
+    \forall \phi \in H^1(\kappa) \cap L^2_0(\kappa), \quad \varphi \in C^{\infty}_c(\real^d), \qquad
+    - \left\langle \mathcal L_{\rm FD} \phi, \varphi \right\rangle
+    = \beta^{-1} \int_{\real^d} \grad_{\vect p} \phi \cdot \grad_{\vect p} \varphi \, \d \kappa.
+\end{equation}
+By the Poincaré inequality~\eqref{eq:poincare},
+the right-hand side of this equation defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
+and so the Riesz representation theorem implies that for all $f \in L^2_0(\kappa)$,
+there exists a unique $\phi \in H^1(\kappa) \cap L^2_0(\kappa)$ such that
+\(
+    - \mathcal L_{\rm FD} \phi = f
+\)
+in the distributional sense.
+It is immediate to show that $\lVert \grad_{\vect p} \phi \rVert^2 \leq \beta \lVert f \rVert$,
+which implies that the resolvent operator $(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$.
+Since the embedding $H^1_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
+the resolvent is compact as an operator on $L^2_0(\kappa)$,
+in addition to being self-adjoint in view of~\eqref{eq:symmetry_Lfd}.
+Therefore, by the spectral theorem for compact self-adjoint operators,
+there is an orthonormal basis $(e_i)_{i \in \nat}$ of~$L^2_0(\kappa)$ consisting of eigenfunctions of $-\mathcal L_{\rm FD}$.
+% (These are in fact tensorized and rescaled Hermite polynomials of positive degrees~\cite{lorenzi2006analytical},
+% but we do not exploit this here.)
+Let us denote the corresponding (real) eigenvalues by~$(\lambda_i)_{i \in \nat}$,
+and note that the Poincaré inequality implies that~$\lambda_i \geq 1$ for all $i \in \nat$.
+Clearly, it holds that
+\begin{equation}
+    \label{eq:series_phi}
+    \phi = \lim_{n \to \infty} \phi_n
+    := \lim_{n \to \infty} \sum_{i=1}^{n} \frac{1}{\lambda_i} \ip{f}{e_i} e_i
+    = \sum_{i=1}^{\infty} \phi_i e_i,
+\end{equation}
+with the series on the right hand side being convergent in $L^2(\kappa)$ and $H^1(\kappa)$.
+The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
+To see this, note that for $n > m$,
+\begin{align*}
+    \norm{\hess (\phi_n - \phi_m)}^2
+    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\hess e_{k}}{\hess e_{\ell}} \\
+    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\grad^* \cdot \grad e_{k}}{\grad^* \cdot \grad e_{\ell}}
+    - \beta \phi_{k} \phi_{\ell} \ip{\hess W \grad e_{\ell}}{\grad e_k} \\
+    &\leq \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}}
+    = \sum_{k=m+1}^{n} \lvert \ip{f}{e_k} \rvert^2,
+\end{align*}
+and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
+Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
+In fact, the convergence in $H^2(\kappa)$ of the right-hand side of~\eqref{eq:series_phi} follows from the fact that,
+for any $u \in H^2(\kappa)$,
+\[
+    \norm{\grad u} = \sum_{i=1}^{\infty} \lambda_i \lvert \ip{u}{e_i} \rvert^2, \qquad
+    \norm{\hess u} = \sum_{i=1}^{\infty} \lambda_i^2 \lvert \ip{u}{e_i} \rvert^2.
+\]
 
-The operator $\mathcal L_{\rm FD}$,
-viewed as an operator over $H^1_0(\kappa)$,
-admits a compact self-adjoint resolvent.
-Therefore, there exist $\{\lambda_i\}_{i\in \nat}$ and
+From the foregoing calculation,
+it is not difficult to show that $(-\mathcal L_{\rm FD})^{-1}$ is a bounded operator from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$
+and that, relatedly, the unbounded operator
+\[
+    \mathcal L_{\rm FD}: H^2(\kappa) \cap L^2_0(\kappa) \subset L^2_0(\kappa) \to L^2_0(\kappa)
+\]
+is closed.
+% Generalizing the above derivation,
+It is also simple to show the resolvent bound
+\[
+    \norm{(\lambda - \mathcal L_{\rm FD})^{-1}}[\mathcal B\left(L^2_0(\mu)\right)] \leq \frac{1}{1+\lambda},
+\]
+and so the classical Hille--Yosida theorem implies that $\mathcal L_{\rm FD}$ generates a contraction semigroup~$(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\mu)$,
+with the decay estimate $\norm{\e^{t \mathcal L_{\rm FD}} f} \leq \e^{-t}$.
+By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$ we have
 \[
     \e^{t \mathcal L_{\rm FD}} f
     = \sum_{i=0}^{\infty} \e^{- \lambda_i t} \ip{f}{e_i} e_i.
 \]
+We will use two corollaries of this representation formula:
+\begin{itemize}
+    \item Decay of derivatives:
+\end{itemize}
 
 The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
@@ -2311,7 +2378,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     assuming $t \geq \gamma^{-1}$:
     \begin{align}
         \notag
-        &\int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \left( \frac{\e^{-\gamma s}}{\sqrt{1 \wedge \gamma s}} \right) \, \d s
+        &\int_{0}^{t} \e^{-\frac{\lambda_{\rm Lang}}{\gamma}(t-s)}  \, \left( \frac{\e^{-\gamma s}}{\sqrt{\min\{1, \gamma s\}}} \right) \, \d s
         \leq
         \e^{-\frac{\lambda_{\rm Lang}}{\gamma} \left(t-\frac{1}{\gamma}\right)}
          \int_{0}^{\frac{1}{\gamma}}  \frac{1}{\sqrt{\gamma s\, }} \, \d s
@@ -2427,28 +2494,28 @@ and so it is sufficient to prove that,
 in the limit as $T \to \infty$ and for $i \in \{1, 2\}$,
 \begin{align}
     \label{eq:target_equation}
-    \expect \bigl[ \lvert X^T_i \rvert^4 \bigr] 
+    \expect \bigl[ \lvert X^T_i \rvert^4 \bigr]
     \to \expect \bigl[ \lvert X^{\infty}_i \rvert^4 \bigr],
-    \qquad  
-    \expect \bigl[ \lvert X^T_i \rvert^2 \bigr] 
+    \qquad
+    \expect \bigl[ \lvert X^T_i \rvert^2 \bigr]
     \to \expect \bigl[ \lvert X^{\infty}_i \rvert^2 \bigr],
     \qquad
     \expect \bigl[ \lvert X^T_1 X^T_2 \rvert^2 \bigr]
     \to \expect \bigl[ \lvert X^T_1 X^T_2 \rvert^2 \bigr].
 \end{align}
-By the continuous mapping theorem, 
-it holds from the convergence in law of $X^{T}$ to $X^{\infty}$ that 
+By the continuous mapping theorem,
+it holds from the convergence in law of $X^{T}$ to $X^{\infty}$ that
 \[
-     \lvert X^T_i \rvert^4  
-    \xrightarrow[T \to \infty]{\rm Law} 
+     \lvert X^T_i \rvert^4
+    \xrightarrow[T \to \infty]{\rm Law}
     \lvert X^{\infty}_i \rvert^4 ,
-    \qquad  
-     \lvert X^T_i \rvert^2  
-    \xrightarrow[T \to \infty]{\rm Law} 
+    \qquad
+     \lvert X^T_i \rvert^2
+    \xrightarrow[T \to \infty]{\rm Law}
     \lvert X^{\infty}_i \rvert^2 ,
     \qquad
-     \lvert X^T_1 X^T_2 \rvert^2 
-    \xrightarrow[T \to \infty]{\rm Law} 
+     \lvert X^T_1 X^T_2 \rvert^2
+    \xrightarrow[T \to \infty]{\rm Law}
     \lvert X^T_1 X^T_2 \rvert^2 .
 \]
 In order to prove~\eqref{eq:target_equation},
@@ -2461,10 +2528,10 @@ A sufficient condition for uniform integrability is that there is $\varepsilon >
 \[
     \sup_{T \in [1, \infty)} \expect \bigl[ \lvert X^T_2 \rvert^{4+\varepsilon} \bigr] < \infty.
 \]
-By definition, 
+By definition,
 it holds that
 \[
-    X^T_2 = 
+    X^T_2 =
     \frac{\psi_{\vect e}(\vect q_0, \vect p_0) - \psi_{\vect e}(\vect q_T, \vect p_T)}{\sqrt{2T}}
     + \sqrt{\frac{\gamma}{\beta T}} \int_{0}^{T} \grad_{\vect p} \psi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t,
 \]
@@ -2472,8 +2539,8 @@ and so, using the standing assumption of a stationary initial condition
 and a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366},
 we have
 \[
-    \lvert X^T_2 \rvert^{4+ \varepsilon} \leq  
-    C \left( 2\norm{\psi_{\vect e}}[L^{4+\varepsilon}(\mu)]^{4 + \varepsilon} + 
+    \lvert X^T_2 \rvert^{4+ \varepsilon} \leq
+    C \left( 2\norm{\psi_{\vect e}}[L^{4+\varepsilon}(\mu)]^{4 + \varepsilon} +
         \norm{\grad_{\vect p} \psi_{\vect e}}[L^{4+\varepsilon}(\mu)]^{4+\varepsilon}
         \right) < \infty.
 \]

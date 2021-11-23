@@ -1944,7 +1944,7 @@ We recall that $\pi$ is said to satisfy the Poincaré inequality with constant $
 \end{equation}
 It is well-known that the Gaussian measure $\kappa$ in~\eqref{eq:definition_prob_measures} satisfies~\eqref{eq:poincare} with $R = \beta$;
 see, for example,~\cite[Lemma 2.1]{MR4071827} for a short proof.
-We also recall that $\mathcal L_{\rm FD} = - \beta^{-1} \grad_{\vect p}^* \cdot \grad_{\vect p}$ by integration by parts,
+We also recall that $\mathcal L_{\rm FD} = - \beta^{-1} \grad_{\vect p}^* \cdot \grad_{\vect p}$,
 at least formally in the sense that
 \begin{equation}
     \label{eq:symmetry_Lfd}
@@ -1952,8 +1952,35 @@ at least formally in the sense that
     - \left\langle \mathcal L_{\rm FD} \phi, \varphi \right\rangle
     = \beta^{-1} \int_{\real^d} \grad_{\vect p} \phi \cdot \grad_{\vect p} \varphi \, \d \kappa.
 \end{equation}
+We will use the following result.
+\begin{lemma}
+    The unbounded operator
+    \begin{equation}
+        \label{eq:unbounded_operator}
+        \mathcal L_{\rm FD}: H^2(\kappa) \cap L^2_0(\kappa) \subset L^2_0(\kappa) \to L^2_0(\kappa)
+    \end{equation}
+    generates a contraction semigroup $(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2(\kappa)$,
+    with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$.
+\end{lemma}
+This standard result follows from, for example,~\cite[Chapter 9]{lorenzi2006analytical}.
+Since the simple setting we consider enables a short and simple proof,
+and since some elements of the proof will be useful in the remainder of this section,
+we present it here.
+\begin{proof}
+    The statement follows from the classical Hille--Yosida theorem,
+    of which we check the assumptions,
+    i.e.\ that the unbounded operator~\eqref{eq:unbounded_operator} is closed,
+    and that
+    \begin{equation}
+        \label{eq:resolvent_bound}
+        \forall \lambda > -1, \qquad
+        \lVert (\lambda - \mathcal L_{\rm FD})^{-1} \rVert_{\mathcal B\bigl(L^2_0(\kappa)\bigr)} \leq \frac{1}{1 + \lambda}.
+    \end{equation}
+
+We first prove~\eqref{eq:resolvent_bound} for $\lambda = 0$,
+noting that the reasoning can easily be extended to other values of $\lambda > -1$.
 By the Poincaré inequality~\eqref{eq:poincare},
-the right-hand side of this equation defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
+the right-hand side of~\eqref{eq:symmetry_Lfd} defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
 and so the Riesz representation theorem implies that for all $f \in L^2_0(\kappa)$,
 there exists a unique $\phi \in H^1(\kappa) \cap L^2_0(\kappa)$ such that
 \(
@@ -1961,7 +1988,12 @@ there exists a unique $\phi \in H^1(\kappa) \cap L^2_0(\kappa)$ such that
 \)
 in the distributional sense.
 It is immediate to show that $\lVert \grad_{\vect p} \phi \rVert^2 \leq \beta \lVert f \rVert$,
-which implies that the resolvent operator $(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$.
+which implies that the resolvent operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$,
+and therefore also from~$L^2_0(\kappa)$ to $L^2_0(\kappa)$,
+with norm at most $1$ by the Poincaré inequality.
+This concludes the proof of~\eqref{eq:resolvent_bound}.
+
+We now show that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
 Since the embedding $H^1_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
 the resolvent is compact as an operator on $L^2_0(\kappa)$,
 in addition to being self-adjoint in view of~\eqref{eq:symmetry_Lfd}.
@@ -1976,47 +2008,36 @@ Clearly, it holds that
     \label{eq:series_phi}
     \phi = \lim_{n \to \infty} \phi_n
     := \lim_{n \to \infty} \sum_{i=1}^{n} \frac{1}{\lambda_i} \ip{f}{e_i} e_i
-    = \sum_{i=1}^{\infty} \phi_i e_i,
+    =: \sum_{i=1}^{\infty} \phi_i e_i,
 \end{equation}
 with the series on the right hand side being convergent in $L^2(\kappa)$ and $H^1(\kappa)$.
 The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
-To see this, note that for $n > m$,
+To see this, we introduce $\grad^* = \beta \vect p - \grad$ and note that for $n > m$,
 \begin{align*}
     \norm{\hess (\phi_n - \phi_m)}^2
     &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\hess e_{k}}{\hess e_{\ell}} \\
     &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\grad^* \cdot \grad e_{k}}{\grad^* \cdot \grad e_{\ell}}
     - \beta \phi_{k} \phi_{\ell} \ip{\hess W \grad e_{\ell}}{\grad e_k} \\
-    &\leq \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}}
-    = \sum_{k=m+1}^{n} \lvert \ip{f}{e_k} \rvert^2,
+    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \bigl(\beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}} + \beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{e_{\ell}}\bigr) \\
+    &= \sum_{k=m+1}^{n} \beta^2 \left(1 - \frac{1}{\lambda_k}\right) \lvert \ip{f}{e_k} \rvert^2,
 \end{align*}
 and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
 Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
-In fact, the convergence in $H^2(\kappa)$ of the right-hand side of~\eqref{eq:series_phi} follows from the fact that,
-for any $u \in H^2(\kappa)$,
-\[
-    \norm{\grad u} = \sum_{i=1}^{\infty} \lambda_i \lvert \ip{u}{e_i} \rvert^2, \qquad
-    \norm{\hess u} = \sum_{i=1}^{\infty} \lambda_i^2 \lvert \ip{u}{e_i} \rvert^2.
-\]
+As a consequence of the foregoing calculation,
+the operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$,
+and so the unbounded operator~\eqref{eq:unbounded_operator} is closed.
+\end{proof}
 
-From the foregoing calculation,
-it is not difficult to show that $(-\mathcal L_{\rm FD})^{-1}$ is a bounded operator from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$
-and that, relatedly, the unbounded operator
-\[
-    \mathcal L_{\rm FD}: H^2(\kappa) \cap L^2_0(\kappa) \subset L^2_0(\kappa) \to L^2_0(\kappa)
-\]
-is closed.
-% Generalizing the above derivation,
-It is also simple to show the resolvent bound
-\[
-    \norm{(\lambda - \mathcal L_{\rm FD})^{-1}}[\mathcal B\left(L^2_0(\mu)\right)] \leq \frac{1}{1+\lambda},
-\]
-and so the classical Hille--Yosida theorem implies that $\mathcal L_{\rm FD}$ generates a contraction semigroup~$(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\mu)$,
-with the decay estimate $\norm{\e^{t \mathcal L_{\rm FD}} f} \leq \e^{-t}$.
 By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$ we have
 \[
     \e^{t \mathcal L_{\rm FD}} f
     = \sum_{i=0}^{\infty} \e^{- \lambda_i t} \ip{f}{e_i} e_i.
 \]
+As direct corollary, we obtain the following decay estimates.
+\begin{corollary}
+    It holds that
+\end{corollary}
+
 We will use two corollaries of this representation formula:
 \begin{itemize}
     \item Decay of derivatives:
@@ -2250,7 +2271,7 @@ Similarly, in one dimension we write $\partial_q^* = \beta V'(q) - \partial_q$ a
 % \end{proof}
 
 The next lemma provides an intermediate result for proving~\cref{proposition:semigroup_meanzero_observable},
-and concerns Langevin dynamics over the state space $\torus^d \times \torus^d$.
+and concerns Langevin dynamics over the state space $\torus^d \times \real^d$.
 This result is sharper than what would be obtained from a simple application of~\eqref{eq:decay_semigroup_general},
 but not yet sufficient for obtaining optimal estimates for the bias of estimator~\eqref{eq:simple_estimator}.
 To lighten notations,
@@ -2261,6 +2282,7 @@ but these carry over \emph{mutatis mutandis} to the multi-dimensional case.
     Assume that $f \in L^2(\mu)$ is a smooth function such that $\grad_{\vect q} f \in L^2(\mu)$ and
     \begin{equation}
         \label{eq:assumption_f}
+        \forall q \in \torus^d, \qquad
         \int_{\real^d} f(\vect q, \vect p) \, \kappa(\d \vect p) = 0.
     \end{equation}
     Then there exist constants $C$ and $\lambda$ independent of $\gamma$ and $f$ such that
@@ -2320,11 +2342,10 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         = \e^{-2\gamma \beta^{-1} t} \norm{f}^2,
     \end{align}
     where we employed \cref{lemma:overdamped_langevin_decay_derivatives} in the second line.
-    For the second term, since $\commut{\partial_p}{\partial_p^*} = \beta$ and $\commut{\partial_q}{\partial_q^*} = \beta V''$,
-    we have
+    For the second term, using that~$\commut{\partial_p}{\partial_p^*} = \beta$ we have
     \begin{align*}
         \norm{\partial_q \partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} f}
-        &= \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} + \beta \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}, \\
+        &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} + \sqrt{\beta} \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}, \\
         \norm{\partial_q^* \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         % &= \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         % + \beta \ip{V''(q) \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} \\
@@ -2335,22 +2356,23 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     \begin{align}
         \notag
         \norm{\mathcal L_{\rm Ham} \e^{t \gamma \mathcal L_{\rm FD}} f}
-        &= \beta^{-1} (\partial_q \partial_p^* - \partial_q^* \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} f \\
+        &= \beta^{-1} \lVert (\partial_q \partial_p^* - \partial_q^* \partial_p) \e^{t \gamma \mathcal L_{\rm FD}} f \rVert \\
         \label{eq:reasoning_action_lham}
         &\leq 2 \beta^{-1} \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
-        + \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \beta^{-1/2} \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \norm*{V'}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align}
     Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
     Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
     we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal L_{\rm FD}}$.
+
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
     Letting $t_* = \min\{t, \gamma^{-1}\}$, we have
     \begin{align*}
         \norm*{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         &= \norm*{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} \partial_q f}
-        = \norm*{\partial_p \e^{(t - t_*) \gamma \mathcal L_{\rm FD}} \e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f} \\
+        = \norm*{\partial_p \e^{(t - t_*) \gamma \mathcal L_{\rm FD}} (\e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f)} \\
         &\leq C \e^{- \gamma (t - t_*)} \norm*{\partial_p \e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f}
         \leq C \frac{\e^{- \gamma (t - t_*)}}{\sqrt{\gamma t_*}} \norm*{\partial_q f},
     \end{align*}

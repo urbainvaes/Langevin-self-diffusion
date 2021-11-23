@@ -743,7 +743,7 @@ in order to motivate \cref{proposition:semigroup_meanzero_observable} below.
     and assume for simplicity $\gamma^2 - 4 k \neq 0$.
     In this case, the eigenfunctions of $\mathcal L$ are polynomials
     and, for every $d \geq 0$, the vector space $\poly(d)$ of polynomials of degree less than or equal to $d$
-    contains a basis of eigenfunctions of $\mathcal L$~\cite[Section~6.3]{pavliotis2011applied}.
+    contains an orthonormal basis of eigenfunctions of $\mathcal L$~\cite[Section~6.3]{pavliotis2011applied}.
     % This is not surprising, considering that $\mathcal L$ maps $\poly(d)$ into itself.
     In particular, the constant function is an eigenfunction with eigenvalue 0,
     and the two other eigenfunctions in~$\poly(1)$, together with their associated eigenvalues,
@@ -1934,7 +1934,7 @@ The associated norm is given by
 \]
 where we use the standard multi-index notation.
 Throughout this section, $\norm{\dummy}$ and $\ip{\dummy}{\dummy}$ are the norm and inner product of~$L^2(\pi)$.
-The probability measure $\pi$ implicit in this notation is either obvious in the context or explicitly specified.
+The probability measure $\pi$ implicit in this notation will be either obvious in the context or explicitly specified.
 We recall that $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
 \begin{equation}
     \label{eq:poincare}
@@ -1963,21 +1963,21 @@ We will use the following result.
     with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$.
 \end{lemma}
 This standard result follows from, for example,~\cite[Chapter 9]{lorenzi2006analytical}.
-Since the simple setting we consider enables a short and simple proof,
+Since the simple setting we consider enables a short and elementary proof,
 and since some elements of the proof will be useful in the remainder of this section,
-we present it here.
+we present the proof here.
 \begin{proof}
     The statement follows from the classical Hille--Yosida theorem,
     of which we check the assumptions,
     i.e.\ that the unbounded operator~\eqref{eq:unbounded_operator} is closed,
-    and that
+    and that the following resolvent bound holds:
     \begin{equation}
         \label{eq:resolvent_bound}
         \forall \lambda > -1, \qquad
-        \lVert (\lambda - \mathcal L_{\rm FD})^{-1} \rVert_{\mathcal B\bigl(L^2_0(\kappa)\bigr)} \leq \frac{1}{1 + \lambda}.
+        \lVert (\lambda - \mathcal L_{\rm FD})^{-1} \rVert_{\mathcal B\left(L^2_0(\kappa)\right)} \leq \frac{1}{1 + \lambda}.
     \end{equation}
     We first prove~\eqref{eq:resolvent_bound} for $\lambda = 0$,
-    noting that the reasoning can easily be extended to other values of $\lambda > -1$.
+    noting that the reasoning can easily be extended to other values of~$\lambda > -1$.
     By the Poincaré inequality~\eqref{eq:poincare},
     the right-hand side of~\eqref{eq:symmetry_Lfd} defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
     and so the Riesz representation theorem implies that for all $f \in L^2_0(\kappa)$,
@@ -1987,21 +1987,21 @@ we present it here.
     \)
     in the distributional sense.
     It is immediate to show that $\lVert \grad_{\vect p} \phi \rVert^2 \leq \beta \lVert f \rVert$,
-    which implies that the resolvent operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$,
-    and therefore also from~$L^2_0(\kappa)$ to $L^2_0(\kappa)$,
+    which implies that the resolvent~$(-\mathcal L_{\rm FD})^{-1}$ is bounded as an operator from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$,
+    and therefore also as an operator on~$L^2_0(\kappa)$,
     with norm at most $1$ by the Poincaré inequality.
     This concludes the proof of~\eqref{eq:resolvent_bound}.
 
     We now show that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
-    Since the embedding $H^1_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
+    Since the embedding $H^1(\kappa) \cap L^2_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
     the resolvent is compact as an operator on $L^2_0(\kappa)$,
     in addition to being self-adjoint in view of~\eqref{eq:symmetry_Lfd}.
     Therefore, by the spectral theorem for compact self-adjoint operators,
-    there is an orthonormal basis $(e_i)_{i \in \nat}$ of~$L^2_0(\kappa)$ consisting of eigenfunctions of $-\mathcal L_{\rm FD}$.
+    there is an orthonormal basis $(e_i)_{i \in \nat^*}$ of~$L^2_0(\kappa)$ consisting of eigenfunctions of $-\mathcal L_{\rm FD}$.
     % (These are in fact tensorized and rescaled Hermite polynomials of positive degrees~\cite{lorenzi2006analytical},
     % but we do not exploit this here.)
-    Let us denote the corresponding (real) eigenvalues by~$(\lambda_i)_{i \in \nat}$,
-    and note that the Poincaré inequality implies that~$\lambda_i \geq 1$ for all $i \in \nat$.
+    Let us denote the corresponding (real) eigenvalues by~$(\lambda_i)_{i \in \nat^*}$,
+    and note that the Poincaré inequality implies that~$\lambda_i \geq 1$ for all $i \in \nat^*$.
     Clearly, it holds that
     \begin{equation}
         \label{eq:series_phi}
@@ -2009,7 +2009,7 @@ we present it here.
         := \lim_{n \to \infty} \sum_{i=1}^{n} \frac{1}{\lambda_i} \ip{f}{e_i} e_i
         =: \sum_{i=1}^{\infty} \phi_i e_i,
     \end{equation}
-    with the series on the right hand side being convergent in $L^2(\kappa)$ and $H^1(\kappa)$.
+    with the series on the right hand side converging in $L^2(\kappa)$ and $H^1(\kappa)$.
     The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
     To see this, we introduce $\grad^* = \beta \vect p - \grad$ and note that for $n > m$,
     \begin{equation}
@@ -2026,166 +2026,63 @@ we present it here.
     and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
     Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
     As a consequence of the foregoing calculation,
-    the operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$,
-    and so the unbounded operator~\eqref{eq:unbounded_operator} is closed.
+    the resolvent~$(-\mathcal L_{\rm FD})^{-1}$ is bounded as an operator from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$.
+    It is then not difficult to conclude that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
 \end{proof}
 
 \begin{remark}
     \label{remark:alternative_norm}
-    The calculation in~\eqref{eq:calculation} can be generalized to show 
+    The calculation in~\eqref{eq:calculation} can be generalized to show
     that the following functional defines a norm on~$H^i(\kappa)$ equivalent to~$\norm{\dummy}_i$:
     \[
         |\!|\!| u |\!|\!|_i = \sum_{n=1}^{\infty} (1 + \lambda_n^i) \ip{u}{e_n}^2.
     \]
 \end{remark}
-By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$ we have
-\[
+By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$,
+it holds that
+\begin{equation}
+    \label{eq:series_expansion}
     \e^{t \mathcal L_{\rm FD}} f
     = \sum_{n=0}^{\infty} \e^{- \lambda_n t} \ip{f}{e_n} e_n.
-\]
-
-As a direct corollary of~\cref{remark:alternative_norm} and this formula,
-we have the following decay estimates.
+\end{equation}
+This formula can be employed to show the following estimates.
 \begin{corollary}
     If $f \in L^2_0(\mu)$, then
+    \begin{subequations}
     \begin{equation}
         \label{lemma:elliptic_reg}
         \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
     \end{equation}
     On the other hand,
-    if also $f \in H^1(\mu)$, then
+    if $f \in H^1(\mu)$,
+    then
     \begin{equation}
         \label{lemma:overdamped_langevin_decay_derivatives}
         \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f} \leq C \e^{-t} \norm{\partial_p f}.
     \end{equation}
+    \end{subequations}
 \end{corollary}
-
-The first lemma is an application of standard elliptic theory and
-concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
-\begin{lemma}
-    \label{lemma:overdamped_langevin_decay_derivatives}
-    Let $\mathcal X = \real^d$ and let $W: \mathcal X \to \real$ be a quadratic potential.
-    In particular the probability measure
-    \[
-        \pi(\d x) = \frac{\e^{- \beta W(x)} \d x}{\int_{\real^d} \e^{-\beta W(\widetilde x)} \d \widetilde x}
-    \]
-    satisfies~\eqref{eq:poincare}.
-    Let also $\mathcal L_{\rm ovd} = - \grad W(p) \cdot \grad + \beta^{-1} \Delta$ denote the generator of overdamped Langevin dynamics in potential~$W$.
-    If $f \in H^i_0(\pi) \cap C^{\infty}(\mathcal X)$ for some $i \geq 0$,
-    then $\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\pi)$ and there exists $K = K(i)$ such that
-    \[
-        \norm*{\e^{t \mathcal L_{\rm ovd}} f}_i \leq K \e^{- 2 R \beta^{-1} t} \norm*{f}_i.
-    \]
-\end{lemma}
 \begin{proof}
-    For simplicity, we consider only the case where $\mathcal X = \torus^d$,
-    so that we know \emph{a priori} that~$\e^{t \mathcal L_{\rm ovd}} f \in H^i_0(\torus^d)$ because
-    the state space is compact and $\e^{t \mathcal L_{\rm ovd}} f \in C^{\infty}(\torus^d)$ by ellipticity.
-
-    We use the notations $u(t) = \e^{t \mathcal L_{\rm ovd}} f$ and
-     $\seminorm{h}_j = \norm*{(- \mathcal L_{\rm ovd})^{j/2} h}$ for $j \geq 0$.
-    Since $\mathcal L_{\rm ovd}$ commutes with~$(-\mathcal L_{\rm ovd})^{i/2}$,
-    it holds for any $j$ that
-    \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = \ip{\mathcal L_{\rm ovd} (-\mathcal L_{\rm ovd})^{j/2} u}{(- \mathcal L_{\rm ovd})^{j/2} u}.
-    \]
-    Introducing $\grad^* = \beta \grad W - \grad$
-    and noting that $\mathcal L_{\rm ovd} = - \beta^{-1} \grad^* \cdot \grad$,
+    If $f \in L^2_0(\kappa)$, then $\e^{t \mathcal L_{\rm FD} } f \in H^2(\kappa) \cap L^2_0(\kappa)$ for all $t > 0$ by the general properties of operator semigroups.
+    Using~\eqref{eq:series_expansion},
     we obtain
     \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 = - \beta^{-1} \norm*{\grad (-\mathcal L_{\rm ovd})^{j/2} u}^2.
+        \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f}^2 = \beta \ip{\mathcal L_{\rm FD} \e^{t \mathcal L_{\rm FD}} f}{\e^{t \mathcal L_{\rm FD}} f}
+        = \sum_{n=1}^{\infty} \beta \lambda_n \e^{- 2\lambda_n t} \lvert \ip{f}{e_n} \rvert^2
     \]
-    Since $(-\mathcal L_{\rm ovd})^{j/2} u \in L^2_0(\pi)$,
-    we can apply Poincar\'e's inequality~\eqref{eq:poincare},
-    which gives
-    \[
-        \frac{1}{2} \derivative*{1}{t} \seminorm{u}_j^2 \leq - 2R \beta^{-1} \seminorm{u}_j^2,
-    \]
-    implying the exponential convergence estimate
-    \begin{equation}
-        \label{eq:exponential_convergence}
-        \forall t \geq 0, \qquad
-        \seminorm{u(t)}_j \leq \e^{- 2 R \beta^{-1} t} \seminorm{u(0)}_j.
-    \end{equation}
-    This estimate with $j = 0$ is the usual convergence estimate for the norm $\norm{u}$.
-    Since it holds for sufficiently regular $h$ that
-    \[
-        \seminorm{h}_1 = \norm*{(- \mathcal L_{\rm ovd})^{1/2} h} = \sqrt{\ip{\mathcal L_{\rm ovd} h}{h}} = \beta^{-1} \norm{\grad h},
-    \]
-    equation~\eqref{eq:exponential_convergence} for $j = 1$ implies the exponential convergence of $\norm{\grad u}$.
-    For $j = 2$, we calculate using the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$ that
-    \[
-        \seminorm{h}_2^2 = \norm*{- \mathcal L_{\rm ovd}f}^2
-        = \beta^{-2} \ip{\grad^* \cdot \grad h}{\grad^* \cdot \grad h}
-        = \beta^{-2} \norm*{\grad^2 h}^2 + \beta^{-1} \ip{\hess W \grad h}{\grad h},
-    \]
-    where $\grad^2$ is the Hessian operator and $\norm{\mat A}$ for a matrix-valued function is simply $\sqrt{\sum_{ij} \norm{A_{ij}}^2}$.
-    Therefore~\eqref{eq:exponential_convergence} with $j = 2$ implies that
-    \begin{align*}
-        \norm*{\hess u(t)}^2
-        &= - \beta \ip{\hess W \grad u(t)}{\grad u(t)} + \beta^2 \seminorm{u(t)}[2]^2, \\
-        &\leq \beta \abs{\ip{\hess W \grad u(t)}{\grad u(t)}} + \e^{-4R \beta^{-1}t} \bigl( \norm{\grad^2 u(0)}^2 + \beta \ip{\grad^2 W \grad u(0)}{\grad u(0)} \bigr) \\
-        &\leq \beta \norm*{\grad^2 W}_{\infty} \norm{\grad u}^2 + \e^{-4R \beta^{-1}t} \bigl( \norm{\grad^2 u(0)}^2 + \beta \norm*{\grad^2 W}_{\infty} \norm*{\grad u(0)}^2 \bigr),
-    \end{align*}
-    and using the exponential convergence of the first term on the right-hand side,
-    which was proved in the previous step,
-    allows to conclude that $\norm*{\grad^2 u(t)} \leq K \e^{-2 R \beta^{-1} t} \norm*{u(t)}[2]$ for some appropriate constant~$K \geq 1$.
-    This procedure can then be repeated in order to deduce the statement.
+    The first claim follows from the inequality
+    \(
+        \lambda \e^{- 2\lambda t} \leq \frac{\e^{-1}}{2 t},
+    \)
+    which is valid for all $\lambda \in \real$.
+    The second claim follows from the fact that $\lambda_n \geq 1$ for all $n \in \nat^*$.
 \end{proof}
 
-% \newcommand{\auxnorm}[1]{|\!|\!| #1 |\!|\!|}
-% \begin{remark}
-%     An alternative approach for showing~\cref{lemma:overdamped_langevin_decay_derivatives} is
-%     to define an auxiliary norm
-%     \[
-%         \auxnorm{u}_N^2 = \norm*{u}^2 + a_1 \norm*{\partial_x u}^2 + \dotsc + a_N \norm*{\partial_x^N u}^2,
-%     \]
-%     with coefficients $a_i = \varepsilon^i$ for some $\varepsilon \in (0, 1)$.
-%     This norm is equivalent to the weighted Sobolev norm $\norm*{u}_N$,
-%     and it is possible to show for all $\lambda \in (0, 1)$ that
-%     \[
-%         \frac{1}{2}\derivative*{1}{t} \auxnorm{u}_N^2 \leq - 2 R(1 - \lambda) \, \auxnorm{u}_N^2
-%     \]
-%     for $\varepsilon$ sufficiently small.
-%     The reason for the suboptimal rate here is that the term $\norm{\partial_x u}^2$,
-%     obtained from $\frac{1}{2} \partial_t \norm*{u}^2$,
-%     needs to control the two terms $\norm{u}^2 + a_1 \norm{\partial_x u}^2$.
-% \end{remark}
-
-For large times,
-the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial condition.
-For the reader's convenience,
-we include hereafter a proof of this result,
-which is essentially a simpler version of more general results in the hypoelliptic setting such as~\cite[Theorem 2.4]{ottobre2012asymptotic} and~\cite[Theorem A.8]{MR2562709}.
-\begin{lemma}
-    [Elliptic regularization]
-    \label{lemma:elliptic_reg}
-    With the same notation as in \cref{lemma:overdamped_langevin_decay_derivatives},
-    there exists for any $(i,j) \in \nat^2$ with $j \leq i$ a constant~$C = C(i, j)$ such that
-    \[
-        \forall t \in (0, 1], \qquad
-        \norm*{\grad^i \e^{t \mathcal L_{\rm ovd}} f} \leq \frac{C}{t^{\frac{i-j}{2}}} \norm*{f}[j].
-    \]
-\end{lemma}
-\begin{proof}
-    Let $u(t) = \e^{t \mathcal L_{\rm ovd}} f$.
-    We will show the existence of a constant $C$ such that
-    \[
-        \forall t \in (0, 1], \qquad
-        \ip{(-\mathcal L_{\rm ovd})^i u(t)}{u(t)}
-        \leq \frac{C}{t^{i-j}} \ip{(-\mathcal L_{\rm ovd})^j f}{f},
-    \]
-    after which the statement follows easily from the expression of $\mathcal L_{\rm ovd} = - \beta^{-1} \grad^* \cdot \grad$ and using commutator relations.
-    Defining the Lyapunov functional
-    \[
-        N(t) = \sum_{n=j}^{i} \frac{(2t)^{n-j}}{(n-j)!} \, \ip{(-\mathcal L_{\rm ovd})^n u(t)}{u(t)} ,
-    \]
-    we calculate
-    \[
-        N'(t) =  - \frac{2(2t)^{i-j}}{(i-j)!} \ip{(- \mathcal L_{\rm ovd})^{i+1} u(t)}{u(t)} \leq 0,
-    \]
-    which enables to conclude since $N(0) = \ip{(- \mathcal L_{\rm ovd})^j f}{f}$.
-\end{proof}
+% For large times,
+% the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial condition.
+% For the reader's convenience,
+% we include hereafter a proof of this result,
+% which is essentially a simpler version of more general results in the hypoelliptic setting such as~\cite[Theorem 2.4]{ottobre2012asymptotic} and~\cite[Theorem A.8]{MR2562709}.
 
 Let us now introduce additional notation.
 We define $\nabla_{\vect q}^* = \beta \nabla V(\vect q) - \nabla_{\vect q}$ and $\nabla_{\vect p}^* = \beta \vect p - \nabla_{\vect p}$,
@@ -2322,9 +2219,9 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         \label{eq:expansion}
         f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
     \end{equation}
-    where $G_i = {\rm Re}(\e^{iq})$ and $H_j$ denotes the Hermite polynomial of degree $j$.
+    where $G_i$ and $H_j$ the basis functions defined in~\eqref{eq:definition_trigonometric_functions} and~\eqref{eq:definition_hermite_functions}.
     The space of functions of this form is dense in $\bigl\{u \in (\id - \Pi_p) L^2(\mu): \partial_q u \in L^2(\mu) \bigr\}$
-    with the norm $\norm{u}_{1,q} := \norm{u} + \norm{\partial_q u}$,
+    endowed with the norm $\norm{u}_{1,q} := \norm{u} + \norm{\partial_q u}$,
     so the general result follows by density.
 
     We expect that $\e^{t \mathcal L} f \approx \e^{t \gamma \mathcal L_{\rm FD}} f$ in an appropriate sense for $\gamma \gg 1$,
@@ -2332,7 +2229,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     Therefore, let us introduce $v(t) = \e^{t \mathcal L} f(q, p) - \e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$
     and aim to show that $v(t)$ is small.
     In the expression $\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$,
-    the variable $q$ should should be viewed as a parameter.
+    the variable $q$ should be viewed as a parameter.
     The function~$v$ satisfies the initial value problem
     \[
         \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(\e^{t \gamma \mathcal L_{\rm FD}} f\bigr), \qquad v(0) = 0.

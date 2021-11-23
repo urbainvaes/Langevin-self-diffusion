@@ -1976,72 +1976,89 @@ we present it here.
         \forall \lambda > -1, \qquad
         \lVert (\lambda - \mathcal L_{\rm FD})^{-1} \rVert_{\mathcal B\bigl(L^2_0(\kappa)\bigr)} \leq \frac{1}{1 + \lambda}.
     \end{equation}
-
-We first prove~\eqref{eq:resolvent_bound} for $\lambda = 0$,
-noting that the reasoning can easily be extended to other values of $\lambda > -1$.
-By the Poincaré inequality~\eqref{eq:poincare},
-the right-hand side of~\eqref{eq:symmetry_Lfd} defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
-and so the Riesz representation theorem implies that for all $f \in L^2_0(\kappa)$,
-there exists a unique $\phi \in H^1(\kappa) \cap L^2_0(\kappa)$ such that
-\(
+    We first prove~\eqref{eq:resolvent_bound} for $\lambda = 0$,
+    noting that the reasoning can easily be extended to other values of $\lambda > -1$.
+    By the Poincaré inequality~\eqref{eq:poincare},
+    the right-hand side of~\eqref{eq:symmetry_Lfd} defines an inner product on~$H^1(\kappa) \cap L^2_0(\kappa)$,
+    and so the Riesz representation theorem implies that for all $f \in L^2_0(\kappa)$,
+    there exists a unique $\phi \in H^1(\kappa) \cap L^2_0(\kappa)$ such that
+    \(
     - \mathcal L_{\rm FD} \phi = f
-\)
-in the distributional sense.
-It is immediate to show that $\lVert \grad_{\vect p} \phi \rVert^2 \leq \beta \lVert f \rVert$,
-which implies that the resolvent operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$,
-and therefore also from~$L^2_0(\kappa)$ to $L^2_0(\kappa)$,
-with norm at most $1$ by the Poincaré inequality.
-This concludes the proof of~\eqref{eq:resolvent_bound}.
+    \)
+    in the distributional sense.
+    It is immediate to show that $\lVert \grad_{\vect p} \phi \rVert^2 \leq \beta \lVert f \rVert$,
+    which implies that the resolvent operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from~$L^2_0(\kappa)$ to $H^1(\kappa) \cap L^2_0(\kappa)$,
+    and therefore also from~$L^2_0(\kappa)$ to $L^2_0(\kappa)$,
+    with norm at most $1$ by the Poincaré inequality.
+    This concludes the proof of~\eqref{eq:resolvent_bound}.
 
-We now show that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
-Since the embedding $H^1_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
-the resolvent is compact as an operator on $L^2_0(\kappa)$,
-in addition to being self-adjoint in view of~\eqref{eq:symmetry_Lfd}.
-Therefore, by the spectral theorem for compact self-adjoint operators,
-there is an orthonormal basis $(e_i)_{i \in \nat}$ of~$L^2_0(\kappa)$ consisting of eigenfunctions of $-\mathcal L_{\rm FD}$.
-% (These are in fact tensorized and rescaled Hermite polynomials of positive degrees~\cite{lorenzi2006analytical},
-% but we do not exploit this here.)
-Let us denote the corresponding (real) eigenvalues by~$(\lambda_i)_{i \in \nat}$,
-and note that the Poincaré inequality implies that~$\lambda_i \geq 1$ for all $i \in \nat$.
-Clearly, it holds that
-\begin{equation}
-    \label{eq:series_phi}
-    \phi = \lim_{n \to \infty} \phi_n
-    := \lim_{n \to \infty} \sum_{i=1}^{n} \frac{1}{\lambda_i} \ip{f}{e_i} e_i
-    =: \sum_{i=1}^{\infty} \phi_i e_i,
-\end{equation}
-with the series on the right hand side being convergent in $L^2(\kappa)$ and $H^1(\kappa)$.
-The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
-To see this, we introduce $\grad^* = \beta \vect p - \grad$ and note that for $n > m$,
-\begin{align*}
-    \norm{\hess (\phi_n - \phi_m)}^2
-    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\hess e_{k}}{\hess e_{\ell}} \\
-    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\grad^* \cdot \grad e_{k}}{\grad^* \cdot \grad e_{\ell}}
-    - \beta \phi_{k} \phi_{\ell} \ip{\hess W \grad e_{\ell}}{\grad e_k} \\
-    &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \bigl(\beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}} + \beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{e_{\ell}}\bigr) \\
-    &= \sum_{k=m+1}^{n} \beta^2 \left(1 - \frac{1}{\lambda_k}\right) \lvert \ip{f}{e_k} \rvert^2,
-\end{align*}
-and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
-Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
-As a consequence of the foregoing calculation,
-the operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$,
-and so the unbounded operator~\eqref{eq:unbounded_operator} is closed.
+    We now show that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
+    Since the embedding $H^1_0(\kappa) \subset L^2_0(\kappa)$ is compact~\cite[Section 8.5]{lorenzi2006analytical},
+    the resolvent is compact as an operator on $L^2_0(\kappa)$,
+    in addition to being self-adjoint in view of~\eqref{eq:symmetry_Lfd}.
+    Therefore, by the spectral theorem for compact self-adjoint operators,
+    there is an orthonormal basis $(e_i)_{i \in \nat}$ of~$L^2_0(\kappa)$ consisting of eigenfunctions of $-\mathcal L_{\rm FD}$.
+    % (These are in fact tensorized and rescaled Hermite polynomials of positive degrees~\cite{lorenzi2006analytical},
+    % but we do not exploit this here.)
+    Let us denote the corresponding (real) eigenvalues by~$(\lambda_i)_{i \in \nat}$,
+    and note that the Poincaré inequality implies that~$\lambda_i \geq 1$ for all $i \in \nat$.
+    Clearly, it holds that
+    \begin{equation}
+        \label{eq:series_phi}
+        \phi = \lim_{n \to \infty} \phi_n
+        := \lim_{n \to \infty} \sum_{i=1}^{n} \frac{1}{\lambda_i} \ip{f}{e_i} e_i
+        =: \sum_{i=1}^{\infty} \phi_i e_i,
+    \end{equation}
+    with the series on the right hand side being convergent in $L^2(\kappa)$ and $H^1(\kappa)$.
+    The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
+    To see this, we introduce $\grad^* = \beta \vect p - \grad$ and note that for $n > m$,
+    \begin{equation}
+        \label{eq:calculation}
+        \begin{aligned}[b]
+            \norm{\hess (\phi_n - \phi_m)}^2
+            &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\hess e_{k}}{\hess e_{\ell}} \\
+            &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\grad^* \cdot \grad e_{k}}{\grad^* \cdot \grad e_{\ell}}
+            - \beta \phi_{k} \phi_{\ell} \ip{\hess W \grad e_{\ell}}{\grad e_k} \\
+            &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \bigl(\beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}} + \beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{e_{\ell}}\bigr) \\
+            &= \sum_{k=m+1}^{n} \beta^2 \left(1 - \frac{1}{\lambda_k}\right) \lvert \ip{f}{e_k} \rvert^2,
+        \end{aligned}
+    \end{equation}
+    and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
+    Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
+    As a consequence of the foregoing calculation,
+    the operator~$(-\mathcal L_{\rm FD})^{-1}$ is bounded from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$,
+    and so the unbounded operator~\eqref{eq:unbounded_operator} is closed.
 \end{proof}
 
+\begin{remark}
+    \label{remark:alternative_norm}
+    The calculation in~\eqref{eq:calculation} can be generalized to show 
+    that the following functional defines a norm on~$H^i(\kappa)$ equivalent to~$\norm{\dummy}_i$:
+    \[
+        |\!|\!| u |\!|\!|_i = \sum_{n=1}^{\infty} (1 + \lambda_n^i) \ip{u}{e_n}^2.
+    \]
+\end{remark}
 By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$ we have
 \[
     \e^{t \mathcal L_{\rm FD}} f
-    = \sum_{i=0}^{\infty} \e^{- \lambda_i t} \ip{f}{e_i} e_i.
+    = \sum_{n=0}^{\infty} \e^{- \lambda_n t} \ip{f}{e_n} e_n.
 \]
-As direct corollary, we obtain the following decay estimates.
-\begin{corollary}
-    It holds that
-\end{corollary}
 
-We will use two corollaries of this representation formula:
-\begin{itemize}
-    \item Decay of derivatives:
-\end{itemize}
+As a direct corollary of~\cref{remark:alternative_norm} and this formula,
+we have the following decay estimates.
+\begin{corollary}
+    If $f \in L^2_0(\mu)$, then
+    \begin{equation}
+        \label{lemma:elliptic_reg}
+        \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
+    \end{equation}
+    On the other hand,
+    if also $f \in H^1(\mu)$, then
+    \begin{equation}
+        \label{lemma:overdamped_langevin_decay_derivatives}
+        \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f} \leq C \e^{-t} \norm{\partial_p f}.
+    \end{equation}
+\end{corollary}
 
 The first lemma is an application of standard elliptic theory and
 concerns the exponential convergence of the derivatives of the overdamped Langevin semigroup.
@@ -2624,38 +2641,6 @@ we have
 %     \]
 %     This inequality is true for all the coordinate unit vectors $\vect e_1, \dotsc, \vect e_d$,
 %     and so the statement follows easily.
-% \end{proof}
-
-
-% \begin{proof}
-%     Let $u(t) = \e^{t \mathcal L} p$ and $v(t) = u(t) - p \e^{-\gamma t}$.
-%     The function $v$ satisfies the equation
-%     \[
-%         \partial_t v = \mathcal L v + V'(q) \, \e^{-\gamma t}, \qquad v(0) = 0.
-%     \]
-%     Using Duhamel's formula, we have
-%     \[
-%         v(t) = \int_{0}^{t} \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr) \e^{-\gamma s} \, \d s
-%     \]
-%     By \cref{lemma:backward_kolmogorov_obs_q},
-%     we have
-%     \[
-%         \e^{- (t-s) \mathcal L} \bigl(V'(q)\bigr)
-%         = \e^{- (t-s) \frac{1}{\gamma}\mathcal L_{\rm ov}} V' + R(t),
-%         % \leq C \e^{- \frac{\lambda}{\gamma} (t-s)} + \frac{C}{\gamma},
-%     \]
-%     where the remainder term is bounded as $\norm{R(t)} \leq \frac{C}{\gamma}$.
-%     Taking the inner product with $p$,
-%     and noting that the constant-in-$p$ part of the integrand vanishes,
-%     we obtain
-%     \[
-%         \ip{v(t)}{p} = \int_{0}^{t} R(s) \e^{-\gamma s} \, \d s
-%         \leq \frac{C}{\gamma^2}.
-%     \]
-%     so we deduce
-%     \[
-%         \norm{v(t)} \leq \int_{0}^{t} \e^{- \frac{\lambda}{\gamma}(t-s)} \e^{- \gamma s} \, \d s + \frac{C}{\gamma^2}.
-%     \]
 % \end{proof}
 
 % \bibliographystyle{abbrv}

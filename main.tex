@@ -141,7 +141,7 @@
 \newcommand{\urbain}[1]{\stepcounter{urbainCounter}\red{\arabic{urbainCounter}.} \green{#1}}
 \crefname{equation}{}{}
 \crefname{paragraph}{\S\!}{\S}
-% \crefname{figure}{Figure}{Figures}
+\crefname{figure}{Figure}{Figures}
 % \crefname{section}{Section}{Sections}
 
 \newcommand{\email}[1]{\href{#1}{#1}}
@@ -500,7 +500,7 @@ Throughout this section,
 we focus on the Langevin dynamics~\eqref{eq:langevin} for simplicity.
 Although some of our arguments are tailored specifically to this dynamics,
 our approach may in principle be applied to other Langevin-type dynamics,
-such as the generalized Langevin dynamics considered in \cref{sec:applications_2d}.
+such as the generalized Langevin dynamics considered in \cref{sub:generalization_to_generalized_langevin_dynamics}.
 We assume throughout the section that $(\vect q_t, \vect p_t)_{t\geq 0}$ is a solution of~\eqref{eq:langevin} with statistically stationary initial condition~$(\vect q_0, \vect p_0) \sim \mu$ independent of the Brownian motion $(\vect w)_{t \geq 0}$.
 This is not a restrictive assumption in our setting as the probability measure $\mu$,
 being defined explicitly on the low-dimensional space $\torus^d \times \real^d$,
@@ -890,15 +890,14 @@ we introduce the notation
     \Pi_{\vect p}\colon \lp{2}{\mu} \rightarrow \lp{2}{\mu}; \int u(\vect q, \vect p) \, \kappa(\d \vect p),
     \qquad  \Pi_{\vect p}^\perp = \id - \Pi_{\vect p}.
 \]
-The operators $\Pi_{\vect p}$ and $\Pi_{\vect p}$ are respectively the $L^2(\mu)$ projection operators on
+The operators $\Pi_{\vect p}$ and $\Pi_{\vect p}$ are respectively the $L^2(\mu)$ projection operators onto
 the subspace of functions depending only on $q$,
 and the subspace of functions with average $0$ in $p$ (with respect to $\kappa$, and for almost every $q \in \torus^d$).
 We also introduce the space $H^{1,\vect q}(\mu)$ of functions in $L^2(\mu)$ with their $\vect q$-gradient also in $L^2(\mu)$,
 and the associated norm $\norm{\dummy}[1,\vect q] = \norm{\dummy} + \norm{\grad_{\vect q} \dummy}$.
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
-    Let
-    Assume that $f \in H^{1,\vect q}(\mu)$ and $h \in H^{1,\vect q}(\mu)$ are smooth functions in $\Pi_{\vect p}^\perp \lp{2}{\mu}$.
+    Assume that $f \in H^{1,\vect q}(\mu)$ and $h \in H^{1,\vect q}(\mu)$ are smooth functions in~$\Pi_{\vect p}^\perp \lp{2}{\mu}$.
     Then there exist constants $A$ and $a$ independent of $f$ and $h$ such that
     \begin{equation}
         \label{eq:optimal_decay_correlation}
@@ -1298,7 +1297,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \section{Application to one-dimensional Langevin-type dynamics}%
 \label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
-We consider in this section two different approaches for constructing the approximate solution~$\psi$ to the Poisson equation~\eqref{eq:poisson_equation}:
+We consider in this section two different approaches for constructing the approximate solution to the Poisson equation~\eqref{eq:poisson_equation}:
 through a Fourier/Hermite Galerkin method in \cref{sub:galerkin_approach} and,
 through formal asymptotic expansions for the underdamped regime in \cref{sub:underdamped_approach}.
 We then present numerical results in \cref{sub:numerical_results}
@@ -1321,7 +1320,7 @@ find~$\Psi_N \in V_N$ such that
   \right.
 \end{align}
 where $V_N$ is a finite-dimensional approximation space,
-$\mathscr P_N$ is the $\lp{2}{\mu}$ projection operator on~$V_N$,
+$\mathscr P_N$ is the $\lp{2}{\mu}$ projection operator onto~$V_N$,
 % satisfying $\ip{\mathscr P_N u - u}{v_N} = 0$ for all functions $v_N \in V_N$,
 $u_N = \mathscr P_N 1 / \norm{\mathscr P_N 1} \in V_N$
 and $\alpha_N$ is a Lagrange multiplier.
@@ -1340,25 +1339,25 @@ we choose $V_N$ to be the subspace of $\lp{2}{\mu}$ spanned by the basis functio
 \begin{equation}
   \label{eq:basis_functions}
   e_{i,j} = Z^{1/2} \, \e^{\frac{\beta}{2} H(q,p)}
-  \, G_i(q) \, H_j(p), \qquad 0 \leq i,j \leq N,
+  \, g_i(q) \, h_j(p), \qquad 0 \leq i,j \leq N,
 \end{equation}
-where $G_i$ are trigonometric functions,
+where $g_i$ are trigonometric functions,
 \begin{equation}
   \label{eq:definition_trigonometric_functions}
-  G_i(q) =
+  g_i(q) =
   \left\{ \begin{aligned}
     (2 \pi)^{-1/2}, \quad & \text{if}~i = 0, \\
     \pi^{-1/2} \sin\left(\frac{i + 1}{2}q\right), \quad & \text{if}~i~\text{is odd}, \\
-    \pi^{-1/2} \cos\left(\frac{i}{2}q\right), \quad & \text{if}~i~\text{is even}, i \geq 2. \\
+    \pi^{-1/2} \cos\left(\frac{i}{2}q\right), \quad & \text{if}~i~\text{is even}, i \geq 2, \\
   \end{aligned} \right.
 \end{equation}
-and $H_j$ are rescaled normalized Hermite functions,
+and $h_j$ are rescaled normalized Hermite functions,
 \begin{equation}
   \label{eq:definition_hermite_functions}
-  H_j(p) = \frac{1}{\sqrt{\sigma}} \, \psi_j \left( \frac{p}{\sigma} \right),
+  h_j(p) = \frac{1}{\sqrt{\sigma}} \, \psi_j \left( \frac{p}{\sigma} \right),
   \qquad \psi_j (p) := (2 \pi)^{-\frac{1}{4}} \frac{(-1)^j}{\sqrt{j!}} \e^{\frac{p^2}{4}} \, \derivative*{j}{p^j} \, \Bigl( \e^{- \frac{p^2}{2}} \Bigr).
 \end{equation}
-The functions $(H_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
+The functions $(h_j)_{j\in \nat}$ are orthonormal in $\lp{2}{\real}$ regardless of the value of $\sigma$,
 which is a scaling parameter that can be adjusted in order to better resolve $\Psi_N$.
 % At the numerical level,
 % the function $\Psi_N$ is stored as an array of Fourier/Hermite coefficients for the basis~\eqref{eq:basis_functions}.
@@ -1368,7 +1367,7 @@ calculating realizations of the control variate requires to evaluate the derivat
 If~$\psi = \Psi_N$ and its derivative $\partial_p \psi = \partial_p \Psi_N$ are stored as arrays of Fourier/Hermite coefficients,
 then the evaluation of $\partial_p \Psi_N$ at a configuration $(q, p)$ is computationally expensive
 because it requires to evaluate all the basis functions~\eqref{eq:basis_functions} at this configuration.
-Therefore, in practice the approximate solution~$\Psi_N$ and its gradient are discretized, in a preprocessing step,
+Therefore, in practice, the approximate solution~$\Psi_N$ and its gradient are discretized, in a preprocessing step,
 over a Cartesian grid with vertices
 \[
     (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
@@ -1386,7 +1385,7 @@ a bilinear interpolant $\widehat \Psi_N$ is defined over the domain $[-\pi, \pi]
 where $i = \lfloor q / \Delta q \rfloor$ and $j = \lfloor p / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$, and $q_i = i \Delta q$, $p_j = j \Delta p$.
 We emphasize that,
-since accessing an array element in an operation with time complexity~$\mathcal O(1)$ with respect to the length of the array,
+since accessing an array element is an operation with time complexity~$\mathcal O(1)$ with respect to the length of the array,
 the computational cost of evaluating~$\widehat \Psi_N$ at a point $(q,p)$ is independent of $N_q$ and $N_p$.
 
 The approximate effective diffusion coefficient $d[\psi]$,
@@ -1397,7 +1396,7 @@ The parameters employed for the construction of the control variate described in
     \centering
     \begin{tabular}{|c|c|c|}
         \hline
-        Scaling coefficient of Hermite functions & $\sigma$ & 0.1 \\
+        Scaling coefficient of Hermite functions & $\sigma$ & $0.1/\sqrt{\beta}$ \\
         \hline
         \# Fourier/Hermite modes in $q$ or $p$ & $N$ & 300 \\
         \hline
@@ -1414,18 +1413,18 @@ The parameters employed for the construction of the control variate described in
     \label{table:parameters_employed_for_the_construction_of_the_control_variate}
 \end{table}
 
-\subsection{Control variate for the underdamped limit.}%
+\subsection{Control variate for the underdamped limit}%
 \label{sub:underdamped_approach}
-In one dimension,
+In dimension one,
 the underdamped limit of Langevin dynamics is well understood.
 Specifically, it is possible to show that the solution to the Poisson equation~\eqref{eq:poisson_equation},
 when multiplied by $\gamma$,
 converges as $\gamma \to 0$ to a limit $\phi_0$ in $L^2(\mu)$ which can be calculated simply using one-dimensional numerical integration;
 see~\cite[Lemma 3.4]{MR2394704} and~\cite[Proposition 4.1]{roussel_thesis}
-for proofs of the convergence to $\phi_0$ in $L^2(\mu)$ using probabilistic and analysis arguments,
-respectively,
-and~\cite{MR2427108} for explicit calculations of $\phi_0$.
-The limiting solution reads $\phi_0(q,p) = \sign(p) \, \varphi_0\bigl(H(q,p)\bigr)$,
+for proofs of the convergence to $\phi_0$ in $L^2(\mu)$ using probabilistic and analytical arguments,
+respectively.
+% and~\cite{MR2427108} for an explicit calculation of $\phi_0$ in the case where $V$ is a simple cosine potential.
+The limiting solution reads~$\phi_0(q,p) = \sign(p) \, \varphi_0\bigl(H(q,p)\bigr)$,
 where
 \[
     \varphi_0(E) = 2 \pi \int_{E_0}^{\max\{E_0, E\}} \frac{1}{S_{\rm und}(\mathcal E)} \, \d \mathcal E,
@@ -1444,11 +1443,11 @@ and
     \end{cases}
 \]
 For certain potentials,
-the function $S_{\rm und}(\dummy)$ can be calculated explicitly,
+the function $S_{\rm und}$ can be calculated explicitly,
 and in general it can be approximated accurately by numerical quadrature.
 For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in~\cref{sub:numerical_results},
-for example, $S_{\rm und}(\dummy)$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108}.
-In practice, given an explicit expression or implementation of~$S_{\rm und}(\dummy)$,
+for example, $S_{\rm und}$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108}.
+In practice, given an explicit expression or implementation of~$S_{\rm und}$,
 we calculate~$\varphi_0$ over a large interval $[0, E_{\max}]$ with $E_{\max} = 100$
 using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations} with default parameters.
 This returns an object containing an approximation of $\varphi_0$ at discrete values of $E$ automatically selected in order to meet a default accuracy threshold.
@@ -1460,32 +1459,36 @@ in which case an approximation $\varphi_0(E)$ automatically obtained by high-dim
 We discretize the Langevin dynamics using the geometric Langevin algorithm introduced in~\cite{MR2608370} which,
 in the general multi-dimensional case, is based on the iteration
 \begin{align*}
-    & \vect p^{n+1/2} = \vect p^n - \left(\frac{\Delta t}{2}\right) \grad V(\vect q^n),
-    \quad \vect q^{n+1/2} = \vect q^n + \Delta t \, \vect p^n,
-    \quad \widetilde {\vect p}^{n+1} = \vect p^{n+1/2} - \left(\frac{\Delta t}{2}\right) \grad V(\vect q^{n+1}), \\
-    & \vect p^{n+1} = \exp \left(- \gamma \Delta t \right) \widetilde {\vect p}^{n+1}
+    \vect p^{n+1/2}
+    &= \vect p^n - \frac{\Delta t}{2} \grad V(\vect q^n), \\
+    \vect q^{n+1/2}
+    &= \vect q^n + \Delta t \, \vect p^{n+1/2}, \\
+    \widetilde {\vect p}^{n+1}
+    &= \vect p^{n+1/2} - \frac{\Delta t}{2} \grad V(\vect q^{n+1}), \\
+    \vect p^{n+1} &= \exp \left(- \gamma \Delta t \right) \widetilde {\vect p}^{n+1}
     + \sqrt{2 \gamma \beta^{-1}} \vect g^n, \qquad \vect g^n = \int_{n \Delta t}^{(n+1)\Delta t} \e^{-\gamma \bigl((n+1)\Delta t-s\bigr)} \, \d \vect w_s,
 \end{align*}
 supplemented with the initial condition $(\vect q^0, \vect p^0) \sim \mu$.
 The resulting discrete-time process $(\vect q^n, \vect p^n)_{n \in \nat}$ is an approximation of $(\vect q_{n \Delta t}, \vect p_{n \Delta t})_{n \in \nat}$.
-The first line can be viewed as a Strang splitting of the Hamiltonian part of the dynamics,
-while the second line is an analytical integration of the fluctuation/dissipation part.
+The first three lines can be viewed as a Strang splitting of the Hamiltonian part of the dynamics;
+this is the St\o rmer--Verlet scheme~\cite{verlet1967computer}.
+The fourth line is an analytical integration of the fluctuation/dissipation part.
 We write the terms~$(\vect g^n)_{n\geq0}$ as stochastic integrals, instead of giving only their law,
-because these are correlated with the Brownian increments necessary for constructing the control variate $\xi_t$.
-Specifically, the It\^o integral in the definition of the control variate is approximated using the explicit scheme
+because these are correlated with the Brownian increments necessary for constructing the control variate.
+Specifically, the It\^o integral in the definition~\eqref{eq:definition_control_variate} of $\xi$ is approximated using the explicit scheme
 \[
     I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_{\vect p} \psi(\vect q^{n}, \vect p^{n}) \cdot
     \widetilde {\vect g}^n, \qquad \widetilde {\vect g}^n = \vect w_{t_{n+1}} - \vect w_{t_n},
 \]
 where $(\widetilde {\vect g}^n)_{n \geq 0}$ are $d$-dimensional standard Gaussian random variables correlated with $(\vect g^n)_{n \geq 0}$
 and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_{\vect p} \psi_{\vect e}(q_t, p_t) \cdot \d \vect w_t$.
-An explicit calculation using It\^o's isometry shows that the vectors $\bigl((\vect g^n, \widetilde {\vect g}^n)\bigr)_{n \geq 0}$,
+An explicit calculation using It\^o's isometry shows that the vectors $(\vect g^n, \widetilde {\vect g}^n)_{n \geq 0}$,
 which are independent and identically distributed for different values of $n$,
 are normally distributed with mean 0 and covariance matrix
 \[
     \begin{pmatrix}
         \displaystyle \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) \mat I_d
-        & \displaystyle \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\
+        & \displaystyle \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\[.4cm]
         \displaystyle  \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d
         & \displaystyle \Delta t \, \mat I_d
     \end{pmatrix}.
@@ -1499,7 +1502,9 @@ are normally distributed with mean 0 and covariance matrix
 % Therefore the covariance matrix the mean-zero normally distributed random vectors $(g_n, \widetilde g_n)_{n \geq 0}$,
 % which are independent, is given by
 
-We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$ from a number $J$ of trajectories.
+We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$,
+defined respectively in~\eqref{eq:simple_estimator} and~\eqref{eq:improved_estimator},
+from a number $J$ of trajectories.
 The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_mc},
 and the associated numerical results are presented in~\cref{fig:effective_diffusion_langevin}.
 \begin{table}[ht]
@@ -1557,7 +1562,7 @@ have a much smaller variance than~$u(t)$ throughout the simulation.
     \centering
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
     \caption{
-        Sample mean and sample standard deviation of the estimators $u(t)$ and $v(t)$,
+        Sample mean and sample standard deviation of the estimators $u(t)$~\eqref{eq:simple_estimator} and $v(t)$~\eqref{eq:improved_estimator},
         for the friction parameter $\gamma = 10^{-3}$.
         The approximate solution to the Poisson equation used for constructing the control variate appearing in $v(t)$ here
         is that given in \cref{sub:underdamped_approach}.
@@ -1579,24 +1584,33 @@ which is studied in~\cite{MR2793823,GPGSUV21}:
       & \d q_t = p_t \, \d t, \\
       & \d p_t = - V'(q_t) \, \d t + \frac{\sqrt{\gamma}}{\nu} \, z_t \, \d t, \\
       & \d z_t = - \frac{\sqrt{\gamma}}{\nu} \, p_t  \, \d t
-       -   \frac{1}{\nu^2} \, z_t \, \d t + \sqrt{\frac{2\beta^{-1}}{\nu^2}} \, \d w_t,
+       -   \frac{1}{\nu^2} \, z_t \, \d t + \sqrt{\frac{2}{\beta\nu^2}} \, \d w_t,
   \end{aligned}
 \right.
 \end{equation}
 where $z_t \in \real$.
-A functional central limit theorem applies also to this dynamics:
+The unique invariant probability measure for this dynamics is given by
+\[
+    \mu_{\rm GLE}(\d q \, \d p \, \d z) \propto \exp \biggl( - \beta \left( H(q,p) + \frac{z^2}{2} \right) \biggr) \, \d q \, \d p \, \d z.
+\]
+A functional central limit theorem applies also to the dynamics~\eqref{eq:gle}:
 the diffusively rescaled position process $(\varepsilon q_{t/\varepsilon^2})_{t \geq 0}$ converges in distribution,
 in the Banach space of continuous functions over a bounded time interval,
 to a Brownian motion with prefactor $\sqrt{2 D^{\gamma, \nu}}$.
+This is given by $\ip{\phi}{p}$, where $\ip{\dummy}{\dummy}$ is the inner product of $L^2(\mu_{\rm GLE})$
+and $\phi$ is the unique solution in $L^2_0(\mu_{\rm GLE})$ to the Poisson equation
+\[
+    - \mathcal L_{\rm GLE} \phi = p.
+\]
 Like Langevin dynamics, generalized Langevin dynamics are difficult to understand in the underdamped regime,
-and in particular there does not exist a rigorous result on the behavior of $D^{\gamma, \nu}$ in the limit as $\gamma \to 0$.
+and in particular there does not exist a rigorous result on the behavior of~$D^{\gamma, \nu}$ in the limit as $\gamma \to 0$.
 Our goal in this section is to calculate accurately the mobility for the dynamics~\eqref{eq:gle} in the underdamped regime
 using a control variate approach similar to that described in~\cref{sec:method},
-and to assess in this way the validity of the asymptotic scaling of $D^{\gamma,\nu}$ conjectured in~\cite{GPGSUV21} by means of formal asymptotics.
+and to assess in this manner the validity of the asymptotic scaling for~$D^{\gamma,\nu}$ conjectured in~\cite{GPGSUV21} by means of formal asymptotics.
 An application of It\^o's formula gives
 \[
     q_T - q_0 = \int_{0}^{T} p_t \, \d t
-    = \phi(q_0, p_0, z_0) - \phi(q_T, p_T, z_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \phi(q_t, p_t, z_t) \, \d t,
+    = \phi(q_0, p_0, z_0) - \phi(q_T, p_T, z_T) + \sqrt{\frac{2 \beta^{-1}}{\nu^2}} \int_{0}^{T} \partial_z \phi(q_t, p_t, z_t) \, \d w_t,
 \]
 where $\phi$ is now the solution to the Poisson equation $- \mathcal L_{\rm GLE} \phi = p$,
 with $\mathcal L_{\rm GLE}$ the generator of~\eqref{eq:gle}.
@@ -1614,10 +1628,6 @@ where
 \end{align}
 \end{subequations}
 for an approximate solution $\psi$ to the Poisson equation,
-and with $\mu_{\rm GLE}$ the invariant probability distribution of~\eqref{eq:gle}:
-\[
-    \mu_{\rm GLE}(\d q \, \d p \, \d z) \propto \exp \biggl( - \beta \left( H(q,p) + \frac{z^2}{2} \right) \biggr) \, \d q \, \d p \, \d z.
-\]
 
 In~\cite{GPGSUV21},
 we employ an asymptotic expansion of the form
@@ -1627,12 +1637,14 @@ we employ an asymptotic expansion of the form
 in order to study the underdamped limit
 and we derive expressions for $\phi_0$ and $\phi_1$
 which enable to show formally that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
-with a prefactor that can be calculated efficiently and is different from $D_{\rm und}$.
+with a prefactor that can be calculated efficiently and is different from $D^{\rm und}$.
+We recall from the introduction that $D^{\rm und} = \lim_{\gamma \to 0} \gamma D^{\gamma}$ by definition,
+where $D^{\gamma}$ is the effective diffusion coefficient of one-dimensional Langevin dynamics~\eqref{eq:effective_diffusion_poisson}.
 Although the assumed asymptotic expansion is shown to be invalid in~\cite{GPGSUV21}
 because $\mathcal L_{\rm GLE} \phi_1 \notin \lp{2}{\mu}$,
 our numerical results in this section demonstrate that this expansion can still be leveraged for constructing an efficient control variate $\xi_T$ in~\eqref{eq:definition_control_variate_gle}.
 Specifically,
-we obtain a considerable reduction in variance by choosing in~\eqref{eq:definition_control_variate_gle} as $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
+we obtain a considerable reduction in variance by choosing the approximation $\psi$ in~\eqref{eq:definition_control_variate_gle} as $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
 We refer to~\cite[Section~4.3.2] {GPGSUV21} for the expressions of the functions $\phi_0$ and $\phi_1$.
 
 \Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect \bigl[ u(t) \bigr]$ and $\expect \bigl[ v(t) \bigr]$ with respect to time,
@@ -1662,7 +1674,7 @@ The evolution of the effective diffusion with respect to $\gamma$ is presented i
     \includegraphics[width=0.75\linewidth]{figures/mobility_gle.pdf}
     \caption{%
         Expectation and ``$m \pm 3 s$'' confidence intervals for $v(T)$ in the underdamped limit,
-        in the case of generalized Langevin dynamics with $\nu = 2$.
+        for generalized Langevin dynamics with $\nu = 2$.
         Since $T$ scales as $1/\gamma$ with a large prefactor,
         it is expected that $\expect \bigl[ v(T) \bigr] \approx D^{\gamma,\nu}$.
     }
@@ -1713,7 +1725,7 @@ where the generator~$\mathcal L^{\delta}$ of the dynamics now reads
     := L_1 + L_2
     - \delta \grad \mathcal W \cdot \grad_{\vect p},
 \end{align}
-with $L_i = p_i \partial_{q_i} - \mathcal V'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$,
+with $L_i = p_i \partial_{q_i} - \mathcal V'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$
 for $i \in \{1, 2\}$.
 Notice that $\phi_\delta(\vect q, \vect p) = \phi(q_1, p_1)$ when $\delta = 0$,
 with $\phi$ the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
@@ -1724,7 +1736,7 @@ For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
 Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
-The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
+The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
 % In particular $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
 % denoting by $\psi$ an approximation of $\phi$,
 % and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
@@ -1741,7 +1753,7 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
     \label{proposition:convergence_gradient}
     Let $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L^{\delta} \phi_{\delta} = p_1$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
-    in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
+    these equations being posed in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
     Then there exists $C$ independent of $\delta$ and $\gamma$ such that
     \begin{align}
         \label{eq:convergence_delta}
@@ -1750,7 +1762,7 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
         \leq C\lvert \delta \rvert \left(
               \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
             + \norm{\phi_0}[L^2(\mu_{\delta})]
-        \right)
+        \right),
     \end{align}
     and
     \begin{align}
@@ -1767,6 +1779,7 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
     %     d^{\delta}_{\phi_0} = \int \abs{\grad \phi_0}^2 \, \d \mu_{\delta}.
     % \]
 \end{proposition}
+Before the proof, a couple of remarks are in order.
 \begin{remark}
     There exist appropriate constants $c_1, c_2 > 0$ such that
     \[
@@ -1775,6 +1788,26 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
     \]
     and so the inequalities~\eqref{eq:convergence_delta} and~\eqref{eq:convergence_gradient} are valid also with~$\norm{\dummy}[L^2(\mu_{\delta})]$ replaced by $\norm{\dummy}[L^2(\mu_{0})]$.
 \end{remark}
+\begin{remark}
+Using~\cref{proposition:convergence_gradient},
+we deduce that
+\[
+    \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
+    \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
+    \leq C \delta \gamma^{-1},
+\]
+and so
+\[
+    \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
+    \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]}
+    \leq  C \delta \gamma^{-1} (2 + C \delta \gamma^{-1}).
+\]
+Indeed, if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$.
+In particular, for~$\gamma/\delta$ fixed and sufficiently small,
+it holds that $\liminf_{\gamma \to 0} \gamma D^{\gamma}_{\vect e} > 0$;
+that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this case.
+(Of course, this does say anything about the behavior of the diffusion coefficient for $\abs{\delta} > 0$ fixed and $\gamma \to 0$.)
+\end{remark}
 \begin{proof}
     Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
     We consider the decomposition~\eqref{eq:generator} of the generator and note that
@@ -1782,7 +1815,7 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
         \label{eq:remainder_expansion}
         \mathcal L^{\delta}(\phi_\delta - \phi_0^{\delta})
         = - \delta \, \mathcal L_1 \phi_0
-        = \delta \, \grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0.
+        = \delta \, \grad \mathcal W \, \cdot \grad_{\vect p} \phi_0.
     \end{equation}
     It follows from~\eqref{eq:remainder_expansion} that
      \begin{align*}
@@ -1837,20 +1870,6 @@ The following result result establishes that~$\phi_\delta \to \phi_0$ in $L^2(\m
     which gives the claimed result.
 \end{proof}
 
-Using~\cref{proposition:convergence_gradient},
-we deduce that
-\[
-    \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
-    \leq C \delta \gamma^{-1}
-    \Rightarrow
-    \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]}
-    \leq  C \delta \gamma^{-1} (2 + C \delta \gamma^{-1}),
-\]
-for all $(\gamma, \delta) \in (0, 1) \times [-1, 1]$,
-since if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$.
-In particular, for $\gamma/\delta$ fixed and sufficiently small,
-it holds that $\liminf_{\gamma \to 0} \gamma D^{\gamma}_{\vect e} > 0$;
-that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this case.
 
 In addition, if the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
 i.e.\ if $\psi_{\vect e} = \phi_0$ in the control variate~\eqref{eq:definition_control_variate},
@@ -1862,13 +1881,13 @@ we have
     &\leq 4 C \delta^2 \gamma^{-1} \beta^{-1} \norm{\grad_{\vect p} \psi_{0}}^2 (d[\phi_{\delta}] + d[\phi_0])
     = 4 C \delta^2 \gamma^{-2} d[\phi_{0}] (d[\phi_{\delta}] + d[\phi_0]),
 \end{align*}
-which shows that the relative standard deviation scales admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
+which shows that the relative standard deviation admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
 in the limit as $\lvert \delta \rvert/\gamma \to 0$,
 provided that $\delta \in [-1, 1]$ and $\gamma \in (0, 1)$.
 
-\Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for different values of $\delta$.
+\Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for various values of $\delta$.
 It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
-with an exponent $\sigma$ that decreases as $\delta$ increases (at least for sufficiently small values of~$\delta$).
+with an exponent $\sigma$ that decreases as $\delta > 0$ increases (at least for sufficiently small values of~$\delta$).
 The variance of the estimators obtained using the approach described above,
 where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
@@ -1954,6 +1973,7 @@ at least formally in the sense that
 \end{equation}
 We will use the following result.
 \begin{lemma}
+    \label{lemma:semigroup}
     The unbounded operator
     \begin{equation}
         \label{eq:unbounded_operator}
@@ -2020,30 +2040,34 @@ we present the proof here.
             &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \ip{\grad^* \cdot \grad e_{k}}{\grad^* \cdot \grad e_{\ell}}
             - \beta \phi_{k} \phi_{\ell} \ip{\hess W \grad e_{\ell}}{\grad e_k} \\
             &= \sum_{k=m+1}^{n} \sum_{\ell=m+1}^{n} \phi_{k} \phi_{\ell} \bigl(\beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{\mathcal L_{\rm FD} e_{\ell}} + \beta^2 \ip{\mathcal L_{\rm FD} e_{k}}{e_{\ell}}\bigr) \\
-            &= \sum_{k=m+1}^{n} \beta^2 \left(1 - \frac{1}{\lambda_k}\right) \lvert \ip{f}{e_k} \rvert^2,
+            &= \sum_{k=m+1}^{n} \beta^2 \left(1 - \frac{1}{\lambda_k}\right) \lvert \ip{f}{e_k} \rvert^2.
         \end{aligned}
     \end{equation}
-    and so $\hess \phi_n$ is a Cauchy sequence in $L^2(\kappa)$.
+    Therefore, the sequence $(\hess \phi_n)_{n \in \nat^*}$ is a Cauchy sequence in $L^2(\kappa)$.
     Here $W(\vect p) = \frac{\vect p^2}{2}$ and we used the commutator relation $\commut{\partial_i}{\partial_j^*} = \beta  \partial_{ij} W$.
+    The manipulations~\eqref{eq:calculation} are reminiscent of the Bochner--Lichnerowicz's formula~\cite[Theorem C.3.3]{MR3155209}.
     As a consequence of the foregoing calculation,
     the resolvent~$(-\mathcal L_{\rm FD})^{-1}$ is bounded as an operator from $L^2_0(\mu)$ to $H^2(\mu) \cap L^2_0(\mu)$.
-    It is then not difficult to conclude that the unbounded operator~\eqref{eq:unbounded_operator} is closed.
+    It is then not difficult to conclude that the unbounded operator~\eqref{eq:unbounded_operator} is closed;
+    see, for example, the proof of Theorem 5 in~\cite[Section 7.4]{evans2010partial}.
 \end{proof}
 
 \begin{remark}
     \label{remark:alternative_norm}
     The calculation in~\eqref{eq:calculation} can be generalized to show
-    that the following functional defines a norm on~$H^i(\kappa)$ equivalent to~$\norm{\dummy}_i$:
+    that the following functional defines a norm on~$H^i(\kappa) \cap L^2_0(\kappa)$ equivalent to~$\norm{\dummy}_i$:
     \[
-        |\!|\!| u |\!|\!|_i = \sum_{n=1}^{\infty} (1 + \lambda_n^i) \ip{u}{e_n}^2.
+        |\!|\!| u |\!|\!|_i = \sum_{n=1}^{\infty} \lambda_n^i \ip{u}{e_n}^2.
     \]
+    Simple calculations similar to those in the proof of~\cref{lemma:semigroup} enable to show this equivalence for $i \in \{0, 1, 2\}$,
+    which is sufficient for our purposes.
 \end{remark}
 By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$,
-it holds that
+it holds for any $f \in L^2_0(\mu)$ that
 \begin{equation}
     \label{eq:series_expansion}
     \e^{t \mathcal L_{\rm FD}} f
-    = \sum_{n=0}^{\infty} \e^{- \lambda_n t} \ip{f}{e_n} e_n.
+    = \sum_{n=1}^{\infty} \e^{- \lambda_n t} \ip{f}{e_n} e_n.
 \end{equation}
 This formula can be employed to show the following estimates.
 \begin{corollary}
@@ -2054,7 +2078,7 @@ This formula can be employed to show the following estimates.
         \norm{\partial_p \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
     \end{equation}
     On the other hand,
-    if $f \in H^1(\mu)$,
+    if $f \in H^1(\mu) \cap L^2_0(\mu)$,
     then
     \begin{equation}
         \label{lemma:overdamped_langevin_decay_derivatives}
@@ -2077,6 +2101,12 @@ This formula can be employed to show the following estimates.
     which is valid for all $\lambda \in \real$.
     The second claim follows from the fact that $\lambda_n \geq 1$ for all $n \in \nat^*$.
 \end{proof}
+\begin{remark}
+    The inequality~\eqref{lemma:overdamped_langevin_decay_derivatives} is of course valid also for $f \in H^1(\kappa) \backslash L^2_0(\kappa)$,
+    provided that we view $(\e^{t \mathcal L_{\rm FD}})_{t\geq 0}$ as the usual extension to $L^2(\kappa)$ of the semigroup given by~\cref{lemma:semigroup},
+    which was defined on $L^2_0(\kappa)$.
+    We adopt this viewpoint and take a more formal approach from now on.
+\end{remark}
 
 % For large times,
 % the derivatives of the semigroup can be controlled using only the $L^2(\mu)$ norm of the initial condition.
@@ -2217,9 +2247,9 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     We prove the result for functions $f(q, p)$ of the form
     \begin{equation}
         \label{eq:expansion}
-        f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, G_i(q) H_j(p).
+        f(q, p) = \sum_{i=0}^{N} \sum_{j=1}^{N} c_{ij} \, g_i(q) h_j(p).
     \end{equation}
-    where $G_i$ and $H_j$ the basis functions defined in~\eqref{eq:definition_trigonometric_functions} and~\eqref{eq:definition_hermite_functions}.
+    where $g_i$ and $h_j$ the basis functions defined in~\eqref{eq:definition_trigonometric_functions} and~\eqref{eq:definition_hermite_functions}.
     The space of functions of this form is dense in $\bigl\{u \in (\id - \Pi_p) L^2(\mu): \partial_q u \in L^2(\mu) \bigr\}$
     endowed with the norm $\norm{u}_{1,q} := \norm{u} + \norm{\partial_q u}$,
     so the general result follows by density.
@@ -2249,14 +2279,14 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     \begin{align}
         \notag
         \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)}^2
-        &= \int_{\torus} \int_{\real}  \abs{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p) }^2 \d \kappa(p) \,\d \nu(q)
-        = \int_{\torus} \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, \cdot) }[\kappa]^2 \, \d \nu(q) \\
+        &= \int_{\torus} \int_{\real}  \abs{\e^{t \gamma \mathcal L_{\rm FD}} f(q, p) }^2 \kappa(\d p) \,\nu(\d q)
+        = \int_{\torus} \norm{\e^{t \gamma \mathcal L_{\rm FD}} f(q, \dummy) }[\kappa]^2 \, \nu(\d q) \\
         \label{eq:bound_first_term}
-        &\leq \int_{\torus} \e^{-2 \gamma \beta^{-1} t} \norm{f(q, \cdot) }[\kappa]^2 \, \d \nu(q)
-        = \e^{-2\gamma \beta^{-1} t} \norm{f}^2,
+        &\leq \int_{\torus} \e^{-2 \gamma t} \norm{f(q, \dummy) }[\kappa]^2 \, \nu(\d q)
+        = \e^{-2\gamma t} \norm{f}^2,
     \end{align}
-    where we employed \cref{lemma:overdamped_langevin_decay_derivatives} in the second line.
-    For the second term, using that~$\commut{\partial_p}{\partial_p^*} = \beta$ we have
+    where we employed \eqref{lemma:overdamped_langevin_decay_derivatives} in the second line.
+    For the second term, using the commutator relation~$\commut{\partial_p}{\partial_p^*} = \beta$, we have
     \begin{align*}
         \norm{\partial_q \partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} f}
         &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} + \sqrt{\beta} \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}, \\
@@ -2276,13 +2306,14 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         + \beta^{-1/2} \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \norm*{V'}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align}
-    Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion} and
-    Hermite polynomials are the eigenfunctions of $\mathcal L_{\rm FD}$,
-    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal L_{\rm FD}}$.
+    Since $f$ is assumed to be a finite linear combination of the form~\eqref{eq:expansion},
+    we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal L_{\rm FD}}$;
+    in particular, the function $\e^{t \gamma \mathcal L_{\rm FD}} f$ is differentiable in $q$.
+    % without having to worry about whether $f$~has sufficient regularity for doing so.
 
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
-    Letting $t_* = \min\{t, \gamma^{-1}\}$, we have
+    Letting $t_* = \min\{ \gamma^{-1}, t\}$, we have
     \begin{align*}
         \norm*{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         &= \norm*{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} \partial_q f}
@@ -2290,10 +2321,9 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         &\leq C \e^{- \gamma (t - t_*)} \norm*{\partial_p \e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f}
         \leq C \frac{\e^{- \gamma (t - t_*)}}{\sqrt{\gamma t_*}} \norm*{\partial_q f},
     \end{align*}
-    where we applied~\cref{lemma:overdamped_langevin_decay_derivatives} with the operator $\mathcal L_{\rm ovd} = \mathcal L_{\rm FD}$ in the first inequality,
-    noting that $\kappa$ satisfies~\eqref{eq:poincare} with constant $R = \frac{\beta}{2}$,
-    then \cref{lemma:elliptic_reg} with the same operator in the second inequality.
-    Bounding the other terms of~\eqref{eq:reasoning_action_lham} using the same method
+    where we applied~\eqref{lemma:overdamped_langevin_decay_derivatives} in the first inequality,
+    then \eqref{lemma:elliptic_reg} in the second inequality.
+    Bounding the other terms in~\eqref{eq:reasoning_action_lham} using the same method
     and observing that~$\e^{\gamma t_*} \leq \e$,
     we obtain
     \begin{align}
@@ -2310,7 +2340,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     \end{align*}
     It is clear that~\eqref{eq:better_decay_estimate} holds for all $t \in [0, \gamma^{-1}]$,
     provided that the prefactor on the right-hand side of that equation is sufficiently large.
-    The integral can be bounded by decomposing the interval $[0, t]$ as $[0, \frac{1}{\gamma}] \cup [\frac{1}{\gamma}, t]$,
+    The integral can be bounded by decomposing the interval~$[0, t]$ as $[0, \frac{1}{\gamma}] \cup [\frac{1}{\gamma}, t]$,
     assuming $t \geq \gamma^{-1}$:
     \begin{align}
         \notag
@@ -2323,6 +2353,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\lambda_{\rm Lang}}{\gamma} \left(t-\frac{1}{\gamma}\right)}
          + \int_{0}^{t} \e^{-\frac{\widetilde \lambda_{\rm Lang}}{\gamma}(t-s) - \gamma s} \d s, \\
+         \label{eq:bound_integral}
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\lambda_{\rm Lang}}{\gamma} \left(t-\frac{1}{\gamma}\right)}
          + \int_{0}^{\infty} \e^{-\frac{\widetilde \lambda_{\rm Lang}}{\gamma}(t-s) - \gamma s} \d s
@@ -2342,8 +2373,10 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
 We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
 \begin{proof}
     [Proof of \cref{proposition:semigroup_meanzero_observable}]
-    We again show the result for functions of the form~\eqref{eq:expansion},
+    We again show the result for functions $f$ and $h$ of the form~\eqref{eq:expansion},
     noting that the general result follows by density of functions of this type.
+    Recall that, by assumption, both $f$ and $h$ are in $\Pi_{p}^\perp L^2(\mu)$,
+    and their derivatives with respect to $q$ are in $L^2(\mu)$.
     From~\eqref{eq:intermediate_decay_correlation}, we obtain
     \begin{align}
         \notag
@@ -2373,8 +2406,15 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
             \int_{0}^{t}  \left( \frac{\e^{-\gamma s}}{\sqrt{\min\{1, \gamma s\}}} \right)
          \left(  \e^{- \gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda (t-s)}{\gamma}} \right) \, \d s.
     \end{align*}
-    Bounding the integral as in the proof of \cref{lemma:initial_lemma},
-    we deduce~\cref{proposition:semigroup_meanzero_observable}.
+    The first term in the integral is bounded as
+    \[
+        \int_{0}^{t}  \left( \frac{\e^{-\gamma s}}{\sqrt{\min\{1, \gamma s\}}} \right)
+        \left(  \e^{- \gamma (t-s)} \right) \, \d s
+        = \e^{- \gamma t} \left( \int_{0}^{\gamma^{-1}} \frac{1}{\sqrt{\gamma s}} \, \d s + (t - \gamma^{-1}) \right)
+        = \e^{-\gamma t} \left( t + \frac{1}{\gamma} \right).
+    \]
+    The second term in the integral can be bounded as in~\eqref{eq:bound_integral} in the proof of \cref{lemma:initial_lemma},
+    which concludes the proof of~\cref{proposition:semigroup_meanzero_observable}.
 \end{proof}
 
 \section{Proof of~\texorpdfstring{the bound \eqref{eq:refined_bound}}{the technical bound on the bias}}%

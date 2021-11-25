@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-matplotlib.rc('font', size=20)
+matplotlib.rc('font', size=22)
 matplotlib.rc('font', family='serif')
 matplotlib.rc('text', usetex=True)
 # matplotlib.rc('figure', figsize=(15, 8))

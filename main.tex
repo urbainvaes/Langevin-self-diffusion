@@ -1776,13 +1776,13 @@ Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with t
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
 In particular, $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
 denoting by $\psi$ an approximation of $\phi$,
-and assuming $\psi_{\vect e}(\vect q, \vect p) = \psi(q_1, p_1)$,
+and assuming $\psi_{\vect e}(\vect q, \vect p) = \phi_0(q_1, p_1)$,
 we have
 \begin{equation}
     \label{eq:effective_diffusion_d}
     d[\psi_{\vect e}]
     = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
-    = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
+    = \int_{\torus^d \times \real^d} \abs{\partial_p \phi_0}^2 \, \d \mu_{\delta}.
 \end{equation}
 The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
 
@@ -1792,6 +1792,7 @@ The following result result establishes that~$\phi_\delta$ converges to $\phi_0$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
     these equations being posed in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
     Then there exists $C$ independent of $\delta$ and $\gamma$ such that
+    \begin{subequations}
     \begin{align}
         \label{eq:convergence_delta}
         \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
@@ -1809,6 +1810,7 @@ The following result result establishes that~$\phi_\delta$ converges to $\phi_0$
         \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
         \leq C \lvert \delta \rvert  \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] .
     \end{align}
+    \end{subequations}
     % and denote
     % \[
     %     d^{\delta}_{\phi_\delta} = \int \abs{\grad \phi_\delta}^2 \, \d \mu_{\delta},
@@ -1826,14 +1828,14 @@ Before the proof, a couple of remarks are in order.
     and so the inequalities~\eqref{eq:convergence_delta} and~\eqref{eq:convergence_gradient} are valid also with~$\norm{\dummy}[L^2(\mu_{\delta})]$ replaced by $\norm{\dummy}[L^2(\mu_{0})]$.
 \end{remark}
 \begin{remark}
-Using~\cref{proposition:convergence_gradient},
+Using the definition~\eqref{eq:effective_diffusion_d} and~\cref{proposition:convergence_gradient},
 we deduce that
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
     \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
     \leq C \delta \gamma^{-1}.
 \]
-Consequently, 
+Consequently,
 since if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$,
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
@@ -1860,10 +1862,15 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
          &\leq \lvert \delta \rvert \norm*{(\mathcal L^{\delta})^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)]
          \norm{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
      \end{align*}
-     Theorem 1 in \cite{roussel2018spectral} establishes that $\norm*{(\mathcal L^{\delta})^{-1}}[\mathcal B \left( L^2_{0}(\mu_{\delta})\right)] $ is bounded from above by $K(\delta) \max\{\gamma, \gamma^{-1}\}$ for all~$\gamma \in (0, \infty)$,
-     with $K(\delta)$ a constant depending on $\delta$.
-     An inspection of the proof of this result reveals that $K(\delta)$ depends on $\delta$ only through the Poincaré constant of $\mu_{\delta}$,
-     in a manner such that in fact $\sup \{K(\delta): -1 \leq \delta \leq 1\} < \infty$.
+     From the results in~\cite[Section 3.1]{BFLS20} which,
+     as discussed in~\cref{ssub:bias_of_the_standard_estimator},
+     were shown in various other works,
+     it is clear that
+     $\norm*{(\mathcal L^{\delta})^{-1}}[\mathcal B \left( L^2_{0}(\mu_{\delta})\right)] $ is bounded from above by $K(\delta) \max\{\gamma, \gamma^{-1}\}$ for all~$\gamma \in (0, \infty)$,
+     with a constant $K(\delta)$ depending on $\delta$.
+     A careful inspection of the result and its proof reveal that $K(\delta)$,
+     which depends on $\delta$ through the Poincaré constant of $\mu_{\delta}$ among other things,
+     is in fact such that $\sup \{K(\delta): -1 \leq \delta \leq 1\} < \infty$.
      Therefore, we obtain that
      \begin{align}
          \label{eq:convergence_l2}
@@ -1877,18 +1884,34 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     In order to show~\eqref{eq:convergence_delta},
     it remains to bound $\norm*{\phi_0^{\delta}- \phi_0}$;
     the result then follows from the triangle inequality.
-    Since
+    To this end, note that
     \(
         \d \mu_{\delta} / \d \mu_0  = 1 + \delta f_{\delta}(q_1, q_2)
     \)
-    for some appropriate smooth function~$f_{\delta}$ that is uniformly bounded from above over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$,
-    we can write
+    for some appropriate smooth function~$f_{\delta}$ that is $0$ if $\delta = 0$ and is otherwise given explicitly by
+    \[
+        f_{\delta}(q_1, q_2) = \frac{1}{\delta} \left( \frac{Z(0)}{Z(\delta)} \e^{- \beta \delta \mathcal W(q_1, q_2)} - 1 \right),
+        \qquad Z(\delta) = \int_{\torus \times \torus} \e^{- \beta\bigl(\mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2)\bigr)}.
+    \]
+    Denoting by $M$ the supremum of $\beta |\mathcal W|$ over $\torus^2$,
+    we have $\e^{-\lvert \delta \rvert M} \leq Z(\delta)/Z(0) \leq \e^{\lvert \delta \rvert M}$, 
+    which implies that $\lvert f_{\delta}(q_1, q_2) \rvert \leq \lvert \delta \rvert^{-1}(\e^{2 \lvert \delta \rvert M} - 1) \leq \e^{2M} -1$ 
+    uniformly for $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
+    % The maximum of the right-hand side over the interval $\lvert \delta \rvert \in (0, 1]$ is achieved for $\lvert \delta \rvert = 1$,
+    % and so $\norm{f_{\delta}}_{L^{\infty}(\torus^2)} \leq \e^{2M}-1$ uniformly in $\delta \in [-1, 1]$.
+    % dit is clear that $f_{\delta}$ is uniformly
+    % $Z_{\delta}$ is bounded away from 0 uniformly for all $\delta \in [-1, 1]$,
+    % and by L'H\^opital's rule it holds $\lvert \lim_{\vect q \to 0} f_{\delta}(q_1, q_2) \rvert < \infty$.
+    % uniformly 
+    % bounded from above, in absolute value, over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
+    Therefore, we can write
     \[
         \norm*{\phi_0^\delta - \phi_0} [L^2(\mu_\delta)]
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \, \d \mu_{\delta} }
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \,\bigl( 1 + \delta f_{\delta}(q_1, q_2) \bigr)\d \mu_{0}}
         \leq C \lvert \delta \rvert \norm{\phi_0}[L^2(\mu_0)].
     \]
+    which leads to~\eqref{eq:convergence_delta}.
 
     We now show~\eqref{eq:convergence_gradient}.
     Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
@@ -1907,8 +1930,8 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     which gives the claimed result.
 \end{proof}
 
-
-In addition, if the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
+A direct corollary of~\cref{proposition:convergence_gradient} is that,
+if the exact solution to the Poisson equation in one spatial dimension is employed for constructing the control variate,
 i.e.\ if $\psi_{\vect e} = \phi_0$ in the control variate~\eqref{eq:definition_control_variate},
 then by~\cref{proposition:asymptotic_variance} and~\eqref{eq:convergence_gradient}
 we have
@@ -1918,18 +1941,21 @@ we have
     &\leq 4 C \delta^2 \gamma^{-1} \beta^{-1} \norm{\grad_{\vect p} \psi_{0}}^2 (d[\phi_{\delta}] + d[\phi_0])
     = 4 C \delta^2 \gamma^{-2} d[\phi_{0}] (d[\phi_{\delta}] + d[\phi_0]),
 \end{align*}
-which shows that the relative standard deviation admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
+which shows that, in this case,
+the relative standard deviation admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
 in the limit as $\lvert \delta \rvert/\gamma \to 0$,
 provided that $\delta \in [-1, 1]$ and $\gamma \in (0, 1)$.
 
 \Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for various values of $\delta$.
-It appears clearly from the figure that the mobility behaves as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
+It appears clearly from the figure that the mobility behaves,
+over the range of values of $\gamma$ we consider,
+as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
 with an exponent $\sigma$ that decreases as $\delta > 0$ increases (at least for sufficiently small values of~$\delta$).
 The variance of the estimators obtained using the approach described above,
 where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
 We observe that, unless $\delta = 0$ in which case we recover the one-dimensional case,
-there is for every $\delta > 0$ and for each of the two choices of $\psi_{\vect e}$,
+there is for every~$\delta > 0$ and for each of the two choices of $\psi_{\vect e}$,
 a threshold value of $\gamma$ below which the control variate ceases to be useful.
 
 \begin{figure}[ht]
@@ -2552,7 +2578,8 @@ and so, using the standing assumption of a stationary initial condition
 and a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366},
 we have
 \[
-    \lvert X^T_2 \rvert^{4+ \varepsilon} \leq
+    \expect \left[ \lvert X^T_2 \rvert^{4+ \varepsilon} \right]
+    \leq
     C \left( 2\norm{\psi_{\vect e}}[L^{4+\varepsilon}(\mu)]^{4 + \varepsilon} +
         \norm{\grad_{\vect p} \psi_{\vect e}}[L^{4+\varepsilon}(\mu)]^{4+\varepsilon}
         \right) < \infty.

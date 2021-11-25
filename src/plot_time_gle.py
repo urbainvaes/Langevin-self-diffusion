@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-matplotlib.rc('font', size=16)
+matplotlib.rc('font', size=20)
 matplotlib.rc('font', family='serif')
 matplotlib.rc('text', usetex=True)
 # matplotlib.rc('figure', figsize=(15, 8))
@@ -47,11 +47,11 @@ def get_diff(γ, plot=True):
         nsigma = 2
         fig, ax = plt.subplots()
         ax.set_xlabel('$t$')
-        ax.set_title(r"MC estimation of $\mathbf{E}u(t)$ and $\mathbf{E}v(t)$ for $\gamma = 10^{" + str(int(np.log10(γ))) +  r"},$"
-                     + r" with $\pm 3 \sigma$ confidence interval")
+        ax.set_title(r"MC estimation of $\mathbf{E}[u(t)]$ and $\mathbf{E}[v(t)]$ for $\gamma = 10^{" + str(int(np.log10(γ))) +  r"},$"
+                     + r" with $\pm 3 s$ confidence interval")
         ax.plot(underdamped_ts, underdamped_D, "-", c='red', label="MC/No control")
         ax.plot(underdamped_ts, underdamped_D_control, "-", c='green', label="MC/Underdamped")
-        ax.plot(underdamped_ts, 0*underdamped_ts + limit, "--", c='blue', lw=3, label="Conjectured limit")
+        ax.plot(underdamped_ts, 0*underdamped_ts + limit, "--", c='blue', lw=3, label="$\\gamma D^{\\rm und}_{\\nu}$")
         ax.fill_between(underdamped_ts,
                         underdamped_D - nsigma*underdamped_σ/np.sqrt(nptotal[i]),
                         underdamped_D + nsigma*underdamped_σ/np.sqrt(nptotal[i]),
@@ -76,15 +76,18 @@ Ds = np.zeros(len(γs))
 for i, γ in enumerate(γs):
     Ds[i], σs[i]  = get_diff(γ, plot=False)
 fig, ax = plt.subplots()
-ax.set_title('Effective diffusion coefficient for the GLE')
+ax.set_title(r"\textbf{Zoom:} effective diffusion coefficient for the GLE, multiplied by $\gamma$")
 ax.set_xlabel('$\gamma$')
+ax.set_ylabel(r"$\gamma D^{\gamma, \nu}$")
 ax.semilogx(γs, γs*Ds, 'o-', color='blue', label='MC/underdamped')
 ax.fill_between(γs, γs*Ds - 3*γs*σs, γs*Ds + 3*γs*σs, color='blue', alpha=.2)
 ax.semilogx(γs, 0*γs + lim_gle, 'g-', lw=3, label="Conjectured asymptotic limit for GLE")
 ax.semilogx(γs, 0*γs + lim_lang, 'k--', lw=3, label="Asymptotic limit for Langevin")
 ax.set_xlim([γs[0], γs[-1]])
+ax.set_ylim([.3, .4])
 ax.legend()
-fig.savefig("mobility_gle.pdf", bbox_inches='tight')
+fig.savefig("mobility_gle_zoom.pdf", bbox_inches='tight')
+# fig.savefig("mobility_gle.pdf", bbox_inches='tight')
 
 get_diff(1e-3, plot=True)
 get_diff(1e-4, plot=True)

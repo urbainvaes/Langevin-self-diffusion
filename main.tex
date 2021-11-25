@@ -1444,7 +1444,7 @@ and
 \]
 For certain potentials,
 the function $S_{\rm und}$ can be calculated explicitly,
-and in general it can be approximated accurately by numerical quadrature.
+and in general this function can be approximated accurately by numerical quadrature.
 For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in~\cref{sub:numerical_results},
 for example, $S_{\rm und}$ admits an explicit expression in terms of an elliptic integral of a second kind~\cite{MR2427108}.
 In practice, given an explicit expression or implementation of~$S_{\rm und}$,
@@ -1452,7 +1452,24 @@ we calculate~$\varphi_0$ over a large interval $[0, E_{\max}]$ with $E_{\max} = 
 using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations} with default parameters.
 This returns an object containing an approximation of $\varphi_0$ at discrete values of $E$ automatically selected in order to meet a default accuracy threshold.
 Conveniently, this object can be evaluated at any $E \in [0, E_{\max}]$,
-in which case an approximation $\varphi_0(E)$ automatically obtained by high-dimensional interpolation from the discrete solution is returned.
+in which case an approximation $\varphi_0(E)$ automatically obtained by high-order interpolation from the discrete solution is returned.
+
+\begin{remark}
+    In practice,
+    several control variates can be calculated simultaneously during the simulation,
+    and only the one leading to the smallest variance can be retained in the estimator.
+    Alternatively, the control variates can be combined in order to minimize the variance;
+    specifically, given two approximations $\xi^{(1)}_T$ and $\xi^{(2)}_T$ of $q_T - q_0$,
+    one may consider the following composite estimator instead of \eqref{eq:improved_estimator}:
+    \[
+        \widehat v(T) =  \frac{\bigl\lvert q_T - q_0 \bigr\rvert^2}{2T}
+        - \alpha_1 \left( \frac{\bigl\lvert \xi^{(1)}_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl[\frac{\bigl\lvert \xi^{(1)}_T \bigr\rvert^2}{2T}\biggr] \right)
+        - \alpha_2 \left( \frac{\bigl\lvert \xi^{(2)}_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl[\frac{\bigl\lvert \xi^{(2)}_T \bigr\rvert^2}{2T}\biggr] \right).
+    \]
+    There are systematic approaches for choosing optimally $\alpha_1$ and $\alpha_2$ in order to minimize the variance,
+    which are studied, for example, in~\cite{MR1958845}.
+    For the sake of simplicity, we do not implement or study these approaches here.
+\end{remark}
 
 \subsection{Numerical results}%
 \label{sub:numerical_results}
@@ -1502,9 +1519,10 @@ are normally distributed with mean 0 and covariance matrix
 % Therefore the covariance matrix the mean-zero normally distributed random vectors $(g_n, \widetilde g_n)_{n \geq 0}$,
 % which are independent, is given by
 
-We select a final time $T$ and estimate the expectations and standard deviation of the estimators $u(T)$ and $v(T)$,
+For a given final time $T$,
+the expectations and standard deviation of the estimators~$u(T)$ and $v(T)$,
 defined respectively in~\eqref{eq:simple_estimator} and~\eqref{eq:improved_estimator},
-from a number $J$ of trajectories.
+are estimated from a number $J$ of trajectories.
 The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_mc},
 and the associated numerical results are presented in~\cref{fig:effective_diffusion_langevin}.
 \begin{table}[ht]
@@ -1551,7 +1569,7 @@ but the benefits decrease as $\gamma$ increases.
     \label{fig:effective_diffusion_langevin}
 \end{figure}
 
-\Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ and~$v(t)$,
+\Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ given in~\eqref{eq:simple_estimator} and~$v(t)$ given in~\eqref{eq:improved_estimator},
 estimated from 5000 trajectories,
 with respect to the integration time~$t$.
 It appears clearly that,
@@ -1597,8 +1615,8 @@ A functional central limit theorem applies also to the dynamics~\eqref{eq:gle}:
 the diffusively rescaled position process $(\varepsilon q_{t/\varepsilon^2})_{t \geq 0}$ converges in distribution,
 in the Banach space of continuous functions over a bounded time interval,
 to a Brownian motion with prefactor $\sqrt{2 D^{\gamma, \nu}}$.
-This is given by $\ip{\phi}{p}$, where $\ip{\dummy}{\dummy}$ is the inner product of $L^2(\mu_{\rm GLE})$
-and $\phi$ is the unique solution in $L^2_0(\mu_{\rm GLE})$ to the Poisson equation
+This prefactor is given by $\ip{\phi}{p}$, where $\ip{\dummy}{\dummy}$ is the inner product of $L^2(\mu_{\rm GLE})$
+and $\phi$ is the unique solution to the following Poisson equation posed in $L^2_0(\mu_{\rm GLE})$:
 \[
     - \mathcal L_{\rm GLE} \phi = p.
 \]
@@ -1636,8 +1654,8 @@ we employ an asymptotic expansion of the form
 \)
 in order to study the underdamped limit
 and we derive expressions for $\phi_0$ and $\phi_1$
-which enable to show formally that $D^{\gamma, \nu}$ behaves as $\gamma^{-1}$ in the limit as $\gamma \to 0$,
-with a prefactor that can be calculated efficiently and is different from $D^{\rm und}$.
+which enable to show formally that $D^{\gamma, \nu}$ behaves as $1/\gamma$ in the limit as $\gamma \to 0$,
+with a prefactor $D^{\rm und}_{\nu}$ that can be calculated efficiently and is different from $D^{\rm und}$.
 We recall from the introduction that $D^{\rm und} = \lim_{\gamma \to 0} \gamma D^{\gamma}$ by definition,
 where $D^{\gamma}$ is the effective diffusion coefficient of one-dimensional Langevin dynamics~\eqref{eq:effective_diffusion_poisson}.
 Although the assumed asymptotic expansion is shown to be invalid in~\cite{GPGSUV21}
@@ -1647,40 +1665,44 @@ Specifically,
 we obtain a considerable reduction in variance by choosing the approximation $\psi$ in~\eqref{eq:definition_control_variate_gle} as $\psi = \gamma^{-1} \phi_0 + \gamma^{-1/2} \phi_1$.
 We refer to~\cite[Section~4.3.2] {GPGSUV21} for the expressions of the functions $\phi_0$ and $\phi_1$.
 
-\Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect \bigl[ u(t) \bigr]$ and $\expect \bigl[ v(t) \bigr]$ with respect to time,
+\Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect \bigl[ u(t) \bigr]$ and $\expect \bigl[ v(t) \bigr]$,
+given in~\eqref{eq:simple_estimator} and~\eqref{eq:improved_estimator_gle},
+with respect to time,
 for a value of~$\nu = 2$ that is sufficiently large to observe a different asymptotic behavior than that of standard Langevin dynamics.
 These expectations are estimated from 5000 independent trajectories,
 and the associated $[m - 3 s, m + 3 s]$ confidence intervals (corresponding to a confidence of approximately $99.7\%$ assuming Gaussianity) are depicted,
 where $m$ and $s$ are the sample mean and sample standard deviation.
-It is evident from the figures that the control variate enables considerable improvements,
-both in terms of bias and variance.
+It is evident from the figures that the control variate enables considerable improvements in terms of variance.
+Drawing conclusions on the bias is a more delicate task,
+as the true value of $D^{\gamma, \nu}$ is unknown,
+but it is clear that the improved estimator~\eqref{eq:improved_estimator_gle} has a smaller bias for small times.
 Furthermore, we observe that the effective diffusion coefficient for $\gamma = 10^{-5}$
-is in very good agreement with the limit conjectured in~\cite{GPGSUV21}.
+is in very good agreement with the limit $\lim_{\gamma \to 0} \gamma D^{\gamma, \nu}$ conjectured in~\cite{GPGSUV21}.
 The evolution of the effective diffusion with respect to $\gamma$ is presented in~\cref{fig:effective_diffusion_gle}.
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.495\linewidth]{figures/time-gle-4.pdf}
-    \includegraphics[width=0.495\linewidth]{figures/time-gle-5.pdf}
+    % \includegraphics[width=0.495\linewidth]{figures/time-gle-4.pdf}
+    \includegraphics[width=0.8\linewidth]{figures/time-gle-5.pdf}
     \caption{%
         Expectations of the naive~\eqref{eq:simple_estimator} and improved~\eqref{eq:improved_estimator_gle} estimators for generalized Langevin dynamics
         and associated ``$m \pm 3 s$'' confidence intervals,
         estimated from $5000$ trajectories.
-        The left panel is for $\gamma = 10^{-4}$ and the right panel is for $\gamma = 10^{-5}$.
+        % The left panel is for $\gamma = 10^{-4}$ and the right panel is for $\gamma = 10^{-5}$.
     }
     \label{fig:effective_diffusion_time_gle}
 \end{figure}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.75\linewidth]{figures/mobility_gle.pdf}
+    \includegraphics[width=0.495\linewidth]{figures/mobility_gle.pdf}
+    \includegraphics[width=0.495\linewidth]{figures/mobility_gle_zoom.pdf}
     \caption{%
-        Expectation and ``$m \pm 3 s$'' confidence intervals for $v(T)$ in the underdamped limit,
+        Expectation and ``$m \pm 3 s$'' confidence intervals for $\expect [v(T)]$ in the underdamped limit,
         for generalized Langevin dynamics with $\nu = 2$.
         Since $T$ scales as $1/\gamma$ with a large prefactor,
         it is expected that $\expect \bigl[ v(T) \bigr] \approx D^{\gamma,\nu}$.
     }
     \label{fig:effective_diffusion_gle}
 \end{figure}
-
 
 % An alternative viewpoint on the control variate approach presented in \cref{sub:galerkin_approach} is that
 % Monte Carlo simulation is employed in order to refine estimates obtained by Fourier/Hermite spectral method for the Poisson equation~\eqref{eq:poisson_equation}.

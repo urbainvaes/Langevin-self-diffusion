@@ -146,7 +146,7 @@
 
 \newcommand{\email}[1]{\href{#1}{#1}}
 \newcommand{\orcidcolor}{ORC\textcolor{orcidlogocol}{ID}}
-\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\includegraphics[width=.4cm]{z_orcid.pdf}}}
+\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\includegraphics[width=.4cm]{figures/z_orcid.pdf}}}
 
 %---------------- GABRIEL ------------
 \usepackage{enumerate}
@@ -1719,25 +1719,41 @@ We consider in this work a non-separable potential even simpler than~\eqref{eq:p
     \label{eq:potential_simple}
     V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
 \end{align}
-In view of the symmetry of this potential,
-the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identity.
-Indeed, it is clear that $D^{\gamma}_{11} = D^{\gamma}_{22}$,
-and $D^{\gamma}_{12} = 0$ because if $\bigl((q_t, p_t)\bigr)_{t \geq 0}$ is a weak solution to~\eqref{eq:langevin},
-then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
-and thus
-\begin{align*}
-    D^{\gamma}_{12}
-    &= \frac{1}{2T} \lim_{\tau \to \infty}
-    \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
-    &= - \frac{1}{2T} \lim_{\tau \to \infty}
-    \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
-    = - D^{\gamma}_{12}
-\end{align*}
-with $\vect e = (1, 0)^\t$ and $\vect f = (0, 1)^\t$,
-and where the first and last equalities follow from the definition~\eqref{eq:einsteins_formula} of the effective diffusion coefficient.
-Note that this can also be shown at the level of the expression~\eqref{eq:effective_diffusion_poisson} of the effective diffusion coefficient.
+Exploiting the symmetry of this potential,
+we show that the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identity.
+
+\begin{lemma}
+    It holds that $D^{\gamma}_{11} = D^{\gamma}_{22}$ and $D^{\gamma}_{12} = 0$.
+\end{lemma}
+\begin{proof}
+    We prove only that $D^{\gamma}_{12} = 0$,
+    the other claim being obvious by symmetry.
+    Tot this end,
+    let $\mathcal R$ be the operator on~$L^2_0(\mu)$ defined by $\mathcal R f(q_1, p_1, q_2, p_2) = f(q_1, p_1, -q_2, -p_2)$.
+    A simple calculation shows that~$\mathcal R \mathcal L \mathcal R = \mathcal L$ and so,
+    denoting by $\phi_1$ the solution to $- \mathcal L \phi_1 = p_1$ posed on~$L^2_0(\mu)$,
+    we have $- \mathcal R \mathcal L \mathcal R \phi_1 = p_1$.
+    This implies  $- \mathcal L \mathcal R \phi_1 = p_1$ because $\mathcal R^2 = \id$,
+    so $\phi_1 = \mathcal R \phi_1$ by uniqueness of the solution to the Poisson equation.
+    It then follows that $D^{\gamma}_{12} = \ip{\phi_1}{p_2} = 0$.
+\end{proof}
+% because if $\phi$ is the solution to
+% $(\vect q_t, \vect p_t)_{t \geq 0}$ is a weak solution to~\eqref{eq:langevin},
+% then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
+% and thus
+% \begin{align*}
+%     D^{\gamma}_{12}
+%     &= \frac{1}{2T} \lim_{\tau \to \infty}
+%     \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
+%     &= - \frac{1}{2T} \lim_{\tau \to \infty}
+%     \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
+%     = - D^{\gamma}_{12}
+% \end{align*}
+% with $\vect e = (1, 0)^\t$ and $\vect f = (0, 1)^\t$,
+% and where the first and last equalities follow from the definition~\eqref{eq:einsteins_formula} of the effective diffusion coefficient.
+% Note that this can also be shown at the level of the expression~\eqref{eq:effective_diffusion_poisson} of the effective diffusion coefficient.
 Since $\mat D^{\gamma}$ is a multiple of the identity,
-we can focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector $\vect e = (1, 0)^\t$,
+we focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector~$\vect e = (1, 0)^\t$,
 which simplifies the discussion.
 Accordingly, let $\phi_\delta(q, p)$ denote the solution to the Poisson equation $- \mathcal L^{\delta} \phi_\delta = p_1$,
 where the generator~$\mathcal L^{\delta}$ of the dynamics now reads
@@ -1758,18 +1774,17 @@ For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
 Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
 which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
+In particular, $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
+denoting by $\psi$ an approximation of $\phi$,
+and assuming $\psi_{\vect e}(\vect q, \vect p) = \psi(q_1, p_1)$,
+we have
+\begin{equation}
+    \label{eq:effective_diffusion_d}
+    d[\psi_{\vect e}]
+    = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
+    = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
+\end{equation}
 The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
-% In particular $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
-% denoting by $\psi$ an approximation of $\phi$,
-% and assuming that the approximate solution to the Poisson equation for the multi-dimensional dynamics,
-% used in the control variate~\eqref{eq:definition_control_variate},
-% is given by $\psi_{\vect e}(q,p) = \psi(q_1, p_1)$,
-% we have
-% \[
-%     d[\psi_{\vect e}]
-%     = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
-%     = \int_{\torus^d \times \real^d} \abs{\partial_p \psi}^2 \, \d \mu_{\delta}.
-% \]
 
 \begin{proposition}
     \label{proposition:convergence_gradient}
@@ -1816,15 +1831,15 @@ we deduce that
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
     \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
-    \leq C \delta \gamma^{-1},
+    \leq C \delta \gamma^{-1}.
 \]
-and so
+Consequently, 
+since if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$,
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
     \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]}
     \leq  C \delta \gamma^{-1} (2 + C \delta \gamma^{-1}).
 \]
-Indeed, if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$.
 In particular, for~$\gamma/\delta$ fixed and sufficiently small,
 it holds that $\liminf_{\gamma \to 0} \gamma D^{\gamma}_{\vect e} > 0$;
 that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this case.

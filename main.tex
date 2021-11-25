@@ -1466,7 +1466,7 @@ in which case an approximation $\varphi_0(E)$ automatically obtained by high-ord
         - \alpha_1 \left( \frac{\bigl\lvert \xi^{(1)}_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl[\frac{\bigl\lvert \xi^{(1)}_T \bigr\rvert^2}{2T}\biggr] \right)
         - \alpha_2 \left( \frac{\bigl\lvert \xi^{(2)}_T \bigr\rvert^2}{2T} + \lim_{T \to \infty} \expect \biggl[\frac{\bigl\lvert \xi^{(2)}_T \bigr\rvert^2}{2T}\biggr] \right).
     \]
-    There are systematic approaches for choosing optimally $\alpha_1$ and $\alpha_2$ in order to minimize the variance,
+    There are systematic \emph{a posteriori} approaches for choosing optimally $\alpha_1$ and $\alpha_2$ in order to minimize the variance,
     which are studied, for example, in~\cite{MR1958845}.
     For the sake of simplicity, we do not implement or study these approaches here.
 \end{remark}
@@ -1894,15 +1894,15 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
         \qquad Z(\delta) = \int_{\torus \times \torus} \e^{- \beta\bigl(\mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2)\bigr)}.
     \]
     Denoting by $M$ the supremum of $\beta |\mathcal W|$ over $\torus^2$,
-    we have $\e^{-\lvert \delta \rvert M} \leq Z(\delta)/Z(0) \leq \e^{\lvert \delta \rvert M}$, 
-    which implies that $\lvert f_{\delta}(q_1, q_2) \rvert \leq \lvert \delta \rvert^{-1}(\e^{2 \lvert \delta \rvert M} - 1) \leq \e^{2M} -1$ 
+    we have $\e^{-\lvert \delta \rvert M} \leq Z(\delta)/Z(0) \leq \e^{\lvert \delta \rvert M}$,
+    which implies that $\lvert f_{\delta}(q_1, q_2) \rvert \leq \lvert \delta \rvert^{-1}(\e^{2 \lvert \delta \rvert M} - 1) \leq \e^{2M} -1$
     uniformly for $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
     % The maximum of the right-hand side over the interval $\lvert \delta \rvert \in (0, 1]$ is achieved for $\lvert \delta \rvert = 1$,
     % and so $\norm{f_{\delta}}_{L^{\infty}(\torus^2)} \leq \e^{2M}-1$ uniformly in $\delta \in [-1, 1]$.
     % dit is clear that $f_{\delta}$ is uniformly
     % $Z_{\delta}$ is bounded away from 0 uniformly for all $\delta \in [-1, 1]$,
     % and by L'H\^opital's rule it holds $\lvert \lim_{\vect q \to 0} f_{\delta}(q_1, q_2) \rvert < \infty$.
-    % uniformly 
+    % uniformly
     % bounded from above, in absolute value, over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
     Therefore, we can write
     \[
@@ -1947,10 +1947,23 @@ in the limit as $\lvert \delta \rvert/\gamma \to 0$,
 provided that $\delta \in [-1, 1]$ and $\gamma \in (0, 1)$.
 
 \Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for various values of $\delta$.
+For the sake of clarity,
+only the data calculated without a control variate,
+i.e.\ with the simple estimator~$u(T)$ given in~\eqref{eq:simple_estimator},
+is depicted in this figure.
+The reason for this choice is that, 
+as we shall see in the next figure,
+the estimator $u(T)$ has the smallest variance when $\gamma \ll 1$ and $\delta/\gamma \gg 1$.
+% We note that the data presented is in very good agreement with estimations obtained using the control variates,
+% which are not presented.
+% is calculated with three different approaches: without control variate, with the Galerkin control variate, and with the underdamped control variate.
+% In \cref{fig:time_bias_variance_2d}, only the results obtained through the first approach are depicted,
+% as the three approaches yields results in very good agreement.
 It appears clearly from the figure that the mobility behaves,
 over the range of values of $\gamma$ we consider,
 as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
-with an exponent $\sigma$ that decreases as $\delta > 0$ increases (at least for sufficiently small values of~$\delta$).
+with an exponent~$\sigma$ that decreases as $\delta > 0$ increases (at least for sufficiently small values of~$\delta$).
+
 The variance of the estimators obtained using the approach described above,
 where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
@@ -1963,7 +1976,7 @@ a threshold value of $\gamma$ below which the control variate ceases to be usefu
     \includegraphics[width=0.99\linewidth]{figures/diffusion.pdf}
     \caption{
         Effective diffusion coefficient as a function of $\gamma$,
-        for different values of $\delta$.
+        for various values of $\delta$.
     }%
     \label{fig:time_bias_variance_2d}
 \end{figure}

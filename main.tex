@@ -18,7 +18,7 @@
 \usepackage[colorlinks=true,citecolor=blue]{hyperref}
 \usepackage[nameinlink,capitalise]{cleveref}
 
-\usepackage[style=trad-abbrv,doi=true,url=false,isbn=false,backend=biber]{biblatex}
+\usepackage[style=trad-abbrv,doi=false,url=false,isbn=false,backend=biber]{biblatex}
 \DeclareFieldFormat{volume}{volume \textbf{#1}}
 \DeclareFieldFormat[article]{volume}{\textbf{#1}}
 \DeclareFieldFormat[book]{note}{}
@@ -171,7 +171,7 @@
   \hspace{2mm}\orcid{0000-0002-2797-5938}%
   \and U. Vaes\thanks{MATHERIALS, Inria Paris (\email{urbain.vaes@inria.fr})}%
   \hspace{2mm}\orcid{0000-0002-7629-7184}
-  \and others?%
+  \and others TBD%
 }
 
 \begin{document}
@@ -189,7 +189,7 @@
     first in simple one-dimensional settings
     and then for two-dimensional Langevin dynamics.
     Our results corroborate previous numerical evidence that
-    the mobility scales as~$\gamma^{-\\sigma}$, with $0 < \sigma \leq 1$,
+    the mobility scales as~$\gamma^{-\sigma}$, with~$0 < \sigma \leq 1$,
     in the low friction regime for a simple non-separable potential.
 \end{abstract}
 
@@ -1946,12 +1946,12 @@ the relative standard deviation admits an upper bound scaling as $\lvert \delta 
 in the limit as $\lvert \delta \rvert/\gamma \to 0$,
 provided that $\delta \in [-1, 1]$ and $\gamma \in (0, 1)$.
 
-\Cref{fig:time_bias_variance_2d} depicts the behaviour of the mobility with respect to $\gamma$ for various values of $\delta$.
+\Cref{fig:time_bias_variance_2d} depicts the behavior of the mobility with respect to $\gamma$ for various values of $\delta$.
 For the sake of clarity,
 only the data calculated without a control variate,
 i.e.\ with the simple estimator~$u(T)$ given in~\eqref{eq:simple_estimator},
 is depicted in this figure.
-The reason for this choice is that, 
+The reason for this choice is that,
 as we shall see in the next figure,
 the estimator $u(T)$ has the smallest variance when $\gamma \ll 1$ and $\delta/\gamma \gg 1$.
 % We note that the data presented is in very good agreement with estimations obtained using the control variates,
@@ -1964,12 +1964,18 @@ over the range of values of $\gamma$ we consider,
 as $\gamma^{-\sigma}$ for $\sigma \in (0, 1]$ in the underdamped regime,
 with an exponent~$\sigma$ that decreases as $\delta > 0$ increases (at least for sufficiently small values of~$\delta$).
 
-The variance of the estimators obtained using the approach described above,
-where $\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
+The variance of the estimators obtained using the control approach described above,
+where~$\psi_{\vect e}$ is constructed from an approximate solution to the Poisson equation in the one-dimensional setting,
 is presented in~\cref{fig:time_bias_deviation_2d}.
-We observe that, unless $\delta = 0$ in which case we recover the one-dimensional case,
-there is for every~$\delta > 0$ and for each of the two choices of $\psi_{\vect e}$,
+The control variates corresponding to the data in the left and right panels
+are constructed with the Galerkin approach of~\cref{sub:galerkin_approach}
+and the underdamped approach of~\cref{sub:underdamped_approach}, respectively.
+We observe that unless $\delta = 0$, in which case we recover the one-dimensional case,
+there seems to be, for every~$\delta > 0$ and for each of the two choices of $\psi_{\vect e}$,
 a threshold value of $\gamma$ below which the control variate ceases to be useful.
+This is not unexpected, in view of~\cref{proposition:convergence_gradient}.
+Although the control variates we consider are advantageous in certain regimes,
+further developments are necessary in order to develop efficient estimators in the small~$\gamma$, constant $\delta$ regime.
 
 \begin{figure}[ht]
     \centering
@@ -1977,6 +1983,8 @@ a threshold value of $\gamma$ below which the control variate ceases to be usefu
     \caption{
         Effective diffusion coefficient as a function of $\gamma$,
         for various values of $\delta$.
+        The straight dashed lines, which correspond to functions of the form $\gamma \mapsto C \gamma^{-\sigma}$ with powers $\sigma$ indicated in the legend,
+        are obtained by linear interpolation (in the log-log plot) using only values of $\gamma$ less than or equal to $10^{-2}$.
     }%
     \label{fig:time_bias_variance_2d}
 \end{figure}
@@ -1986,8 +1994,10 @@ a threshold value of $\gamma$ below which the control variate ceases to be usefu
     \includegraphics[width=0.49\linewidth]{figures/var-delta-galerkin.pdf}
     \includegraphics[width=0.49\linewidth]{figures/var-delta-underdamped.pdf}
     \caption{
-        Relative standard deviation of the estimator $v(T)$ for two-dimensional Langevin dynamics,
+        Relative standard deviation of the estimator $v(T)$ in~\eqref{eq:improved_estimator} for two-dimensional Langevin dynamics,
         when the approximate solution to the Poisson equation is constructed by tensorization from the solution of the one-dimensional equation.
+        The one-dimensional solution is approximated using either the Galerkin approach of \cref{sub:galerkin_approach} (\textbf{left} panel)
+        or the underdamped approach of \cref{sub:underdamped_approach} (\textbf{right} panel).
     }%
     \label{fig:time_bias_deviation_2d}
 \end{figure}

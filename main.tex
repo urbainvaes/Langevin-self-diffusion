@@ -1010,7 +1010,7 @@ Note that the right-hand side of~\eqref{eq:basic_bound_bias} is small when $\mat
 
 \Cref{lemma:bias_improved} suffers from the same shortcoming as~\cref{lemma:easy_lemma}:
 it is not optimal in the large $\gamma$ regime.
-Employing~\cref{proposition:semigroup_meanzero_observable} is a similar manner as in~\cref{corollary:better_bias},
+Employing~\cref{proposition:semigroup_meanzero_observable} is a similar manner as in the proof of~\cref{corollary:better_bias},
 it is possible to prove that,
 if $\mathcal L \psi_{\vect e} \in H^{1,\vect q}(\mu)$,
 then there is $C$ independent of $\psi_{\vect e}$ such that
@@ -1728,7 +1728,7 @@ we show that the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identit
 \begin{proof}
     We prove only that $D^{\gamma}_{12} = 0$,
     the other claim being obvious by symmetry.
-    Tot this end,
+    To this end,
     let $\mathcal R$ be the operator on~$L^2_0(\mu)$ defined by $\mathcal R f(q_1, p_1, q_2, p_2) = f(q_1, p_1, -q_2, -p_2)$.
     A simple calculation shows that~$\mathcal R \mathcal L \mathcal R = \mathcal L$ and so,
     denoting by $\phi_1$ the solution to $- \mathcal L \phi_1 = p_1$ posed on~$L^2_0(\mu)$,
@@ -2116,7 +2116,7 @@ we present the proof here.
         =: \sum_{i=1}^{\infty} \phi_i e_i,
     \end{equation}
     with the series on the right hand side converging in $L^2(\kappa)$ and $H^1(\kappa)$.
-    The series on the right-hand side converges, in fact, also in $H^2(\kappa)$.
+    This series converges, in fact, also in $H^2(\kappa)$.
     To see this, we introduce $\grad^* = \beta \vect p - \grad$ and note that for $n > m$,
     \begin{equation}
         \label{eq:calculation}
@@ -2520,16 +2520,16 @@ The last two terms are bounded using the general bound on the Langevin semigroup
     \abs{\ip{\e^{t \mathcal L} (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}{\Pi_{\vect p} \mathcal L \psi_{\vect e}}},
     \abs{\ip{\e^{t \mathcal L} \Pi_{\vect p} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}}}
     \right\} \\
-    &\qquad \leq L \exp \left( - \ell \min\{\gamma, \gamma^{-1}\} t\right) \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
+    &\qquad \leq L \exp \left( - \ell \min\{\gamma, \gamma^{-1}\} t\right) \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}}.
 \end{align*}
-where the first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:
+The first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:
 \begin{align*}
     \abs{\ip{\e^{t \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p + (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}}
     &\leq C \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}[1,\vect q] \, \zeta(t), \\
     \abs{\ip{\e^{t \mathcal L} \bigl(\vect e^\t \vect p + (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}\bigr)}{(\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}}
     &\leq C \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}[1,\vect q] \, \norm*{\mathcal L \psi_{\vect e}}[1,\vect q] \, \zeta(t),
 \end{align*}
-where $\zeta(t) = \gamma^{-2} \e^{- \kappa \gamma^{-1} t } + \e^{- \kappa \gamma t}$.
+where $\zeta(t) = \gamma^{-2} \e^{- a \gamma^{-1} t } + \e^{- a \gamma t}$.
 Here we employed the fact that, for any $f \in \lp{2}{\mu}$ such that also $\grad_{\vect q} f \in \lp{2}{\mu}$,
 it holds
 \[

@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-matplotlib.rc('font', size=16)
+matplotlib.rc('font', size=20)
 matplotlib.rc('font', family='serif')
 matplotlib.rc('text', usetex=True)
 matplotlib.rc('figure', figsize=(15, 8))
@@ -90,8 +90,9 @@ for iδ, δ in enumerate(δs_underdamped):
     ifitu, cu = np.where(γu <= 1e-2)[0], [0]
     if len(ifitu) > 1:
         cu = np.polyfit(np.log10(γu[ifitu]), np.log10(yu[ifitu]), deg=1)
-    ax.loglog(γu, yu, ".-",
-              label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
+    line, = ax.loglog(γu, yu, ".", ms=12, label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, cu[0]))
+    γs_interp = np.logspace(-5, 0, 10)
+    ax.loglog(γs_interp, 10**cu[1]*γs_interp**cu[0], "--", c=line.get_color())
 ax.set_prop_cycle(None)
 # for iδ, δ in enumerate(δs_galerkin):
 #     ig = np.nonzero(D11_wo_galerkin[:, iδ])[0]
@@ -105,6 +106,7 @@ ax.set_prop_cycle(None)
 #     yg = D11_wo_galerkin[:, iδ][ig]
 #     ax.loglog(γg, yg, ".--")
 ax.set_xlabel("$\gamma$")
+ax.set_ylabel(r"$D^\gamma_{\mathbf e}$")
 plt.legend()
 plt.savefig("diffusion.pdf")
 plt.show()
@@ -139,13 +141,13 @@ for iδ, δ in enumerate(δs_galerkin):
     iu = np.nonzero(σ11_wo_underdamped[:, iδ])[0]
     γu = γs_underdamped[iu]
     yu = σ11_wo_underdamped[:, iδ][iu]
-    plot1 = ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu], "o--", label="MC/Underdamped, $\delta = {}$".format(δ))
+    # plot1 = ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu], "o--", label="MC/Underdamped, $\delta = {}$".format(δ))
     ig = np.nonzero(σ11_wo_galerkin[:, iδ])[0]
     γg = γs_galerkin[ig]
     yg = σ11_wo_galerkin[:, iδ][ig]
     # ax.loglog(γg, σ11_wo_galerkin[:, iδ][ig])
-    # plot1 = ax.loglog(0, 0)
-    # plot2 = ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig]/D11_wo_galerkin[:, iδ][ig], "o-", color=plot1[0].get_color(), label="MC/Galerkin, $\delta = {}$".format(δ))
+    plot1 = ax.loglog(0, 0)
+    plot2 = ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig]/D11_wo_galerkin[:, iδ][ig], "o--", color=plot1[0].get_color(), label="MC/Galerkin, $\delta = {}$".format(δ))
 plt.legend()
 ax.set_title("Relative standard deviation")
 ax.set_xlim([1e-4, 1])

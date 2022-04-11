@@ -182,7 +182,7 @@
     Theoretical results are lacking,
     and numerical calculation of the mobility in the underdamped regime is challenging because
     the computational cost of standard Monte Carlo methods is inversely proportional to the friction coefficient,
-    which deterministic methods are ill-conditioned.
+    while deterministic methods are ill-conditioned.
     In this note, we propose a new variance-reduction method based on control variates for efficiently estimating the mobility of Langevin-type dynamics.
     We provide bounds on the bias and variance of the proposed estimator,
     and illustrate its efficacy through numerical experiments,
@@ -1957,7 +1957,7 @@ i.e.\ with the simple estimator~$u(T)$ given in~\eqref{eq:simple_estimator},
 is depicted in this figure.
 The reason for this choice is that,
 as we shall see in the next figure,
-the estimator $u(T)$ has the smallest variance when $\gamma \ll 1$ and $\delta/\gamma \gg 1$.
+the estimator $u(T)$ has the smallest variance when $\gamma \ll 1$ and~$\delta/\gamma \gg 1$.
 % We note that the data presented is in very good agreement with estimations obtained using the control variates,
 % which are not presented.
 % is calculated with three different approaches: without control variate, with the Galerkin control variate, and with the underdamped control variate.
@@ -2381,8 +2381,8 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         \norm{\partial_q \partial_p^* \e^{t \gamma \mathcal L_{\rm FD}} f}
         &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} + \sqrt{\beta} \norm{\partial_q \e^{t \gamma \mathcal L_{\rm FD}} f}, \\
         \norm{\partial_q^* \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
-        % &= \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
-        % + \beta \ip{V''(q) \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} \\
+        &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
+        + \beta \ip{V''(q) \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f} \\
         &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \beta \norm{V'}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align*}

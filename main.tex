@@ -1572,17 +1572,15 @@ The approaches employed in \cref{sec:application_to_one_dimensional_langevin_typ
 do not generalize well to the multi-dimensional setting for non-separable potentials.
 On one hand, Galerkin methods for the Poisson equation suffer from the curse of dimensionality and,
 on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
-In this section we discuss alternative approaches.
-We consider in this work a non-separable potential even simpler than~\eqref{eq:potential_julien}:
-\begin{align}
-    \label{eq:potential_simple}
-    V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
-\end{align}
-Exploiting the symmetry of this potential,
-we show that the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identity.
+In this section, we discuss alternative approaches.
+We begin by showing that,
+under a symmetry assumption on the potential~$V$,
+the diffusion tensor $\mat D^{\gamma}$ is isotropic.
 
 \begin{lemma}
-    It holds that $D^{\gamma}_{11} = D^{\gamma}_{22}$ and $D^{\gamma}_{12} = 0$.
+    \label{lemma:diffusion_symmmetry}
+    Assume that $V(q_1, q_2) = V(q_2, q_1)$.
+    Then it holds that $D^{\gamma}_{11} = D^{\gamma}_{22}$ and $D^{\gamma}_{12} = 0$.
 \end{lemma}
 \begin{proof}
     We prove only that $D^{\gamma}_{12} = 0$,
@@ -1595,25 +1593,32 @@ we show that the diffusion tensor $\mat D^{\gamma}$ is a multiple of the identit
     This implies  $- \mathcal L \mathcal R \phi_1 = p_1$ because $\mathcal R^2 = \id$,
     so $\phi_1 = \mathcal R \phi_1$ by uniqueness of the solution to the Poisson equation.
     It then follows that $D^{\gamma}_{12} = \ip{\phi_1}{p_2} = 0$.
+    % because if $\phi$ is the solution to
+    % $(\vect q_t, \vect p_t)_{t \geq 0}$ is a weak solution to~\eqref{eq:langevin},
+    % then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
+    % and thus
+    % \begin{align*}
+    %     D^{\gamma}_{12}
+    %     &= \frac{1}{2T} \lim_{\tau \to \infty}
+    %     \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
+    %     &= - \frac{1}{2T} \lim_{\tau \to \infty}
+    %     \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
+    %     = - D^{\gamma}_{12}
+    % \end{align*}
+    % with $\vect e = (1, 0)^\t$ and $\vect f = (0, 1)^\t$,
+    % and where the first and last equalities follow from the definition~\eqref{eq:einsteins_formula} of the effective diffusion coefficient.
+    % Note that this can also be shown at the level of the expression~\eqref{eq:effective_diffusion_poisson} of the effective diffusion coefficient.
 \end{proof}
-% because if $\phi$ is the solution to
-% $(\vect q_t, \vect p_t)_{t \geq 0}$ is a weak solution to~\eqref{eq:langevin},
-% then so is $\bigl((R \vect q_t, R \vect p_t)\bigr)_{t \geq 0}$ with $R: \real^2 \to \real^2; (x_1, x_2) \mapsto (x_1, -x_2)$,
-% and thus
-% \begin{align*}
-%     D^{\gamma}_{12}
-%     &= \frac{1}{2T} \lim_{\tau \to \infty}
-%     \expect \left[ \bigl(\vect e^\t (\vect q_{\tau} - \vect q_0)\bigr) \bigl(\vect f^\t (\vect q_{\tau} - \vect q_0)\bigr) \right] \\
-%     &= - \frac{1}{2T} \lim_{\tau \to \infty}
-%     \expect \left[ \bigl(\vect e^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \bigl(\vect f^\t (R \vect q_{\tau} - R \vect q_0)\bigr) \right]
-%     = - D^{\gamma}_{12}
-% \end{align*}
-% with $\vect e = (1, 0)^\t$ and $\vect f = (0, 1)^\t$,
-% and where the first and last equalities follow from the definition~\eqref{eq:einsteins_formula} of the effective diffusion coefficient.
-% Note that this can also be shown at the level of the expression~\eqref{eq:effective_diffusion_poisson} of the effective diffusion coefficient.
-Since $\mat D^{\gamma}$ is a multiple of the identity,
-we focus on estimating $D^{\gamma}_{\vect e}$ only for the unit vector~$\vect e = (1, 0)^\t$,
-which simplifies the discussion.
+
+We consider in this work a non-separable potential even simpler than~\eqref{eq:potential_julien}:
+\begin{align}
+    \label{eq:potential_simple}
+    V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
+\end{align}
+This potential satisfies the symmetry assumption of~\cref{lemma:diffusion_symmmetry},
+and so the corresponding diffusion tensor is isotropic.
+Therefore, in order to simplify the discussion,
+we focus on estimating~$D^{\gamma}_{\vect e}$ only for the unit vector~$\vect e = (1, 0)^\t$.
 Accordingly, let $\phi_\delta(q, p)$ denote the solution to the Poisson equation $- \mathcal L^{\delta} \phi_\delta = p_1$,
 where the generator~$\mathcal L^{\delta}$ of the dynamics now reads
 \begin{align}
@@ -1624,26 +1629,27 @@ where the generator~$\mathcal L^{\delta}$ of the dynamics now reads
 \end{align}
 with $L_i = p_i \partial_{q_i} - \mathcal V'(q_i) \, \partial_{p_i} + \gamma \left(- p_i \partial_{p_i} + \beta^{-1} \partial^2_{p_i} \right)$
 for $i \in \{1, 2\}$.
-Notice that $\phi_\delta(\vect q, \vect p) = \phi(q_1, p_1)$ when $\delta = 0$,
-with $\phi$ the solution to the one-dimensional Poisson equation $-L_1 \phi(q_1, p_1) = p_1$.
-In other words, it holds $\phi_0 = \phi \otimes 1$,
+Notice that $\phi_\delta(\vect q, \vect p) = \phi_{\rm 1D}(q_1, p_1)$ when $\delta = 0$,
+with $\phi_{\rm 1D}$ the solution to the one-dimensional Poisson equation $-L_1 \phi_{\rm 1D}(q_1, p_1) = p_1$.
+In other words, it holds in this case that $\phi_0 = \phi_{\rm 1D} \otimes 1$,
 where for two functions $f_1: \torus \times \real \rightarrow \real$ and $f_2: \torus \times \real \rightarrow \real$
 the notation $f_1 \otimes f_2$ denotes the function $(\vect q, \vect p) \mapsto f_1(q_1,p_1) \, f_2(q_2,p_2)$.
 For small $\delta$, it is natural to use $\phi_0$, or an approximation thereof,
 as the function $\psi_{\vect e}$ in the definition of the control variate~\eqref{eq:definition_control_variate}.
-Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is with this approach an average with respect to the invariant distribution of the non-separable dynamics,
-which we denote by $\mu_{\delta}$ to emphasize its dependence on $\delta$.
-In particular, $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
-denoting by $\psi$ an approximation of $\phi$,
-and assuming $\psi_{\vect e}(\vect q, \vect p) = \phi_0(q_1, p_1)$,
-we have
+Note that $d[\psi_{\vect e}]$ in~\eqref{eq:definition_control_variate} is an average with respect to the invariant distribution of the non-separable dynamics,
+which we denote by $\mu_{\delta}$ to emphasize the dependence on $\delta$.
+% In particular, $d[\psi_{\vect e}]$ takes different values than in the one-dimensional setting:
+% denoting by $\psi$ an approximation of $\phi_{\rm 1D}$,
+% and assuming $\psi_{\vect e}(\vect q, \vect p) = \phi_0(q_1, p_1)$,
+Specifically, we have
+% assuming that $\psi_{\vect e}(\vect q, \vect p) = \phi_0(q_1, p_1)$, we have
 \begin{equation}
     \label{eq:effective_diffusion_d}
     d[\psi_{\vect e}]
-    = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}
-    = \int_{\torus^d \times \real^d} \abs{\partial_p \phi_0}^2 \, \d \mu_{\delta}.
+    = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}.
+    % = \int_{\torus^d \times \real^d} \abs{\partial_p \phi_0}^2 \, \d \mu_{\delta}.
 \end{equation}
-The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ as~$\delta \to 0$.
+The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ in the limit as~$\delta \to 0$.
 
 \begin{proposition}
     \label{proposition:convergence_gradient}
@@ -1651,7 +1657,6 @@ The following result result establishes that~$\phi_\delta$ converges to $\phi_0$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
     these equations being posed in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
     Then there exists $C$ independent of $\delta$ and $\gamma$ such that
-    \begin{subequations}
     \begin{align}
         \label{eq:convergence_delta}
         \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
@@ -1669,7 +1674,6 @@ The following result result establishes that~$\phi_\delta$ converges to $\phi_0$
         \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
         \leq C \lvert \delta \rvert  \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] .
     \end{align}
-    \end{subequations}
     % and denote
     % \[
     %     d^{\delta}_{\phi_\delta} = \int \abs{\grad \phi_\delta}^2 \, \d \mu_{\delta},
@@ -1692,19 +1696,19 @@ we deduce that
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
     \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
-    \leq C \delta \gamma^{-1}.
+    \leq C \lvert\delta\rvert \gamma^{-1}.
 \]
 Consequently,
 since if $\abs{\sqrt{x} - 1} \leq \varepsilon$ for $x \geq 0$ then $\abs{x-1} = \abs{\sqrt{x} - 1} \abs{\sqrt{x} + 1} \leq \varepsilon (2 + \varepsilon)$,
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
     \frac{ \lvert d[\phi_{\delta}] - d[\phi_{0}] \rvert } {d[\phi_{0}]}
-    \leq  C \delta \gamma^{-1} (2 + C \delta \gamma^{-1}).
+    \leq  C \lvert\delta\rvert \gamma^{-1} (2 + C \lvert\delta\rvert \gamma^{-1}).
 \]
-In particular, for~$\gamma/\delta$ fixed and sufficiently small,
+In particular, for~$\delta/\gamma$ fixed and sufficiently small,
 it holds that $\liminf_{\gamma \to 0} \gamma D^{\gamma}_{\vect e} > 0$;
 that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this case.
-(Of course, this does say anything about the behavior of the diffusion coefficient for $\abs{\delta} > 0$ fixed and $\gamma \to 0$.)
+(Of course, this does not say anything about the behavior of the diffusion coefficient for $\abs{\delta} > 0$ fixed and $\gamma \to 0$.)
 \end{remark}
 \begin{proof}
     Let $\phi_0^{\delta}$ denote the $L^2(\mu_{\delta})$ orthogonal projection of $\phi_0$ onto $L^2_0(\mu_{\delta})$.
@@ -1717,9 +1721,9 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     \end{equation}
     It follows from~\eqref{eq:remainder_expansion} that
      \begin{align*}
-         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
-         &\leq \lvert \delta \rvert \norm*{(\mathcal L^{\delta})^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)]
-         \norm{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
+         \norm{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+         &\leq \lvert \delta \rvert \norm{(\mathcal L^{\delta})^{-1}} [\mathcal B\left(L^2_0(\mu_{\delta})\right)]
+         \norm{\grad \mathcal W \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
      \end{align*}
      From the results in~\cite[Section 3.1]{BFLS20} which,
      as discussed in~\cref{ssub:bias_of_the_standard_estimator},
@@ -1730,11 +1734,13 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
      A careful inspection of the result and its proof reveal that $K(\delta)$,
      which depends on $\delta$ through the Poincaré constant of $\mu_{\delta}$ among other things,
      is in fact such that $\sup \{K(\delta): -1 \leq \delta \leq 1\} < \infty$.
-     Therefore, we obtain that
+     Therefore,
+     using in addition that $\grad \mathcal W$ is uniformly bounded,
+     we obtain that
      \begin{align}
          \label{eq:convergence_l2}
          \forall (\gamma, \delta) \in (0, \infty) \times [-1, 1], \qquad
-         \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
+         \norm{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
          &\leq C \lvert \delta \rvert \max\{\gamma, \gamma^{-1}\}
          \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})].
      \end{align}
@@ -1750,7 +1756,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     for some appropriate smooth function~$f_{\delta}$ that is $0$ if $\delta = 0$ and is otherwise given explicitly by
     \[
         f_{\delta}(q_1, q_2) = \frac{1}{\delta} \left( \frac{Z(0)}{Z(\delta)} \e^{- \beta \delta \mathcal W(q_1, q_2)} - 1 \right),
-        \qquad Z(\delta) = \int_{\torus \times \torus} \e^{- \beta\bigl(\mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2)\bigr)}.
+        \qquad Z(\delta) = \int_{\torus \times \torus} \e^{- \beta\bigl(\mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2)\bigr)} \, \d q_1 \d q_2.
     \]
     Denoting by $M$ the supremum of $\beta |\mathcal W|$ over $\torus^2$,
     we have $\e^{-\lvert \delta \rvert M} \leq Z(\delta)/Z(0) \leq \e^{\lvert \delta \rvert M}$,
@@ -1763,7 +1769,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     % and by L'H\^opital's rule it holds $\lvert \lim_{\vect q \to 0} f_{\delta}(q_1, q_2) \rvert < \infty$.
     % uniformly
     % bounded from above, in absolute value, over $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
-    Therefore, we can write
+    Therefore, using that $\phi_0$ has average 0 with respect to $\mu_0$,
     \[
         \norm*{\phi_0^\delta - \phi_0} [L^2(\mu_\delta)]
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \, \d \mu_{\delta} }
@@ -1863,26 +1869,33 @@ further developments are necessary in order to develop efficient estimators in t
 
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}
-In this note,
+In this work,
 we show how techniques based on control variates can be employed for improving estimators of the mobility of Langevin dynamics based on Einstein's formula.
-The control variate approach we propose requires the knowledge of an approximate solution of a Poisson equation involving the generator of the dynamics.
-We obtain general bounds on the bias and variance of the improved estimator in terms of the error on the solution to this equation,
-and we study several practical approaches for constructing an approximate solution.
+The control variate approach we propose requires the knowledge of an approximate solution to a Poisson equation involving the generator of the dynamics.
+We study several practical approaches for constructing this approximate solution,
+and we obtain general bounds on the bias and variance of the proposed estimator in terms of the approximation error.
 
 In the one-dimensional setting,
 we demonstrate the efficiency of control variates
 (i) obtained by a Fourier/Hermite spectral method and
 (ii) based on an explicit expression for the limiting solution of the Poisson equation in the underdamped limit.
-The latter approach, in particular,
-leads to a variance reduction by a factor more than 10 for Monte Carlo methods in the very small friction regime $\gamma \leq 10^{-3}$,
-in which purely deterministic Galerkin methods are typically inaccurate.
+Both for Langevin and generalized Langevin dynamics,
+the latter approach leads to a significant variance reduction in the very small friction regime $\gamma \leq 10^{-3}$,
+in which purely deterministic Galerkin methods are inaccurate.
+
+The numerical experiments we present for the one-dimensional generalized Langevin dynamics also corroborate prior findings in~\cite{GPGSUV21},
+obtained through formal asymptotics,
+concerning the asymptotic behavior of the mobility in the small friction limit.
 
 The two-dimensional setting is much more challenging because of the high dimensionality of the state space of the dynamics
 and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
 Nevertheless, the control variates developed for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
 and we show by means of numerical experiments that
 they lead to estimators with reduced variance provided that
-the parameter multiplying the non-separable part of the potential is small with respect to $\gamma$.
+the parameter multiplying the non-separable part of the potential is small with respect to the friction $\gamma$.
+
+In the future,
+approaches based on physics-informed neural networks (PINN)~\cite{MR3881695} may be useful for constructing better approximate solutions to the Poisson equation~\eqref{eq:poisson_equation} than is possible using Galerkin method.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
@@ -1906,16 +1919,16 @@ We recall that $\pi$ is said to satisfy the Poincaré inequality with constant $
     \forall f \in H^1(\pi) \cap L^2_0(\pi), \qquad
     \norm*{f}^2 \leq \frac{1}{R} \norm{\grad f}^2.
 \end{equation}
-It is well known that the Gaussian measure $\kappa$ in~\eqref{eq:definition_prob_measures} satisfies~\eqref{eq:poincare} with $R = \beta$;
+It is well known that the Gaussian measure $\kappa$ in~\eqref{eq:definition_prob_measures} satisfies~\eqref{eq:poincare} with a constant $R_{\kappa} = \beta$;
 see, for example,~\cite[Lemma 2.1]{MR4071827} for a short proof.
-We also recall that $\mathcal L_{\rm FD} = - \beta^{-1} \grad_{\vect p}^* \cdot \grad_{\vect p}$,
-at least formally in the sense that
-\begin{equation}
-    \label{eq:symmetry_Lfd}
-    \forall \phi \in H^1(\kappa) \cap L^2_0(\kappa), \quad \varphi \in C^{\infty}_c(\real^d), \qquad
-    - \left\langle \mathcal L_{\rm FD} \phi, \varphi \right\rangle
-    = \beta^{-1} \int_{\real^d} \grad_{\vect p} \phi \cdot \grad_{\vect p} \varphi \, \d \kappa.
-\end{equation}
+% We also recall that $\mathcal L_{\rm FD} = - \beta^{-1} \grad_{\vect p}^* \cdot \grad_{\vect p}$,
+% at least formally in the sense that
+% \begin{equation}
+%     \label{eq:symmetry_Lfd}
+%     \forall \phi \in H^1(\kappa) \cap L^2_0(\kappa), \quad \varphi \in C^{\infty}_c(\real^d), \qquad
+%     - \left\langle \mathcal L_{\rm FD} \phi, \varphi \right\rangle
+%     = \beta^{-1} \int_{\real^d} \grad_{\vect p} \phi \cdot \grad_{\vect p} \varphi \, \d \kappa.
+% \end{equation}
 We will use the following standard result which follows,
 for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
 \begin{lemma}
@@ -2011,7 +2024,7 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
 %     Simple calculations similar to those in the proof of~\cref{lemma:semigroup} enable to show this equivalence for $i \in \{0, 1, 2\}$,
 %     which is sufficient for our purposes.
 % \end{remark}
-It is well known that the eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
+The eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
 which form a complete orthogonal set of $L^2(\kappa)$.
 The eigenvalue associated with the constant polynomial is~0,
 and all the other eigenvalues are less than or equal to $-1$.
@@ -2019,18 +2032,20 @@ and all the other eigenvalues are less than or equal to $-1$.
 We denote the normalized eigenfunctions by $(H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
 and the corresponding eigenvalues by $(-\lambda_{\vect \alpha})_{\vect \alpha \in \nat^d}$.
 By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$,
-we have that, for any $f \in L^2_0(\mu)$,
+we have that
 \begin{equation}
     \label{eq:series_expansion}
+    \forall f \in L^2(\mu), \qquad
     \e^{t \mathcal L_{\rm FD}} f
     = \sum_{\abs{\vect \alpha} > 0} \e^{-\lambda_{\vect \alpha} t} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
 \end{equation}
 This formula can be employed to show the following estimates.
 \begin{corollary}
-    If $f \in L^2_0(\mu)$, then
+    If $f \in L^2_0(\mu)$, then $\e^{t \mathcal L_{\rm FD}} f \in H^1(\mu)$ for $t > 0$ and
     \begin{subequations}
     \begin{equation}
         \label{lemma:elliptic_reg}
+        \forall t > 0, \qquad
         \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
     \end{equation}
     On the other hand,
@@ -2038,6 +2053,7 @@ This formula can be employed to show the following estimates.
     then
     \begin{equation}
         \label{lemma:overdamped_langevin_decay_derivatives}
+        \forall t \geq 0, \qquad
         \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f} \leq C \e^{-t} \norm{\grad_{\vect p} f}.
     \end{equation}
     \end{subequations}
@@ -2055,7 +2071,7 @@ This formula can be employed to show the following estimates.
         \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f}^2 = \beta \ip{\mathcal L_{\rm FD} \e^{t \mathcal L_{\rm FD}} f}{\e^{t \mathcal L_{\rm FD}} f}
         = \sum_{\abs{\vect \alpha} > 0} \beta \lambda_{\vect \alpha} \e^{- 2\lambda_{\vect \alpha} t} \lvert \ip{f}{H_{\vect \alpha}} \rvert^2.
     \end{equation}
-    The first claim then follows from the inequality
+    The first claim follows from the inequality
     \(
         \lambda \e^{- 2\lambda t} \leq \frac{\e^{-1}}{2 t},
     \)
@@ -2063,15 +2079,15 @@ This formula can be employed to show the following estimates.
     The second claim follows from the fact that $\e^{-2\lambda_n t} \leq \e^{-2t}$ for all $n \in \nat^*$.
 
 
-    If $f \in L^2(\mu)$ does not belong to $D(\mathcal L_{\rm FD})$,
-    then~\eqref{eq:gradient_series} may be employed to show that the series~\eqref{eq:series_expansion} is Cauchy and therefore convergent in~$H^1(\kappa)$ for fixed~$t$.
-    Applying~\eqref{lemma:elliptic_reg} and~\eqref{lemma:overdamped_langevin_decay_derivatives} to the partial sum
+    We consider now the case where $f \in L^2(\mu)$ does not necessarily belong to $D(\mathcal L_{\rm FD})$
+    and let
     \[
-        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha},
+        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
     \]
-    which belongs to~$D(\mathcal L_{\rm FD})$,
-    and then letting $n \to \infty$,
-    we conclude that these inequalities are valid for the function spaces stated.
+    The sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ is Cauchy in $H^1(\mu)$ by~\eqref{lemma:elliptic_reg},
+    and so it has a limit $H^1(\mu)$ which necessarily coincides with $\e^{t \mathcal L_{\rm FD}} f$,
+    because $L^2(\mu)$ convergence implies almost everywhere convergence.
+    We conclude by applying~\eqref{lemma:elliptic_reg} and~\eqref{lemma:overdamped_langevin_decay_derivatives} to $f_n$ and taking the limit $n \to \infty$.
 \end{proof}
 
 % \begin{remark}

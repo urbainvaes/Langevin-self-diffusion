@@ -12,7 +12,6 @@
   \hspace{2mm}\orcid{0000-0002-2797-5938}%
   \and U. Vaes\thanks{MATHERIALS, Inria Paris (\email{urbain.vaes@inria.fr})}%
   \hspace{2mm}\orcid{0000-0002-7629-7184}
-  \and others TBD%
 }
 
 \begin{document}
@@ -769,7 +768,7 @@ Noting that
 \begin{equation}
     \label{eq:petit_calcul}
     \forall \lambda > 0, \qquad
-    \int_{0}^{\infty} \e^{-\lambda \theta} \min\left\{ 1, \frac{\theta}{T} \right\} \, \d \theta 
+    \int_{0}^{\infty} \e^{-\lambda \theta} \min\left\{ 1, \frac{\theta}{T} \right\} \, \d \theta
     \leq \frac{1}{T} \int_{0}^{\infty} \theta \e^{-\lambda \theta} \, \d \theta = \frac{1}{\lambda^2 T},
 \end{equation}
 we obtain~\eqref{eq:bias_simple}.
@@ -2025,16 +2024,16 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
     \label{lemma:semigroup}
     Let
     \[
-        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\mu) \Bigr\}.
+        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\}.
     \]
     It holds that $D(\mathcal L_{\rm FD}) = H^2(\kappa) \cap L^2_0(\kappa)$ and the unbounded operator
     \(
         % \label{eq:unbounded_operator}
         \mathcal L_{\rm FD}
     \)
-    with domain $D(\mathcal L_{\rm FD})$ 
+    with domain $D(\mathcal L_{\rm FD})$
     generates a contraction semigroup $(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\kappa)$,
-    with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$.
+    with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$ for all $f \in L^2_0(\kappa)$.
 \end{lemma}
 % Since the simple setting we consider enables a short and elementary proof,
 % and since some elements of the proof will be useful in the remainder of this section,

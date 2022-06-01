@@ -1970,21 +1970,26 @@ we demonstrate the efficiency of control variates
 (ii) based on an explicit expression for the limiting solution of the Poisson equation in the underdamped limit.
 Both for Langevin and generalized Langevin dynamics,
 the latter approach leads to a significant variance reduction in the very small friction regime $\gamma \leq 10^{-3}$,
-in which purely deterministic Galerkin methods are inaccurate.
+in which fully deterministic Galerkin methods are inaccurate.
 
 The numerical experiments we present for the one-dimensional generalized Langevin dynamics also corroborate prior findings in~\cite{GPGSUV21},
 obtained through formal asymptotics,
 concerning the asymptotic behavior of the mobility in the small friction limit.
 
-The two-dimensional setting is much more challenging because of the high dimensionality of the state space of the dynamics
+The two-dimensional setting for Langevin dynamics is much more challenging because of the high dimensionality of the state space of the dynamics
 and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
 Nevertheless, the control variates developed for one-dimensional Langevin dynamics may still be applied with appropriate tensorization,
 and we show by means of numerical experiments that
 they lead to estimators with reduced variance provided that
 the parameter multiplying the non-separable part of the potential is small with respect to the friction $\gamma$.
 
-In the future,
-approaches based on physics-informed neural networks (PINN)~\cite{MR3881695} may be useful for constructing better approximate solutions to the Poisson equation~\eqref{eq:poisson_equation} than is possible using Galerkin method.
+We anticipate that, in the future, 
+approaches based on physics-informed neural networks (PINN)~\cite{MR3759415,MR3881695} will be useful for constructing more accurate solutions to the Poisson equation~\eqref{eq:poisson_equation} in two spatial dimensions than is possible using a Galerkin method,
+providing scope for greater variance reduction for Monte Carlo estimators of the mobility.
+The body of literature on the use of neural networks in the context of high-dimensional PDEs has grown very rapidly in recent years,
+and there is increasing evidence that these approaches are able to overcome the curse of dimensionality in a variety of PDE applications~\cite{MR3847747,MR4338293,2018arXiv180907321J,2019arXiv190810828G,2019arXiv190110854H,2021arXiv210614473D,MR4203091,pmlr-v145-zhai22a}.
+% The 
+% ~\cite{MR3847747,MR4338293,pmlr-v145-zhai22a}.
 
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
@@ -2121,7 +2126,7 @@ and all the other eigenvalues are integer numbers less than or equal to $-1$.
 % and that the associated eigenvalues natural numbers.
 We denote the normalized eigenfunctions by $(H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
 and the corresponding eigenvalues by $(-\lambda_{\vect \alpha})_{\vect \alpha \in \nat^d}$.
-By continuity of~$\e^{t \mathcal L_{\rm FD}}$ in~$L^2_0(\kappa)$,
+By continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$,
 we have that
 \begin{equation}
     \label{eq:series_expansion}
@@ -2176,7 +2181,7 @@ This formula can be employed to show the following estimates.
     \]
     The sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ is Cauchy in $H^1(\mu)$ by~\eqref{lemma:elliptic_reg},
     and so it has a limit in $H^1(\mu)$ which necessarily coincides with $\e^{t \mathcal L_{\rm FD}} f$,
-    because $L^2(\mu)$ convergence implies almost everywhere convergence.
+    because $L^2(\mu)$ convergence implies almost everywhere convergence of a subsequence.
     We conclude by applying~\eqref{lemma:elliptic_reg} and~\eqref{lemma:overdamped_langevin_decay_derivatives} to $f_n$ and taking the limit $n \to \infty$.
 \end{proof}
 

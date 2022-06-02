@@ -2372,7 +2372,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         = \e^{-2\gamma t} \norm{f}^2,
     \end{align}
     where we employed \cref{lemma:semigroup} in the second line.
-    We now bound the second term on the right-hand side of~\eqref{eq:intermediate_decay_correlation},
+    We now bound the second term on the right-hand side of~\eqref{eq:intermediate_decay_correlation}.
     The commutator relation~$\commut{\partial_p}{\partial_p^*} = \beta$ implies that
     \[
         \forall \varphi \in L^2(\kappa), \qquad
@@ -2389,7 +2389,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         &\leq \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         + \beta \norm{V'}[\infty] \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}.
     \end{align*}
-    From these equations we deduce
+    From these equations, we deduce
     \begin{align}
         \notag
         \norm{\mathcal L_{\rm Ham} \e^{t \gamma \mathcal L_{\rm FD}} f}
@@ -2403,7 +2403,6 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     we can freely change the order of the operators $\partial_q$ and $\e^{t \gamma \mathcal L_{\rm FD}}$;
     in particular, the function $\e^{t \gamma \mathcal L_{\rm FD}} f$ is differentiable in $q$.
     % without having to worry about whether $f$~has sufficient regularity for doing so.
-
     % Since $\mathcal L_{\rm FD}$ is not hypoelliptic when viewed as an operator acting on functions of $q$ and $p$,
     % it is not clear \emph{a priori} that~$\e^{t \gamma \mathcal L_{\rm FD}} f$ is a smooth function.
     Letting $t_* = \min\{ \gamma^{-1}, t\}$, we have
@@ -2446,15 +2445,15 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
          \notag
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\ell}{\gamma} \left(t-\frac{1}{\gamma}\right)}
-         + \int_{0}^{t} \e^{-\frac{\widetilde \ell}{\gamma}(t-s) - \gamma s} \d s, \\
+         + \int_{0}^{t} \e^{-\frac{\lambda}{\gamma}(t-s) - \gamma s} \d s, \\
          \label{eq:bound_integral}
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\ell}{\gamma} \left(t-\frac{1}{\gamma}\right)}
-         + \int_{0}^{\infty} \e^{-\frac{\widetilde \ell}{\gamma}(t-s) - \gamma s} \d s
-        \leq C  \gamma^{-1} \e^{-\frac{\widetilde \ell t}{\gamma}},
+         + \int_{0}^{\infty} \e^{-\frac{\lambda}{\gamma}(t-s) - \gamma s} \d s
+        \leq C  \gamma^{-1} \e^{-\frac{\lambda t}{\gamma}},
     \end{align}
-    where $\widetilde \ell = \min \{\frac{1}{2}, \ell \}$.
-    Defining $\widetilde \ell$ in this manner ensures that the integral on the last line is bounded for all $\gamma \in [1, \infty)$.
+    where $\lambda = \min \{\frac{1}{2}, \ell \}$.
+    Defining $\lambda$ in this manner ensures that the integral on the last line is bounded for all $\gamma \in [1, \infty)$.
     The conclusion then follows.
     % \begin{align*}
     %     &\leq  \e^{-\gamma t} \norm{f}

@@ -286,7 +286,7 @@ His results demonstrate clearly that, for a wide range of friction coefficients 
 and in the particular case of the potential
 \begin{equation}
     \label{eq:potential_julien}
-    V(\vect q) = - \cos(q_1) - \cos(q_2) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
+    V(\vect q) = - \frac{1}{2} \bigl( \cos(q_1) + \cos(q_2) \bigr) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
 \end{equation}
 the mobility scales as $\gamma^{- \sigma}$,
 with an exponent $\sigma \in [0, 1]$ that depends on the degree $\delta$ of non-separability of the potential.
@@ -1200,11 +1200,15 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \section{Application to one-dimensional Langevin-type dynamics}%
 \label{sec:application_to_one_dimensional_langevin_type_dynamics}
 
-We consider in this section two different approaches for constructing the approximate solution to the Poisson equation~\eqref{eq:poisson_equation}:
+We consider in this section two different approaches for constructing an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}:
 through a Fourier/Hermite Galerkin method in \cref{sub:galerkin_approach},
 and through formal asymptotic expansions for the underdamped regime in \cref{sub:underdamped_approach}.
 We then present numerical results in \cref{sub:numerical_results}
 and discuss an extension of our approach to generalized Langevin-type dynamics in \cref{sub:generalization_to_generalized_langevin_dynamics}.
+Throughout this section, we consider the one-dimension potential
+\[
+    V(q) = - \frac{\cos(q)}{2}.
+\]
 Since we are concerned only with one-dimensional dynamics in most of this section,
 we employ the scalar notation $q, p, \phi, \psi, D^{\gamma}$ in place of $\vect q, \vect p, \phi_{\vect e}, \psi_{\vect e}, D^{\gamma}_{\vect e}$.
 
@@ -1703,7 +1707,7 @@ the diffusion tensor $\mat D^{\gamma}$ is isotropic.
 We consider in this work a non-separable potential even simpler than~\eqref{eq:potential_julien}:
 \begin{align}
     \label{eq:potential_simple}
-    V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \cos(q_1) - \cos(q_2) - \delta \cos(q_1) \cos(q_2).
+    V(q) =  \mathcal V(q_1) + \mathcal V(q_2) + \delta \mathcal W(q_1, q_2) := - \frac{\cos(q_1) + \cos(q_2)}{2} - \delta \cos(q_1) \cos(q_2).
 \end{align}
 This potential satisfies the symmetry assumption of~\cref{lemma:diffusion_symmmetry},
 and so the corresponding diffusion tensor is isotropic.

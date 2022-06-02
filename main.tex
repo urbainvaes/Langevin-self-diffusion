@@ -1966,15 +1966,17 @@ and we obtain general bounds on the bias and variance of the proposed estimator 
 
 In the one-dimensional setting,
 we demonstrate the efficiency of control variates
-(i) obtained by a Fourier/Hermite spectral method and
-(ii) based on an explicit expression for the limiting solution of the Poisson equation in the underdamped limit.
-Both for Langevin and generalized Langevin dynamics,
+(i) obtained by a Fourier/Hermite spectral method for the Poisson equation, and
+(ii) based on an explicit expression for the limiting solution to the Poisson equation in the underdamped limit.
+For both Langevin and generalized Langevin dynamics,
 the latter approach leads to a significant variance reduction in the very small friction regime $\gamma \leq 10^{-3}$,
 in which fully deterministic Galerkin methods are inaccurate.
 
 The numerical experiments we present for the one-dimensional generalized Langevin dynamics also corroborate prior findings in~\cite{GPGSUV21},
 obtained through formal asymptotics,
 concerning the asymptotic behavior of the mobility in the small friction limit.
+More precisely, they indicate that the mobility scales as $1/\gamma$ when $\gamma \to 0$ and the parameter~$\nu$ encoding memory is fixed,
+with a prefactor different from that corresponding to Langevin dynamics.
 
 The two-dimensional setting for Langevin dynamics is much more challenging because of the high dimensionality of the state space of the dynamics
 and the lack of theoretical results for the underdamped limit in the case of a non-separable potential.
@@ -1983,12 +1985,12 @@ and we show by means of numerical experiments that
 they lead to estimators with reduced variance provided that
 the parameter multiplying the non-separable part of the potential is small with respect to the friction $\gamma$.
 
-We anticipate that, in the future, 
+We anticipate that, in the future,
 approaches based on physics-informed neural networks (PINN)~\cite{MR3759415,MR3881695} will be useful for constructing more accurate solutions to the Poisson equation~\eqref{eq:poisson_equation} in two spatial dimensions than is possible using a Galerkin method,
 providing scope for greater variance reduction for Monte Carlo estimators of the mobility.
 The body of literature on the use of neural networks in the context of high-dimensional PDEs has grown very rapidly in recent years,
 and there is increasing evidence that these approaches are able to overcome the curse of dimensionality in a variety of PDE applications~\cite{MR3847747,MR4338293,2018arXiv180907321J,2019arXiv190810828G,2019arXiv190110854H,2021arXiv210614473D,MR4203091,pmlr-v145-zhai22a}.
-% The 
+% The
 % ~\cite{MR3847747,MR4338293,pmlr-v145-zhai22a}.
 
 \appendix
@@ -2001,7 +2003,7 @@ For a measure $\pi$, we define the weighted Sobolev space~$H^i(\pi)$ as the subs
 of functions whose derivatives up to order $i$ are in $L^2(\pi)$.
 The associated norm is given by
 \[
-    \norm{u}_i^2 = \sum_{|\alpha| \leq i} \norm*{\partial^{\alpha} f}^2,
+    \norm{u}_i^2 = \sum_{|\vect \alpha| \leq i} \norm*{\partial^{\vect \alpha} f}^2,
 \]
 where we use the standard multi-index notation.
 Throughout this section, $\norm{\dummy}$ and $\ip{\dummy}{\dummy}$ are the norm and inner product of~$L^2(\pi)$.
@@ -2027,18 +2029,18 @@ We will use the following standard result which follows,
 for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
 \begin{lemma}
     \label{lemma:semigroup}
-    Let
+    It holds that
     \[
-        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\}.
+        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\} = H^2(\kappa) \cap L^2_0(\kappa),
     \]
-    It holds that $D(\mathcal L_{\rm FD}) = H^2(\kappa) \cap L^2_0(\kappa)$ and the unbounded operator
+    and the unbounded operator
     \(
         % \label{eq:unbounded_operator}
         \mathcal L_{\rm FD}
     \)
     with domain $D(\mathcal L_{\rm FD})$
     generates a contraction semigroup $(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\kappa)$,
-    with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$ for all $f \in L^2_0(\kappa)$.
+    with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$ for all $f \in L^2_0(\kappa)$ and $t \geq 0$.
 \end{lemma}
 % Since the simple setting we consider enables a short and elementary proof,
 % and since some elements of the proof will be useful in the remainder of this section,
@@ -2130,13 +2132,13 @@ By continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$,
 we have that
 \begin{equation}
     \label{eq:series_expansion}
-    \forall f \in L^2(\mu), \qquad
+    \forall f \in L^2(\kappa), \qquad
     \e^{t \mathcal L_{\rm FD}} f
     = \sum_{\abs{\vect \alpha} > 0} \e^{-\lambda_{\vect \alpha} t} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
 \end{equation}
 This formula can be employed to show the following estimates.
 \begin{corollary}
-    If $f \in L^2_0(\mu)$, then $\e^{t \mathcal L_{\rm FD}} f \in H^1(\mu)$ for $t > 0$ and
+    If $f \in L^2_0(\kappa)$, then $\e^{t \mathcal L_{\rm FD}} f \in H^1(\kappa)$ for $t > 0$ and
     \begin{subequations}
     \begin{equation}
         \label{lemma:elliptic_reg}
@@ -2144,7 +2146,7 @@ This formula can be employed to show the following estimates.
         \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
     \end{equation}
     On the other hand,
-    if $f \in H^1(\mu)$,
+    if $f \in H^1(\kappa)$,
     then
     \begin{equation}
         \label{lemma:overdamped_langevin_decay_derivatives}
@@ -2174,14 +2176,14 @@ This formula can be employed to show the following estimates.
     The second claim follows from the fact that $\e^{-2\lambda_n t} \leq \e^{-2t}$ for all $n \in \nat^*$.
 
 
-    We consider now the case where $f \in L^2(\mu)$ does not necessarily belong to $D(\mathcal L_{\rm FD})$
+    Consider now the case where $f \in L^2(\kappa)$ does not necessarily belong to $D(\mathcal L_{\rm FD})$
     and let
     \[
-        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
+        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha} \in D(\mathcal L_{\rm FD})
     \]
-    The sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ is Cauchy in $H^1(\mu)$ by~\eqref{lemma:elliptic_reg},
-    and so it has a limit in $H^1(\mu)$ which necessarily coincides with $\e^{t \mathcal L_{\rm FD}} f$,
-    because $L^2(\mu)$ convergence implies almost everywhere convergence of a subsequence.
+    The sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ for fixed $t > 0$ is Cauchy in $H^1(\kappa)$ by~\eqref{lemma:elliptic_reg},
+    and so it converges to a limit in $H^1(\kappa)$ which necessarily coincides with $\e^{t \mathcal L_{\rm FD}} f$.
+    % because $L^2(\kappa)$ convergence implies almost everywhere convergence of a subsequence.
     We conclude by applying~\eqref{lemma:elliptic_reg} and~\eqref{lemma:overdamped_langevin_decay_derivatives} to $f_n$ and taking the limit $n \to \infty$.
 \end{proof}
 

@@ -4,8 +4,8 @@ import Arpack
 import DelimitedFiles
 import FFTW
 import GaussQuadrature
+import Cubature
 import LinearAlgebra
-import QuadGK
 import QuadGK
 import SparseArrays
 import Statistics
@@ -25,7 +25,7 @@ struct Series
     coeffs::Array{BigFloat}
 end
 
-function get_controls(γ, recalculate)
+function get_controls(γ, δ, recalculate)
     datadir = "precom_data/galerkin/γ=$γ";
     run(`mkdir -p "$datadir"`);
     if !recalculate && isfile("$datadir/galerkin_q.txt")
@@ -37,7 +37,7 @@ function get_controls(γ, recalculate)
         dq, dp = qgrid[2] - qgrid[1], pgrid[2] - pgrid[1]
         Lp = pgrid[end]
     else
-        _ignored, solution_fun, dp_solution_fun = galerkin_solve(γ)
+        _, solution_fun, dp_solution_fun = galerkin_solve(γ)
         # nq, np, Lp = 300, 500, 9;
         nq, np, Lp = 100, 100, 9; # Old parameters!
         dq, dp = 2π/nq, Lp/np;
@@ -76,9 +76,27 @@ function get_controls(γ, recalculate)
         println("Using existing approximate diffusion coefficient!")
         D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
     else
-        nsamples = 10^7
-        q, p = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
-        D = γ*Statistics.mean(∂φ.(q, p).^2)
+        # nsamples = 10^7
+        # q, p = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
+        # D = γ*Statistics.mean(∂φ.(q, p).^2)
+        # println("Effective diffusion (Interpolant): $D")
+        # DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
+
+        Vδ(q₁, q₂) = - cos(q₁)/2 - cos(q₂)/2 - δ*cos(q₁)*cos(q₂);
+        Zδ, _ = Cubature.hcubature(q -> exp(-β*Vδ(q[1], q[2])), [-π, -π], [π, π])
+        Zp = sqrt(2π/β)
+
+        nevals = 0
+        function integrand(x)
+            global nevals += 1
+            if nevals % 100000 == 0
+                println(nevals)
+            end
+            q₁, q₂, p₁ = x
+            μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
+            return φ(q₁, p₁)*p₁ * μ(q₁, q₂, p₁)
+        end
+        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], reltol=1e-5)
         println("Effective diffusion (Interpolant): $D")
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end

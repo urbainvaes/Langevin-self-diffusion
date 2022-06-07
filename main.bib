@@ -1294,7 +1294,6 @@
     TITLE = {Dynamical {T}heories of {B}rownian {M}otion},
     PUBLISHER = {Princeton University Press, Princeton, N.J.},
     YEAR = {1967},
-    PAGES = {iii+142},
     MRCLASS = {60.62 (82.00)},
     MRNUMBER = {0214150},
     MRREVIEWER = {H. P. McKean, Jr.},
@@ -1358,7 +1357,6 @@
     TITLE = {Free {E}nergy {C}omputations: {A} {M}athematical {P}erspective},
     PUBLISHER = {Imperial College Press, London},
     YEAR = {2010},
-    PAGES = {xiv+458},
     ISBN = {978-1-84816-247-1; 1-84816-247-2},
     MRCLASS = {82C80 (60H10 65C30 82C31)},
     MRNUMBER = {2681239},
@@ -1386,7 +1384,7 @@
     Year = {2002},
     Pages = {061107},
     Volume = {65},
-    Issue = {6},
+    % Issue = {6},
     Numpages = {11},
     doi = {10.1103/PhysRevE.65.061107},
     Publisher = {American Physical Society},
@@ -1396,7 +1394,7 @@
     title={Theoretical and Numerical Analysis of Non-Reversible Dynamics in Computational Statistical Physics},
     author={Julien Roussel},
     year={2018},
-    school={Université Paris-Est, École doctorale MSTIC},
+    school={Université Paris-Est},
 }
 
 @article {GPGSUV21,
@@ -1421,7 +1419,6 @@
     EDITION = {Second},
     PUBLISHER = {Horwood Publishing Limited, Chichester},
     YEAR = {2008},
-    PAGES = {xviii+422},
     ISBN = {978-1-904275-34-3},
     MRCLASS = {60-02 (34F05 34K50 60H10 60H30 91B28)},
     MRNUMBER = {2380366},
@@ -1500,8 +1497,8 @@
     volume = {2112.00126},
 }
 
-@@article{einstein1905molekularkinetischen,
-    title={{\"U}ber die von der {M}olekularkinetischen {T}heorie der {W}{\"a}rme {g}eforderte {B}ewegung von in {R}uhenden {F}l{\"u}ssigkeiten {S}uspendierten {T}eilchen},
+@article{einstein1905molekularkinetischen,
+    title={{\"U}ber die von der {M}olekularkinetischen {T}heorie der {W}{\"a}rme {g}eforderte {B}ewegung von in ruhenden {F}l{\"u}ssigkeiten suspendierten {T}eilchen},
     author={Einstein, Albert},
     fjournal={Annalen der Physik},
     journal={Ann. Phys.},
@@ -1525,7 +1522,7 @@
 }
 
 @article{von1906kinetischen,
-    title={Zur {K}inetischen {T}heorie der {B}rownschen {M}olekularbewegung und der {S}uspensionen},
+    title={Zur kinetischen {T}heorie der {B}rownschen {M}olekularbewegung und der {S}uspensionen},
     author={Von Smoluchowski, Marian},
     fjournal={Annalen der Physik},
     journal={Ann. Phys.},
@@ -1647,6 +1644,7 @@
 @book{kroese2013handbook,
     title={Handbook of {M}onte {C}arlo {M}ethods},
     author={Kroese, Dirk P and Taimre, Thomas and Botev, Zdravko I},
+    series={Wiley Series in Probability and Statistics},
     volume={706},
     year={2013},
     publisher={John Wiley \& Sons}
@@ -1780,7 +1778,7 @@
 @incollection {MR1958845,
     AUTHOR = {Glynn, Peter W. and Szechtman, Roberto},
     TITLE = {Some new perspectives on the method of control variates},
-    BOOKTITLE = {Monte {C}arlo and {q}uasi-{M}onte {C}arlo {m}ethods, 2000 ({H}ong
+    BOOKTITLE = {Monte {C}arlo and {Q}uasi-{M}onte {C}arlo {M}ethods, 2000 ({H}ong
                  {K}ong)},
     PAGES = {27--49},
     PUBLISHER = {Springer, Berlin},
@@ -1796,7 +1794,6 @@
     SERIES = {Oxford Graduate Texts},
     PUBLISHER = {Oxford University Press},
     YEAR = {2010},
-    PAGES = {xvi+700},
     ISBN = {978-0-19-852526-4},
     MRCLASS = {82-01 (81V55 82-08 82C80)},
     MRNUMBER = {2723222},
@@ -1812,14 +1809,11 @@
 
 @book {MR1700749,
     AUTHOR = {Billingsley, Patrick},
-    TITLE = {Convergence of probability measures},
-    SERIES = {Wiley Series in Probability and Statistics: Probability and
-              Statistics},
+    TITLE = {Convergence of {P}robability {M}easures},
+    SERIES = {Wiley Series in Probability and Statistics: Probability and Statistics},
     EDITION = {Second},
-    NOTE = {A Wiley-Interscience Publication},
     PUBLISHER = {John Wiley \& Sons, Inc., New York},
     YEAR = {1999},
-    PAGES = {x+277},
     ISBN = {0-471-19745-9},
     MRCLASS = {60B10 (28A33 60F17)},
     MRNUMBER = {1700749},
@@ -1875,7 +1869,6 @@
     title = "{Deep neural network approximations for Monte Carlo algorithms}",
     journal = {arXiv preprint},
     year = 2019,
-    month = aug,
     volume = {1908.10828},
 }
 
@@ -1978,7 +1971,6 @@ MRREVIEWER = {Erich Novak},
        URL = {https://doi-org.extranet.enpc.fr/10.1098/rspa.2019.0630},
 }
 
-
 @InProceedings{pmlr-v145-zhai22a,
   title = 	 {A deep learning method for solving {F}okker-{P}lanck equations},
   author =       {Zhai, Jiayu and Dobson, Matthew and Li, Yao},
@@ -1993,4 +1985,36 @@ MRREVIEWER = {Erich Novak},
   pdf = 	 {https://proceedings.mlr.press/v145/zhai22a/zhai22a.pdf},
   url = 	 {https://proceedings.mlr.press/v145/zhai22a.html},
   abstract = 	 {The time evolution of the probability distribution of a stochastic differential equation follows the Fokker-Planck equation, which usually has an unbounded, high-dimensional domain. Inspired by Li (2019), we propose a mesh-free Fokker-Planck solver, in which the solution to the Fokker-Planck equation is now represented by a neural network. The presence of the differential operator in the loss function improves the accuracy of the neural network representation and reduces the demand of data in the training process. Several high dimensional numerical examples are demonstrated. }
+}
+
+@book {MR503330,
+    AUTHOR = {Bensoussan, Alain and Lions, Jacques-Louis and Papanicolaou,
+              George},
+     TITLE = {Asymptotic analysis for periodic structures},
+    SERIES = {Studies in Mathematics and its Applications},
+    VOLUME = {5},
+ PUBLISHER = {North-Holland Publishing Co., Amsterdam-New York},
+      YEAR = {1978},
+     PAGES = {xxiv+700},
+      ISBN = {0-444-85172-0},
+   MRCLASS = {35-02 (35B40 49D50 60H99)},
+  MRNUMBER = {503330},
+MRREVIEWER = {Carlo Sbordone},
+}
+
+@book {MR710486,
+    AUTHOR = {Pazy, A.},
+     TITLE = {Semigroups of linear operators and applications to partial
+              differential equations},
+    SERIES = {Applied Mathematical Sciences},
+    VOLUME = {44},
+ PUBLISHER = {Springer-Verlag, New York},
+      YEAR = {1983},
+     PAGES = {viii+279},
+      ISBN = {0-387-90845-5},
+   MRCLASS = {47D05 (34Gxx 35Fxx 35Gxx 47H20)},
+  MRNUMBER = {710486},
+MRREVIEWER = {H. O. Fattorini},
+       DOI = {10.1007/978-1-4612-5561-1},
+       URL = {https://doi-org.extranet.enpc.fr/10.1007/978-1-4612-5561-1},
 }

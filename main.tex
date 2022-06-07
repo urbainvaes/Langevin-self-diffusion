@@ -98,9 +98,10 @@ the mobility in the direction $\vect e$ is defined mathematically as
 \end{equation}
 where $\mu_{\eta}$ is the invariant probability distribution of~\eqref{eq:langevin} when
 an additional drift term $\eta \vect e$ is present on the right-hand side of~\eqref{eq:langevin_p}.
-It is possible to show that the measure $\mu_{\eta}$ exists and is uniquely defined,
+Let us emphasize that this additional drift term is not the gradient of a smooth periodic potential.
+Nonetheless, it is possible to show that the probability measure $\mu_{\eta}$ exists and is uniquely defined,
 and that the limit in~\eqref{eq:relation_mobility_diffusion} is well-defined;
-see~\cite[Section 5]{MR3509213},
+see~\cite[Section 5]{MR3509213}.
 Except when $\eta = 0$, in which case we recover~\eqref{eq:invariant_measure},
 the measure~$\mu_{\eta}$ is not known explicitly,
 and so $M_{\vect e}^{\gamma}$ cannot be obtained simply by numerical integration of the observable $\vect e^\t \vect p$ with respect to this measure.
@@ -146,7 +147,7 @@ see also~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentati
 and~\cite[Theorem 2.5]{MR2793823} for a full homogenization proof for the generalized Langevin equation.
 The precise statement of Einstein's relation is then that
 \[
-    D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}
+    D^{\gamma}_{\vect e} := \vect e^\t \mat D^{\gamma} \vect e = \beta M^{\gamma}_{\vect e}.
 \]
 
 \paragraph{Link with a Poisson equation.}
@@ -179,7 +180,7 @@ one may use the approach employed in~\cite[Proposition 5.1]{MR2793823},
 which is itself inspired from~\cite[Lemma 2.1]{MR812349},
 or obtain well-posedness as a corollary of the exponential decay in $L^2(\mu)$ of the Markov semigroup associated with the dynamics,
 as in~\cite[Corollary 1]{roussel2018spectral}.
-See also~\cite{Herau06,MR3106879,MR3522857,2020arXiv200300726B} for other references on the exponential decay for semigroups with a hypocoercive generator.
+See also~\cite{Herau06,MR3106879,MR3522857,BFLS20} for other references on the exponential decay for semigroups with a hypocoercive generator.
 
 \paragraph{Numerical estimation of the mobility.}
 In spatial dimension 1,
@@ -190,9 +191,9 @@ a spectral discretization of~\eqref{eq:poisson_equation} based on a tensorized b
 with say~$N$ degrees of freedom per dimension of the state space $\torus^2 \times \real^2$, leads to a linear systems with~$N^4$ unknowns,
 % (because the dimension of the state space for $(\vect q, \vect p)$ is~4),
 which is computationally intractable for large values of $N$.
-In this setting, probabilistic methods are an attractive alternative.
+In this setting, probabilistic methods offer an attractive alternative.
 % As will be justified rigorously in \cref{sec:method},
-It follows from the definition of~$\mat D^{\gamma}$ that,
+It follows from the definition of~$D^{\gamma}_{\vect e}$ that,
 for any $t > 0$,%
 \begin{equation}
     \label{eq:einsteins_formula}
@@ -225,7 +226,7 @@ it needs to be sufficiently large to ensure that the systematic bias is small,
 but not too large, or else the variance of the resulting estimator is large.
 The technical challenges impeding adoption of the Green--Kubo formalism,
 as well as some solutions to overcome these in the context of heat transport,
-are discussed extensively in~\cite{ercole2017accurate,Baroni2020}.
+are discussed in~\cite{ercole2017accurate,Baroni2020}.
 
 \paragraph{Overdamped and underdamped limits.}
 The behavior of the Langevin dynamics~\eqref{eq:langevin} depends on the value of the friction parameter~$\gamma$.
@@ -242,7 +243,7 @@ where $\vect b_t$ is another standard $d$-dimensional Brownian motion.
 It is also possible to prove that~$\gamma \mat D^{\gamma} = \mat D^{\rm ovd} + \bigo{\gamma^{-2}}$ as $\gamma \to \infty$,
 where~$\mat D^{\rm ovd}$ is the effective diffusion coefficient of overdamped Langevin dynamics,
 and to derive explicit expressions for the correction terms by asymptotic analysis~\cite{MR2394704}.
-The diffusion coefficient in the overdamped limit is given by $D^{\rm ovd}_{\vect e} = \norm{\vect e + \grad \chi_{\vect e}}[L^2(\nu)]^2$,
+The diffusion coefficient in the overdamped limit is given by $\vect e^\t \mat D^{\rm ovd} \vect e = \norm{\vect e + \grad \chi_{\vect e}}[L^2(\nu)]^2$,
 where $\chi_{\vect e}$ is the unique solution in~$L^2_0(\nu)$ to the Poisson equation
 \[
     - \mathcal L_{\rm ovd} \chi_{\vect e} = - \vect e^\t \grad V(q), \qquad \mathcal L_{\rm ovd} = - \grad V \cdot \grad + \beta^{-1} \laplacian,
@@ -282,7 +283,7 @@ More recently, in his doctoral thesis~\cite{roussel_thesis},
 Roussel calculates the mobility of Langevin dynamics using a control variate approach for linear response,
 relying on~\eqref{eq:relation_mobility_diffusion}.
 The control variate he employs is constructed from an approximate solution to the Poisson equation~\eqref{eq:poisson_equation}.
-His results demonstrate clearly that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$
+His results suggest that, for a wide range of friction coefficients in the interval $[10^{-3}, 1]$
 and in the particular case of the potential
 \begin{equation}
     \label{eq:potential_julien}
@@ -438,7 +439,7 @@ the value of $\alpha$ minimizing the variance can be expressed in terms of the v
 the covariance between $u(T)$ and $\widehat u(T)$,
 but for simplicity of the analysis we consider only the case $\alpha = 1$.
 This is the variance-minimizing choice when~$\widehat u(T) = u(T)$,
-and it yields good results so long as $\widehat u(T)$ is a good approximation of~$u(T)$.
+and it yields good results as long as $\widehat u(T)$ is a good approximation of~$u(T)$.
 The estimator can be further modified by replacing the expectation in~\eqref{eq:simple_estimator_improvement_1} by its value in the limit as $T \to \infty$;
 that is, we define
 \begin{equation}
@@ -576,7 +577,7 @@ we employ the notation $\e^{\mathcal L t}$ to denote the Markov semigroup corres
     [Constant potential]
     \label{example:constant}
     Consider the case where $V(q) = 0$ in $d = 1$ dimension
-    (therefore we drop the $\vect e$ subscript and the bold notation for $\vect q$ and $\vect p$).
+    (henceforth we drop the $\vect e$ subscript and the bold notation for $\vect q$ and $\vect p$).
     In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$,
     and applying Itô's formula to this function we obtain
     (this also follows directly from a time integration of~\eqref{eq:langevin_p})
@@ -611,6 +612,8 @@ we employ the notation $\e^{\mathcal L t}$ to denote the Markov semigroup corres
     \[
         \var \bigl[u(T)\bigr] = 2  \bigl(\expect [u(T)]\bigr)^2 = 2 \sigma_T^4 \xrightarrow[T \to \infty]{} 2 \lvert D^{\gamma} \rvert^2 .
     \]
+    Note that this variance does not converge to 0 as $T \to \infty$,
+    a result further made precise for generic potentials in \cref{proposition:variance,proposition:asymptotic_variance}.
 \end{example}
 
 The case of a confining quadratic potential is degenerate,
@@ -625,25 +628,25 @@ in order to motivate \cref{proposition:semigroup_meanzero_observable} below.
     We now consider the case of the one-dimensional quadratic confining potential $V(q) = \frac{k q^2}{2}$,
     and assume for simplicity $\gamma^2 - 4 k \neq 0$.
     In this case, the eigenfunctions of $\mathcal L$ are polynomials
-    and, for every $d \geq 0$, the vector space $\poly(d)$ of polynomials of degree less than or equal to $d$
+    and, for every $n \geq 0$, the vector space $\poly(n)$ of polynomials of degree less than or equal to $n$
     contains an orthonormal basis of eigenfunctions of $\mathcal L$~\cite[Section~6.3]{pavliotis2011applied}.
     % This is not surprising, considering that $\mathcal L$ maps $\poly(d)$ into itself.
     In particular, the constant function is an eigenfunction with eigenvalue 0,
     and the two other eigenfunctions in~$\poly(1)$, together with their associated eigenvalues,
     are given by
     \begin{equation*}
-        v_{\pm}(q, p) =
+        g_{\pm}(q, p) =
         - \lambda_{\mp} q + p, \\
         \qquad
         \lambda_{\pm} = \frac{- \gamma \pm \sqrt{\gamma^2 - 4k}}{2}.
     \end{equation*}
     Here the radical symbol $\sqrt{\cdot}$ denotes the principal square root;
     for a complex number $z$, this is defined as $\sqrt{z} = \sqrt{r} \, \e^{\imag \theta/2}$ where $(r, \theta) \in [0, \infty) \times (-\pi, \pi]$ are the polar coordinates of~$z$.
-    The coordinate functions $(q, p) \mapsto q$ and $(q, p) \mapsto q$ are the following linear combinations of $v_+$ and~$v_-$:
+    The coordinate functions $(q, p) \mapsto q$ and $(q, p) \mapsto p$ are the following linear combinations of $g_+$ and~$g_-$:
     \[
-        q = \frac{v_+(q,p) - v_-(q,p)}{\lambda_+ - \lambda_-},
+        q = \frac{g_+(q,p) - g_-(q,p)}{\lambda_+ - \lambda_-},
         \qquad
-        p = \frac{\lambda_+ v_+(q,p) - \lambda_- v_-(q,p)}{\lambda_+ - \lambda_-}.
+        p = \frac{\lambda_+ g_+(q,p) - \lambda_- g_-(q,p)}{\lambda_+ - \lambda_-}.
     \]
     Therefore,
     using the assumption that $(q_0, p_0) \sim \mu$,
@@ -651,7 +654,7 @@ in order to motivate \cref{proposition:semigroup_meanzero_observable} below.
     \begin{align*}
         \expect \bigl[ \lvert q_T - q_0 \rvert^2 \bigr]
         &= 2 \norm{q}^2 - 2 \ip{\e^{T \mathcal L}q}{q}
-        = 2 \norm{q}^2 - 2 \frac{\ip{\e^{\lambda_+ T} v_+ - \e^{\lambda_- T} v_-}{q}}{\lambda_+ - \lambda_-} \\
+        = 2 \norm{q}^2 - 2 \frac{\ip{\e^{\lambda_+ T} g_+ - \e^{\lambda_- T} g_-}{q}}{\lambda_+ - \lambda_-} \\
         &= \frac{2}{k \beta} \left( 1 +  \frac{\lambda_- \e^{\lambda_+ T} - \lambda_+ \e^{\lambda_- T}}{\lambda_+ - \lambda_-} \right).
     \end{align*}
     This implies that
@@ -664,16 +667,16 @@ in order to motivate \cref{proposition:semigroup_meanzero_observable} below.
     in this case, the variance is 0 asymptotically.
     % and so the solution to the Poisson equation~\eqref{eq:poisson_equation} is given by
     % \[
-    %     \phi = \frac{v_+ - v_-}{\sqrt{\gamma^2 - 4k}} = q,
+    %     \phi = \frac{g_+ - g_-}{\sqrt{\gamma^2 - 4k}} = q,
     % \]
     % which shows that $D^{\gamma} = 0$, as was expected.
-    % Given that $\ip{v_+}{p} = \ip{v_-}{p} = \beta^{-1}$,
-    Using that $\ip{v_+}{p} = \ip{v_-}{p} = \beta^{-1}$,
+    % Given that $\ip{g_+}{p} = \ip{g_-}{p} = \beta^{-1}$,
+    Using that $\ip{g_+}{p} = \ip{g_-}{p} = \beta^{-1}$,
     we can also calculate the velocity autocorrelation function:
     \begin{equation}
         \label{eq:velocity_autocorrelation_quadratic}
         \ip{\e^{t \mathcal L}p}{p} =
-        \frac{\lambda_+ \e^{\lambda_+ t} + \lambda_- \e^{\lambda_- t}}{\beta(\lambda_+ - \lambda_-)}.
+        \frac{\lambda_+ \e^{\lambda_+ t} - \lambda_- \e^{\lambda_- t}}{\beta(\lambda_+ - \lambda_-)}.
     \end{equation}
     In the limit as $\gamma \to \infty$,
     it holds that $\lambda_+ \sim - k/\gamma$ and $\lambda_- \sim - \gamma$.
@@ -689,7 +692,7 @@ in order to motivate \cref{proposition:semigroup_meanzero_observable} below.
 In this subsection,
 we begin by studying the bias of the standard estimator $u(T)$ in~\cref{ssub:bias_of_the_standard_estimator},
 % which coincides with $v(T)$ when~$\psi_{\vect e} = 0$,
-and then we study the bias of the improved estimator $v(T)$ in~\cref{ssub:bias_of_the_improved_estimator}.
+and then the bias of the improved estimator $v(T)$ in~\cref{ssub:bias_of_the_improved_estimator}.
 Although we use, in \cref{sec:application_to_one_dimensional_langevin_type_dynamics,sec:applications_2d},
 approximate solutions $\psi_{\vect e}$ of the Poisson equation~\eqref{eq:poisson_equation} that are not twice differentiable,
 we focus in this section on the case where $\psi_{\vect e}$ is at least twice differentiable for simplicity of the analysis.
@@ -780,10 +783,10 @@ It turns out that the estimate~\eqref{eq:initial_bound_velocity_autocorrelation}
 which is clear in the case of quadratic potential; see~\eqref{eq:velocity_autocorrelation_quadratic} in \cref{example:quadratic}.
 We derive a sharper estimate from the following~\cref{proposition:semigroup_meanzero_observable}.
 In order to state this result,
-we introduce the notation
+we introduce the operators~$\Pi_{\vect p}\colon \lp{2}{\mu} \rightarrow \lp{2}{\mu}$ and  $\Pi_{\vect p}^\perp = \id - \Pi_{\vect p}$,
+with
 \[
-    \Pi_{\vect p}\colon \lp{2}{\mu} \rightarrow \lp{2}{\mu}; \int u(\vect q, \vect p) \, \kappa(\d \vect p),
-    \qquad  \Pi_{\vect p}^\perp = \id - \Pi_{\vect p}.
+    \Pi_{\vect p} u (\vect q) = \int u(\vect q, \vect p) \, \kappa(\d \vect p).
 \]
 The operators $\Pi_{\vect p}$ and $\Pi_{\vect p}^\perp$ are respectively the $L^2(\mu)$ projection operators onto
 the subspace of functions depending only on $\vect q$,
@@ -934,7 +937,7 @@ because a $\gamma^2$ factor remains in the second term on the right-hand side.
     unless $\Pi_{\vect p} \mathcal L \psi_{\vect e} = \Pi_{\vect p} \mathcal L_{\rm ham} \psi_{\vect e} = \mathcal O(\gamma^{-2})$,
     the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit $\gamma \to \infty$
     than that of the simple estimator $u(T)$, see~\eqref{eq:bias}.
-    Therefore, it is not clear that employing a control variate is useful in this limit.
+    It is then not clear that employing a control variate is useful in this limit.
     Since our focus in this work is on the underdamped limit $\gamma \to 0$,
     and since the overdamped limit $\gamma \to \infty$ for one or two-dimensional systems is more easily studied numerically through deterministic methods anyway,
     we do not further investigate this issue.
@@ -1964,7 +1967,8 @@ further developments are necessary in order to develop efficient estimators in t
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}
 In this work,
-we show how techniques based on control variates can be employed for improving estimators of the mobility of Langevin dynamics based on Einstein's formula.
+we show how techniques based on control variates can be employed for improving estimators of dynamical properties, 
+here the mobility of Langevin dynamics based on Einstein's formula.
 The control variate approach we propose requires the knowledge of an approximate solution to a Poisson equation involving the generator of the dynamics.
 We study several practical approaches for constructing this approximate solution,
 and we obtain general bounds on the bias and variance of the proposed estimator in terms of the approximation error.
@@ -1980,7 +1984,7 @@ in which fully deterministic Galerkin methods are inaccurate.
 The numerical experiments we present for the one-dimensional generalized Langevin dynamics also corroborate prior findings in~\cite{GPGSUV21},
 obtained through formal asymptotics,
 concerning the asymptotic behavior of the mobility in the small friction limit.
-More precisely, they indicate that the mobility scales as $1/\gamma$ when $\gamma \to 0$ and the parameter~$\nu$ encoding memory is fixed,
+More precisely, they indicate that the mobility scales as $1/\gamma$ as $\gamma \to 0$ when the parameter~$\nu$ encoding memory is fixed,
 with a prefactor different from that corresponding to Langevin dynamics.
 
 The two-dimensional setting for Langevin dynamics is much more challenging because of the high dimensionality of the state space of the dynamics
@@ -2013,7 +2017,7 @@ The associated norm is given by
 where we use the standard multi-index notation.
 Throughout this section, $\norm{\dummy}$ and $\ip{\dummy}{\dummy}$ are the norm and inner product of~$L^2(\pi)$.
 The probability measure $\pi$ implicit in this notation will be either obvious in the context or explicitly specified.
-We recall that $\pi$ is said to satisfy the Poincaré inequality with constant $R$ if
+We recall that $\pi$ is said to satisfy a Poincaré inequality with constant $R$ if
 \begin{equation}
     \label{eq:poincare}
     \tag{P$_R$}
@@ -2036,15 +2040,15 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
     \label{lemma:semigroup}
     It holds that
     \[
-        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\} = H^2(\kappa) \cap L^2_0(\kappa),
+        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\} = H^2(\kappa) \cap L^2_0(\kappa).
     \]
-    and the unbounded operator
+    In addition, the unbounded operator
     \(
         % \label{eq:unbounded_operator}
         \mathcal L_{\rm FD}
     \)
     with domain $D(\mathcal L_{\rm FD})$
-    generates a contraction semigroup $(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\kappa)$,
+    generates a contraction semigroup~$(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\kappa)$,
     with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$ for all $f \in L^2_0(\kappa)$ and $t \geq 0$.
 \end{lemma}
 % Since the simple setting we consider enables a short and elementary proof,
@@ -2126,20 +2130,23 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
 %     Simple calculations similar to those in the proof of~\cref{lemma:semigroup} enable to show this equivalence for $i \in \{0, 1, 2\}$,
 %     which is sufficient for our purposes.
 % \end{remark}
-The eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
-which form a complete orthogonal set of $L^2(\kappa)$.
-The eigenvalue associated with the constant polynomial is~0,
+
+The resolvent operator $\mathcal L_{\rm FD}^{-1} \colon L^2_0(\kappa) \to L^2_0(\kappa)$ is compact and self-adjoint.
+Therefore, by the spectral theorem,
+there exists an orthonormal basis of $L^2(\kappa)$ consisting of eigenfunctions of~$\mathcal L_{\rm FD}^{-1}$.
+% The eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
+These, which are also eigenfunctions of $\mathcal L_{\rm FD}$, are rescaled Hermite polynomials;
+the eigenvalue of~$\mathcal L_{\rm FD}$ associated with the constant polynomial is~0,
 and all the other eigenvalues are integer numbers less than or equal to $-1$.
 % and that the associated eigenvalues natural numbers.
-We denote the normalized eigenfunctions by $(H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
+We denote the normalized eigenfunctions by $(\mathscr H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
 and the corresponding eigenvalues by $(-\lambda_{\vect \alpha})_{\vect \alpha \in \nat^d}$.
-By continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$,
-we have that
+Then, by continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$ for fixed $t \geq 0$,
 \begin{equation}
     \label{eq:series_expansion}
-    \forall f \in L^2(\kappa), \qquad
+    \forall f \in L^2_0(\kappa), \qquad
     \e^{t \mathcal L_{\rm FD}} f
-    = \sum_{\abs{\vect \alpha} > 0} \e^{-\lambda_{\vect \alpha} t} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
+    = \sum_{\abs{\vect \alpha} \geq 1} \e^{-\lambda_{\vect \alpha} t} \ip{f}{\mathscr H_{\vect \alpha}} \mathscr H_{\vect \alpha}.
 \end{equation}
 This formula can be employed to show the following estimates.
 \begin{corollary}
@@ -2148,7 +2155,7 @@ This formula can be employed to show the following estimates.
     \begin{equation}
         \label{lemma:elliptic_reg}
         \forall t > 0, \qquad
-        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f} \leq \frac{C}{\sqrt{t}} \norm{f}.
+        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f}_{L^2(\kappa)} \leq \frac{C}{\sqrt{t}} \norm{f}_{L^2(\kappa)}.
     \end{equation}
     On the other hand,
     if $f \in H^1(\kappa)$,
@@ -2156,22 +2163,22 @@ This formula can be employed to show the following estimates.
     \begin{equation}
         \label{lemma:overdamped_langevin_decay_derivatives}
         \forall t \geq 0, \qquad
-        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f} \leq C \e^{-t} \norm{\grad_{\vect p} f}.
+        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f}_{L^2(\kappa)} \leq \e^{-t} \norm{\grad_{\vect p} f}_{L^2(\kappa)}.
     \end{equation}
     \end{subequations}
 \end{corollary}
 \begin{proof}
     % Let us denote by $f_n$ the partial sum
     % \[
-    %     f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha}.
+    %     f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{\mathscr H_{\vect \alpha}} \mathscr H_{\vect \alpha}.
     % \]
     Assume first that $f \in D(\mathcal L_{\rm FD})$.
-    Then $\e^{t \mathcal L_{\rm FD} } f \in D(\mathcal L_{\rm FD})$ for all $t > 0$ by the general properties of operator semigroups and,
+    Then $\e^{t \mathcal L_{\rm FD} } f \in D(\mathcal L_{\rm FD})$ for all $t > 0$ by the general properties of operator semigroups~\cite{MR710486} and,
     using~\eqref{eq:series_expansion}, we obtain
     \begin{equation}
         \label{eq:gradient_series}
-        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f}^2 = \beta \ip{\mathcal L_{\rm FD} \e^{t \mathcal L_{\rm FD}} f}{\e^{t \mathcal L_{\rm FD}} f}
-        = \sum_{\abs{\vect \alpha} > 0} \beta \lambda_{\vect \alpha} \e^{- 2\lambda_{\vect \alpha} t} \lvert \ip{f}{H_{\vect \alpha}} \rvert^2.
+        \norm{\grad_{\vect p} \e^{t \mathcal L_{\rm FD}} f}_{L^2(\kappa)}^2 = \beta \ip{\mathcal L_{\rm FD} \e^{t \mathcal L_{\rm FD}} f}{\e^{t \mathcal L_{\rm FD}} f}
+        = \sum_{\abs{\vect \alpha} \geq 1} \beta \lambda_{\vect \alpha} \e^{- 2\lambda_{\vect \alpha} t} \lvert \ip{f}{\mathscr H_{\vect \alpha}} \rvert^2.
     \end{equation}
     The first claim follows from the inequality
     \(
@@ -2184,10 +2191,10 @@ This formula can be employed to show the following estimates.
     Consider now the case where $f \in L^2(\kappa)$ does not necessarily belong to $D(\mathcal L_{\rm FD})$
     and let
     \[
-        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{H_{\vect \alpha}} H_{\vect \alpha} \in D(\mathcal L_{\rm FD})
+        f_n = \sum_{0 \leq \abs{\vect \alpha} \leq n} \ip{f}{\mathscr H_{\vect \alpha}} \mathscr H_{\vect \alpha} \in D(\mathcal L_{\rm FD})
     \]
-    The sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ for fixed $t > 0$ is Cauchy in $H^1(\kappa)$ by~\eqref{lemma:elliptic_reg},
-    and so it converges to a limit in $H^1(\kappa)$ which necessarily coincides with $\e^{t \mathcal L_{\rm FD}} f$.
+    For fixed $t > 0$, the sequence $(\e^{t \mathcal L_{\rm FD}}f_n)_{n\in \nat}$ is a Cauchy sequence in $H^1(\kappa)$ by~\eqref{lemma:elliptic_reg},
+    and so it converges to a limit in $H^1(\kappa)$ which necessarily coincides with the $L^2(\kappa)$ limit $\e^{t \mathcal L_{\rm FD}} f$.
     % because $L^2(\kappa)$ convergence implies almost everywhere convergence of a subsequence.
     We conclude by applying~\eqref{lemma:elliptic_reg} and~\eqref{lemma:overdamped_langevin_decay_derivatives} to $f_n$ and taking the limit $n \to \infty$.
 \end{proof}
@@ -2318,9 +2325,9 @@ but these carry over \emph{mutatis mutandis} to the multi-dimensional case.
     \begin{equation}
         \label{eq:assumption_f}
         \forall \vect q \in \torus^d, \qquad
-        \int_{\real^d} f(\vect q, \vect p) \, \kappa(\d \vect p) = 0.
+        \Pi_{\vect p} f(\vect q) = \int_{\real^d} f(\vect q, \vect p) \, \kappa(\d \vect p) = 0.
     \end{equation}
-    Then there exist constants $C$ and $\lambda$ independent of $\gamma$ and $f$ such that
+    Then there exist constants $C > 0$ and $\lambda > 0$ independent of $\gamma$ and $f$ such that
     \begin{align}
         \label{eq:better_decay_estimate}
         \forall \gamma \geq 1, \qquad
@@ -2345,8 +2352,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     endowed with the norm $\norm{u}_{1,q} := \norm{u} + \norm{\partial_q u}$,
     so the general result follows by density.
 
-    We expect that $\e^{t \mathcal L} f \approx \e^{t \gamma \mathcal L_{\rm FD}} f$ in an appropriate sense for $\gamma \gg 1$,
-    where the operator $\mathcal L_{\rm FD}$ is defined in~\eqref{eq:decomposition_generator}.
+    We expect that $\e^{t \mathcal L} f \approx \e^{t \gamma \mathcal L_{\rm FD}} f$ in an appropriate sense for $\gamma \gg 1$.
     Therefore, let us introduce $v(t) = \e^{t \mathcal L} f(q, p) - \e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$
     and show that~$v(t)$ is small.
     In the expression $\e^{t \gamma \mathcal L_{\rm FD}} f(q, p)$,
@@ -2355,7 +2361,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     \[
         \partial_t v = \mathcal L v +  \mathcal L_{\rm Ham} \bigl(\e^{t \gamma \mathcal L_{\rm FD}} f\bigr), \qquad v(0) = 0.
     \]
-    Using Duhamel's formula, we have
+    By Duhamel's formula,
     \[
         v(t) = \int_{0}^{t} \e^{(t-s) \mathcal L}  \Bigl( \mathcal L_{\rm Ham} \bigl(\e^{s \gamma \mathcal L_{\rm FD}} f\bigr) \Bigr) \, \d s,
     \]
@@ -2381,7 +2387,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     The commutator relation~$\commut{\partial_p}{\partial_p^*} = \beta$ implies that
     \[
         \forall \varphi \in L^2(\kappa), \qquad
-        \norm{\partial_p^* \varphi}^2 = \norm{\partial_p \varphi}^2 + \beta \norm{\varphi}^2.
+        \norm{\partial_p^* \varphi}_{L^2(\kappa)}^2 = \norm{\partial_p \varphi}_{L^2(\kappa)}^2 + \beta \norm{\varphi}_{L^2(\kappa)}^2.
     \]
     Using this equation together with the definition of $\partial_q^*$,
     we have
@@ -2415,7 +2421,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
         \norm{\partial_q \partial_p \e^{t \gamma \mathcal L_{\rm FD}} f}
         &= \norm{\partial_p \e^{t \gamma \mathcal L_{\rm FD}} \partial_q f}
         = \norm{\partial_p \e^{(t - t_*) \gamma \mathcal L_{\rm FD}} (\e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f)} \\
-        &\leq C \e^{- \gamma (t - t_*)} \norm{\partial_p \e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f}
+        &\leq \e^{- \gamma (t - t_*)} \norm{\partial_p \e^{t_* \gamma \mathcal L_{\rm FD}} \partial_q f}
         \leq C \frac{\e^{- \gamma (t - t_*)}}{\sqrt{\gamma t_*}} \norm{\partial_q f},
     \end{align*}
     where we applied~\eqref{lemma:overdamped_langevin_decay_derivatives} in the first inequality,
@@ -2450,7 +2456,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
          \notag
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\ell}{\gamma} \left(t-\frac{1}{\gamma}\right)}
-         + \int_{0}^{t} \e^{-\frac{\lambda}{\gamma}(t-s) - \gamma s} \d s, \\
+         + \int_{0}^{t} \e^{-\frac{\lambda}{\gamma}(t-s) - \gamma s} \d s \\
          \label{eq:bound_integral}
         &\qquad \leq
         \frac{2}{\gamma}\e^{-\frac{\ell}{\gamma} \left(t-\frac{1}{\gamma}\right)}
@@ -2459,7 +2465,7 @@ showing that $\e^{t\mathcal L} f$ is small after a time of order $\mathcal O(\ga
     \end{align}
     where $\lambda = \min \{\frac{1}{2}, \ell \}$.
     Defining $\lambda$ in this manner ensures that the integral on the last line is bounded for all $\gamma \in [1, \infty)$.
-    The conclusion then follows.
+    The conclusion then follows from~\eqref{eq:bound_intermediate} and~\eqref{eq:bound_integral}.
     % \begin{align*}
     %     &\leq  \e^{-\gamma t} \norm{f}
     %     + C \bigl( \norm{f} + \norm{\partial_q f} \bigr)
@@ -2494,7 +2500,7 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     \[
         \forall \gamma \geq 1, \quad
         \forall t \geq 0, \qquad
-        \norm*{\e^{(t-s)\mathcal L^*} h}
+        \norm{\e^{(t-s)\mathcal L^*} h}
         \leq C \bigl( \norm{h} + \norm{\partial_q h} \bigr)
         \left( \e^{- \gamma (t-s)} + \gamma^{-1} \e^{-\frac{\lambda (t-s)}{\gamma}} \right).
     \]
@@ -2510,8 +2516,8 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     The first term in the integral is bounded as
     \[
         \int_{0}^{t}  \left( \frac{\e^{-\gamma s}}{\sqrt{\min\{1, \gamma s\}}} \right)
-        \left(  \e^{- \gamma (t-s)} \right) \, \d s
-        = \e^{- \gamma t} \left( \int_{0}^{\gamma^{-1}} \frac{1}{\sqrt{\gamma s}} \, \d s + (t - \gamma^{-1}) \right)
+          \e^{- \gamma (t-s)}  \, \d s
+        = \e^{- \gamma t} \left( \int_{0}^{\gamma^{-1}} \frac{1}{\sqrt{\gamma s}} \, \d s + t - \gamma^{-1} \right)
         = \e^{-\gamma t} \left( t + \frac{1}{\gamma} \right).
     \]
     For any $\alpha \in (0, 1)$, the right-hand side of this equation may be bounded from above by $C_{\alpha} \e^{- \alpha \gamma t}$ .
@@ -2541,7 +2547,7 @@ The last two terms are bounded using the general bound on the Langevin semigroup
 The first two terms are bounded using \cref{proposition:semigroup_meanzero_observable}:
 \begin{align*}
     \abs{\ip{\e^{t \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p + (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}}
-    &\leq C \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}[1,\vect q] \, \zeta(t), \\
+    &\leq C \beta^{-1/2} \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}[1,\vect q] \, \zeta(t), \\
     \abs{\ip{\e^{t \mathcal L} \bigl(\vect e^\t \vect p + (\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}\bigr)}{(\id - \Pi_{\vect p}) \mathcal L \psi_{\vect e}}}
     &\leq C \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}[1,\vect q] \, \norm*{\mathcal L \psi_{\vect e}}[1,\vect q] \, \zeta(t),
 \end{align*}
@@ -2554,7 +2560,7 @@ it holds
     \leq \norm{\grad_{\vect q} f}.
 \]
 and so $\norm{(\id - \Pi_{\vect p}) f}[1,\vect q] \leq \norm{f}[1,\vect q]$.
-The bound~\eqref{eq:refined_bound} is then obtained by repeating verbatim the reasoning leading to~\eqref{eq:bias}.
+The bound~\eqref{eq:refined_bound} is then obtained by repeating the reasoning in the proof of~\cref{lemma:bias_improved}.
 
 \section{Proof of \texorpdfstring{equation~\eqref{eq:limit_variance}}{the limit of the variance}}%
 \label{sec:proof_of_equation_variance}
@@ -2563,37 +2569,37 @@ The bound~\eqref{eq:refined_bound} is then obtained by repeating verbatim the re
 By definition of the variance,
 we have
 \[
-    \var \Bigl[ \lvert X^T_1 \rvert^2 - \lvert X^T_2 \rvert^2 \Bigr]
-    = \expect \Bigl[ \lvert X^T_1 \rvert^4 + \lvert X^T_2 \rvert^4 - 2 \lvert X^T_1 X^T_2 \rvert^2 \Bigr]
-    - \Bigl( \expect \Bigl[ \lvert X^T_1 \rvert^2 - \lvert X^T_2 \rvert^2 \Bigr] \Bigr)^2,
+    \var \Bigl[ \left\lvert X^T_1 \right\rvert^2 - \left\lvert X^T_2 \right\rvert^2 \Bigr]
+    = \expect \Bigl[ \left\lvert X^T_1 \right\rvert^4 + \left\lvert X^T_2 \right\rvert^4 - 2 \left\lvert X^T_1 X^T_2 \right\rvert^2 \Bigr]
+    - \Bigl( \expect \Bigl[ \left\lvert X^T_1 \right\rvert^2 - \left\lvert X^T_2 \right\rvert^2 \Bigr] \Bigr)^2,
 \]
 and so it is sufficient to prove that,
 in the limit as $T \to \infty$ and for $i \in \{1, 2\}$,
 \begin{align}
     \label{eq:target_equation}
-    \expect \bigl[ \lvert X^T_i \rvert^4 \bigr]
-    \to \expect \bigl[ \lvert X^{\infty}_i \rvert^4 \bigr],
-    \qquad
-    \expect \bigl[ \lvert X^T_i \rvert^2 \bigr]
-    \to \expect \bigl[ \lvert X^{\infty}_i \rvert^2 \bigr],
-    \qquad
-    \expect \bigl[ \lvert X^T_1 X^T_2 \rvert^2 \bigr]
-    \to \expect \bigl[ \lvert X^T_1 X^T_2 \rvert^2 \bigr].
+    \expect \left[ \left\lvert X^T_i \right\rvert^4 \right]
+    \to \expect \left[ \left\lvert X^{\infty}_i \right\rvert^4 \right],
+    \quad
+    \expect \left[ \left\lvert X^T_i \right\rvert^2 \right]
+    \to \expect \left[ \left\lvert X^{\infty}_i \right\rvert^2 \right],
+    \quad
+    \expect \left[ \left\lvert X^T_1 X^T_2 \right\rvert^2 \right]
+    \to \expect \left[ \left\lvert X^T_1 X^T_2 \right\rvert^2 \right].
 \end{align}
 By the continuous mapping theorem,
 it holds from the convergence in law of $X^{T}$ to $X^{\infty}$ that
 \[
      \lvert X^T_i \rvert^4
     \xrightarrow[T \to \infty]{\rm Law}
-    \lvert X^{\infty}_i \rvert^4 ,
+    \left\lvert X^{\infty}_i \right\rvert^4 ,
     \qquad
      \lvert X^T_i \rvert^2
     \xrightarrow[T \to \infty]{\rm Law}
-    \lvert X^{\infty}_i \rvert^2 ,
+    \left\lvert X^{\infty}_i \right\rvert^2 ,
     \qquad
-     \lvert X^T_1 X^T_2 \rvert^2
+     \left\lvert X^T_1 X^T_2 \right\rvert^2
     \xrightarrow[T \to \infty]{\rm Law}
-    \lvert X^T_1 X^T_2 \rvert^2 .
+    \left\lvert X^T_1 X^T_2 \right\rvert^2 .
 \]
 In order to prove~\eqref{eq:target_equation},
 it is therefore sufficient~\cite[Theorem 3.5]{MR1700749}
@@ -2603,7 +2609,7 @@ We check this condition carefully for $\lvert X^T_2 \rvert^4$,
 noting that the same reasoning can be applied to the other terms.
 A sufficient condition for uniform integrability is that there is $\varepsilon > 0$ such that
 \[
-    \sup_{T \in [1, \infty)} \expect \bigl[ \lvert X^T_2 \rvert^{4+\varepsilon} \bigr] < \infty.
+    \sup_{T \in [1, \infty)} \expect \left[ \left\lvert X^T_2 \right\rvert^{4+\varepsilon} \right] < \infty.
 \]
 By definition,
 it holds that
@@ -2614,7 +2620,7 @@ it holds that
 \]
 and so, using manipulations similar to those in the proof of~\cref{proposition:variance},
 including a moment inequality for It\^o integrals~\cite[Theorem 7.1]{MR2380366} and the standing assumption of a stationary initial condition,
-we have
+we have, for $T \geq 0$,
 \[
     \expect \left[ \lvert X^T_2 \rvert^{4+ \varepsilon} \right]
     \leq

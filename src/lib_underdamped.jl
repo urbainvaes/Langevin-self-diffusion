@@ -12,7 +12,7 @@ export get_controls
 
 V(q) = (1 - cos(q))/2;
 
-function get_controls(γ, _required_by_api)
+function get_controls(γ, δ,_required_by_api)
 
     # Inverse temperature
     β = 1
@@ -26,7 +26,7 @@ function get_controls(γ, _required_by_api)
         Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besseli(0, β/2);
         S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
         integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1];
-        Du = (1/Zb)*(1/β)*8*π^2*integral;
+        (1/Zb)*(1/β)*8*π^2*integral;
     end
 
     E₀ = 1

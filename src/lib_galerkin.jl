@@ -25,6 +25,20 @@ struct Series
     coeffs::Array{BigFloat}
 end
 
+@inbounds function bilinear_interpolant(values, q, p, Lp, dq, dp, qgrid, pgrid)
+    q = q - 2π*floor(Int, (q+π)/2π);
+    # if abs(p) >= Lp
+    #     println("p is out of interpolation grid!")
+    # end
+    iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
+    x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
+    a11 = values[iq, ip];
+    a21 = values[iq+1, ip] - a11;
+    a12 = values[iq, ip+1] - a11;
+    a22 = values[iq+1, ip+1] + a11 - values[iq+1, ip] - values[iq, ip+1];
+    return a11 + a21*x + a12*y + a22*x*y
+end
+
 function get_controls(γ, δ, recalculate)
     datadir = "precom_data/galerkin/γ=$γ";
     run(`mkdir -p "$datadir"`);
@@ -53,22 +67,12 @@ function get_controls(γ, δ, recalculate)
         DelimitedFiles.writedlm("$datadir/galerkin_dp_phi.txt", dp_solution_values)
     end
 
-    function bilinear_interpolant(values, q, p)
-        q = q - 2π*floor(Int, (q+π)/2π);
-        if abs(p) >= Lp
-            println("p is out of interpolation grid!")
-        end
-        iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
-        x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
-        a11 = values[iq, ip];
-        a21 = values[iq+1, ip] - a11;
-        a12 = values[iq, ip+1] - a11;
-        a22 = values[iq+1, ip+1] + a11 - values[iq+1, ip] - values[iq, ip+1];
-        return a11 + a21*x + a12*y + a22*x*y
+    φ = let solution_values = solution_values, Lp = Lp, dq = dq, dp = dp, qgrid = qgrid, pgrid = pgrid
+        (q, p) -> bilinear_interpolant(solution_values, q, p, Lp, dq, dp, qgrid, pgrid)
     end
-
-    φ(q, p) = bilinear_interpolant(solution_values, q, p)
-    ∂φ(q, p) = bilinear_interpolant(dp_solution_values, q, p)
+    ∂φ = let dp_solution_values = dp_solution_values, Lp = Lp, dq = dq, dp = dp, qgrid = qgrid, pgrid = pgrid
+        (q, p) -> bilinear_interpolant(dp_solution_values, q, p, Lp, dq, dp, qgrid, pgrid)
+    end
 
     # Improve on φ
     β = 1

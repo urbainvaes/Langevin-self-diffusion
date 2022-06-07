@@ -726,14 +726,30 @@ we prove a finer bound on the bias in~\cref{corollary:better_bias}.
 \begin{proof}
 Since the initial conditions are assumed statistically stationary,
 it holds that
+\begin{align}
+    \notag
+    \expect \bigl[u(T)\bigr]
+    &= \frac{1}{2T} \expect \left[ \int_{0}^{T} \vect e^\t \vect p_{t} \, \d t \int_{0}^{T} \vect e^\t \vect p_s \, \d s \right]
+    = \frac{1}{2T}  \int_{0}^{T} \!\! \int_{0}^{T} \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right] \, \d s \, \d t  \\
+    \label{eq:first_equation_bias}
+    &= \frac{1}{T}  \int_{0}^{T} \!\! \int_{0}^{t} \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right] \, \d s \, \d t,
+\end{align}
+since the contribution of the domain $0 \leq t \leq s \leq T$ is the same as that of $0 \leq s \leq t \leq T$.
+The stationarity of the velocity process implies that, for ~$t \geq s$,
+\begin{align*}
+    \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right] 
+    &= \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \right]
+    = \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \middle| (\vect q_0, \vect p_0) \right] \right] \\
+    &= \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right)  \middle| (\vect q_0, \vect p_0) \right] \left(\vect e^\t \vect p_0\right)\right] \\
+    &= \expect \left[ \Bigl( \e^{(t-s) \mathcal L} \left(\vect e^\t \vect p\right) \Bigr) (\vect q_0,\vect p_0) \left(\vect e^\t \vect p_0\right)\right]
+    = \ip{\e^{(t-s) \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p}.
+\end{align*}
+Substituting this expression in~\eqref{eq:first_equation_bias} and letting $\theta = t-s$ leads to
 \begin{equation}
 \label{eq:bias_without_control}
 \begin{aligned}[b]
     \expect \bigl[u(T)\bigr]
-    &= \frac{1}{2T} \expect \left[ \int_{0}^{T} \vect e^\t \vect p_{t} \, \d t \int_{0}^{T} \vect e^\t \vect p_s \, \d s \right]
-    = \frac{1}{2T}  \int_{0}^{T} \!\! \int_{0}^{T} \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right] \, \d s \, \d t  \\
-    &= \frac{1}{2T}  \int_{0}^{T} \!\! \int_{0}^{T} \ip{\e^{\abs{t - s} \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p} \, \d s \, \d t
-    =  \int_{0}^{T} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \left(1 - \frac{\theta}{T}\right) \d \theta  \\
+    &= \int_{0}^{T} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \left(1 - \frac{\theta}{T}\right) \d \theta  \\
     &= \int_{0}^{\infty} \ip{\e^{\theta \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p}  \d \theta
     - \int_{0}^{\infty} \ip{\e^{\theta \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p} \min\left\{1, \frac{\theta}{T}\right\} \, \d \theta.
     % D_{\phi} - \int_{0}^{\infty} \min\left(1, \frac{s}{t}\right) C_{\phi}(s) \, \d s.
@@ -742,10 +758,13 @@ it holds that
 As we shall demonstrate, the second term tends to 0 in the limit as $T \to \infty$.
 Therefore, since the estimator $u(T)$ is asymptotically unbiased,
 the first term must coincide with the effective diffusion coefficient~$D^{\gamma}_{\vect e}$
--- this is in fact the well known Green--Kubo formula for the effective diffusion coefficient, see e.g.~\cite{pavliotis2011applied,MR3509213} --
-and the second term is the bias.
+-- this is in fact the well known Green--Kubo formula for the effective diffusion coefficient, see e.g.~\cite{pavliotis2011applied,MR3509213}.
+The Green--Kubo formula can also be derived from~\eqref{eq:effective_diffusion_poisson} with the representation formula $\phi_{\vect e} = \int_{0}^{\infty} \e^{\theta \mathcal L} \left(\vect e^\t \vect p\right) \, \d \theta$,
+which is well defined in view of the exponential decay of $\e^{\theta \mathcal L}$ on $L^2_0(\mu)$,
+see~\eqref{eq:decay_semigroup_general} below.
+The second term in~\eqref{eq:bias_without_control} is the bias.
 % As a first attempt towards bounding the latter term,
-In order to bound the latter term,
+In order to bound this term,
 we use a general bound for the Markov semigroup associated with Langevin dynamics
 stating that
 \begin{equation}
@@ -772,12 +791,13 @@ Noting that
     \label{eq:petit_calcul}
     \forall \lambda > 0, \qquad
     \int_{0}^{\infty} \e^{-\lambda \theta} \min\left\{ 1, \frac{\theta}{T} \right\} \, \d \theta
-    \leq \frac{1}{T} \int_{0}^{\infty} \theta \e^{-\lambda \theta} \, \d \theta = \frac{1}{\lambda^2 T},
+    % \leq \frac{1}{T} \int_{0}^{\infty} \theta \e^{-\lambda \theta} \, \d \theta 
+    = \frac{1 - \e^{- \lambda T}}{\lambda^2 T} \leq \frac{1}{\lambda^2 T},
 \end{equation}
 we obtain~\eqref{eq:bias_simple}.
 \end{proof}
 Since the effective diffusion coefficient scales as $\gamma^{-1}$ in both the underdamped ($\gamma \to 0$) and overdamped limits ($\gamma \to \infty$)~\cite{MR2394704,MR2427108},
-this estimate suggests that the relative bias of the estimator scales as $\max\{\gamma^{-1}, \gamma^3\} T^{-1}$ and that,
+this estimate~\eqref{eq:bias_simple} suggests that the relative bias of the estimator scales as $\max\{\gamma^{-1}, \gamma^3\} T^{-1}$ and that,
 consequently, the integration time $T$ should scale proportionally to $\max\{\gamma^{-1}, \gamma^3\}$ in order to achieve a given relative accuracy.
 It turns out that the estimate~\eqref{eq:initial_bound_velocity_autocorrelation} is not optimal in the overdamped regime,
 which is clear in the case of quadratic potential; see~\eqref{eq:velocity_autocorrelation_quadratic} in \cref{example:quadratic}.
@@ -1013,7 +1033,7 @@ as this is the regime where our approach is of practical interest.
     We study more precisely the behavior of the variance in the limit as $T \to \infty$ in \cref{proposition:asymptotic_variance} below.
 \end{remark}
 \begin{remark}
-    In order to assess the quality of the upper bound~\eqref{eq:statement_variance} in the underdamped limit,
+    In order to assess the quality of the upper bound~\eqref{eq:statement_variance} in the underdamped limit~$\gamma \to 0$,
     let us consider the particular setting where $\psi_{\vect e} = 0$ in one dimension.
     In~\cite[Remark 6.10]{MR2394704},
     the authors prove that $\norm{\phi}[\lp{r}{\mu}] = \bigo{\gamma^{-1}}$ as $\gamma \to 0$ for every $r \in [1, \infty)$,
@@ -1023,9 +1043,9 @@ as this is the regime where our approach is of practical interest.
         \label{eq:variance_scaling}
         \forall \gamma \in (0, 1), \qquad
         \var \bigl[v(T)\bigr]
-        \leq C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2,
+        \leq \widetilde C \left( T^{-1} \gamma^{-2} + \gamma^{-1} \right)^2,
     \end{equation}
-    for some constant $C$.
+    for some constant $\widetilde C > 0$.
     For an integration time $T$ scaling as $\gamma^{-1}$,
     which is required in order to control the bias,
     we find from this formula that the variance scales as $\gamma^{-2}$,
@@ -1043,8 +1063,9 @@ as this is the regime where our approach is of practical interest.
     \begin{align}
         \notag
         \var \bigl[v(T)\bigr]
-        &\leq \expect \left[ \bigl( v(T) - d[\psi_{\vect e}] \bigr)^2 \right]
-        = \frac{1}{4 T^2} \expect \left[ \left\lvert \vect e^\t (\vect q_T - \vect q_0) - \xi_T \right\rvert^2 \, \left\lvert \vect e^\t (\vect q_T - \vect q_0) + \xi_T \right\rvert^2 \right] \\
+        &= \min_{\mathscr V \in \real} \expect \Bigl[\left(v(T) - \mathscr V\right)^2\Bigr]
+        \leq \expect \left[ \bigl( v(T) - d[\psi_{\vect e}] \bigr)^2 \right] \\
+        &= \frac{1}{4 T^2} \expect \left[ \left\lvert \vect e^\t (\vect q_T - \vect q_0) - \xi_T \right\rvert^2 \, \left\lvert \vect e^\t (\vect q_T - \vect q_0) + \xi_T \right\rvert^2 \right] \\
         \label{eq:bound_variance_two_factors}
         &\leq \frac{1}{4 T^2}
         {\left(\expect \left[  \left\lvert \vect e^\t(\vect q_T - \vect q_0) - \xi_T \right\rvert^{2a} \right]\right)^{\frac{1}{a}}} \,
@@ -1085,7 +1106,7 @@ as this is the regime where our approach is of practical interest.
         &\expect \left[ |\vect e^\t(\vect q_T - \vect q_0) + \xi_T|^{2b} \right] \\
         &\qquad
         \leq 3^{2b-1} \Bigl( 2 \norm{\phi_{\vect e} + \psi_{\vect e}}[L^{2b}(\mu)]^{2b}
-        + \bigl(b(2b - 1)\bigr)^b \, \left(2 \gamma \beta^{-1}\right)^b \, T^{b} \norm{\grad_{\vect p} \phi_{\vect e} + \grad_{\vect p} \psi_{\vect e}}[L^{4}(\mu)]^{2b} \Bigr).
+        + \bigl(b(2b - 1)\bigr)^b \, \left(2 \gamma \beta^{-1}\right)^b \, T^{b} \norm{\grad_{\vect p} \phi_{\vect e} + \grad_{\vect p} \psi_{\vect e}}[L^{2b}(\mu)]^{2b} \Bigr).
     \end{align*}
     The statement is then obtained by choosing $a = b = 2$.
 \end{proof}
@@ -1124,7 +1145,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \end{proposition}
 \begin{remark}
     \label{remark:asym_variance_u}
-    The result~\eqref{eq:asymptotic_variance} implies that $\var\bigl[u(T)\bigr] \to 2 d[\phi_{\vect e}]^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
+    The result~\eqref{eq:asymptotic_variance} implies that $\var\bigl[v(T)\bigr] \to 2 d[\phi_{\vect e}]^2$ in the limit as $T \to \infty$ when $\psi_{\vect e} = 0$,
     which is consistent with our explicit computations in \cref{example:constant} for the case of a constant potential.
 \end{remark}
 \begin{proof}
@@ -1176,28 +1197,31 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
         2 \norm{a}^4 + 2 \norm{b}^4 - 4\ip{a}{b}^2
         &= 2 \norm{a}^4 + 2 \norm{b}^4 - \bigl(\ip{a}{a} + \ip{b}{b} - \ip{a-b}{a-b} \bigr)^2 \\
         &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + 2 \norm{a-b}^2 \bigl(\norm{a}^2 + \norm{b}^2 \bigr) - \norm{a-b}^4 \\
-        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2 \\
-        &\leq \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + 2 \norm{a-b}^2 \bigl(\norm{a}^2 + \norm{b}^2\bigr).
+        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2 \\ 
+        &= \ip{a - b}{a + b}^2 + \norm{a-b}^2 \norm{a + b}^2 \\ 
+        &\leq 2 \norm{a - b}^2 \norm{a + b}^2
+        \leq 4 \norm{a - b}^2 \bigl(\norm{a}^2 + \norm{b}^2\bigr).
     \end{align*}
-    Using this inequality with $a = \grad_{\vect p} \phi_{\vect e}$ and $b = \grad_{\vect p} \psi_{\vect e}$ in the Hilbert space $L^2(\mu)$,
-    we deduce that
-    \begin{align*}
-        \lim_{T \to \infty} \var \bigl[v(T)\bigr]
-        &\leq \bigl(d[\phi_{\vect e}] - d[\psi_{\vect e}]\bigr)^2 +
-        2\gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]).
-    \end{align*}
-    The triangle inequality enables to bound the first term as
-    \begin{align*}
-        \bigl\lvert d[\phi_{\vect e}] - d[\psi_{\vect e}] \bigr\rvert
-        &= \gamma \beta^{-1} \left( \norm{\grad_{\vect p} \phi_{\vect e}}^2 - \norm{\grad_{\vect p} \psi_{\vect e}}^2 \right)
-        \leq \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}} \bigl( \norm{\grad_{\vect p} \phi_{\vect e}} + \norm{\grad_{\vect p} \psi_{\vect e}} \bigr),
-    \end{align*}
-    and so
-    \[
-        \lim_{T \to \infty} \var \bigl[v(T)\bigr]
-        \leq  4\gamma \beta^{-1}  \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]),
-    \]
-    which is the required upper bound.
+    The desired upper bound is obtained by
+    using this inequality with $a = \grad_{\vect p} \phi_{\vect e}$ and $b = \grad_{\vect p} \psi_{\vect e}$ in the Hilbert space $L^2(\mu)$.
+    % we deduce that
+    % \begin{align*}
+    %     \lim_{T \to \infty} \var \bigl[v(T)\bigr]
+    %     &\leq \bigl(d[\phi_{\vect e}] - d[\psi_{\vect e}]\bigr)^2 +
+    %     2\gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]).
+    % \end{align*}
+    % The triangle inequality enables to bound the first term as
+    % \begin{align*}
+    %     \bigl\lvert d[\phi_{\vect e}] - d[\psi_{\vect e}] \bigr\rvert
+    %     &= \gamma \beta^{-1} \left( \norm{\grad_{\vect p} \phi_{\vect e}}^2 - \norm{\grad_{\vect p} \psi_{\vect e}}^2 \right)
+    %     \leq \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p} \psi_{\vect e}} \bigl( \norm{\grad_{\vect p} \phi_{\vect e}} + \norm{\grad_{\vect p} \psi_{\vect e}} \bigr),
+    % \end{align*}
+    % and so
+    % \[
+    %     \lim_{T \to \infty} \var \bigl[v(T)\bigr]
+    %     \leq  4\gamma \beta^{-1}  \norm{\grad_{\vect p} \phi_{\vect e} - \grad_{\vect p}  \psi_{\vect e}}^2 (d[\phi_{\vect e}] + d[\psi_{\vect e}]),
+    % \]
+    % which is the required upper bound.
 \end{proof}
 
 \section{Application to one-dimensional Langevin-type dynamics}%
@@ -1743,17 +1767,17 @@ Specifically, we have
 \begin{equation}
     \label{eq:effective_diffusion_d}
     d[\psi_{\vect e}]
-    = \int_{\torus^d \times \real^d} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}.
+    = \int_{\torus^2 \times \real^2} \abs{\grad_{\vect p} \psi_{\vect e}}^2 \, \d \mu_{\delta}.
     % = \int_{\torus^d \times \real^d} \abs{\partial_p \phi_0}^2 \, \d \mu_{\delta}.
 \end{equation}
-The following result result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ in the limit as~$\delta \to 0$.
+The following result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^2(\mu)$ in the limit as~$\delta \to 0$.
 
 \begin{proposition}
     \label{proposition:convergence_gradient}
     Let $\phi_{\delta}$ and $\phi_0$ denote the solutions to the Poisson equation $- \mathcal L^{\delta} \phi_{\delta} = p_1$
     and its separable counterpart $- \mathcal L_0 \phi_0 = p_1$,
     these equations being posed in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$ respectively.
-    Then there exists $C$ independent of $\delta$ and $\gamma$ such that
+    Then there exists $C > 0$ independent of $\delta$ and $\gamma$ such that
     \begin{align}
         \label{eq:convergence_delta}
         \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
@@ -1778,7 +1802,8 @@ The following result result establishes that~$\phi_\delta$ converges to $\phi_0$
     %     d^{\delta}_{\phi_0} = \int \abs{\grad \phi_0}^2 \, \d \mu_{\delta}.
     % \]
 \end{proposition}
-Before the proof, a couple of remarks are in order.
+Before giving the proof of this result,
+a couple of remarks are in order.
 \begin{remark}
     There exist appropriate constants $c_1, c_2 > 0$ such that
     \[
@@ -1792,7 +1817,7 @@ Using the definition~\eqref{eq:effective_diffusion_d} and~\cref{proposition:conv
 we deduce that
 \[
     \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
-    \frac{ \lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \rvert } {\sqrt{d[\phi_{0}]}}
+    \frac{ \left\lvert \sqrt{d[\phi_{\delta}]} - \sqrt{d[\phi_{0}]} \right\rvert } {\sqrt{d[\phi_{0}]}}
     \leq C \lvert\delta\rvert \gamma^{-1}.
 \]
 Consequently,
@@ -1813,6 +1838,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     \begin{equation}
         \label{eq:remainder_expansion}
         \mathcal L^{\delta}(\phi_\delta - \phi_0^{\delta})
+        = \mathcal L^{\delta}(\phi_\delta - \phi_0)
         = - \delta \, \mathcal L_1 \phi_0
         = \delta \, \grad \mathcal W \, \cdot \grad_{\vect p} \phi_0.
     \end{equation}
@@ -1828,7 +1854,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
      it is clear that
      $\norm*{(\mathcal L^{\delta})^{-1}}[\mathcal B \left( L^2_{0}(\mu_{\delta})\right)] $ is bounded from above by $K(\delta) \max\{\gamma, \gamma^{-1}\}$ for all~$\gamma \in (0, \infty)$,
      with a constant $K(\delta)$ depending on $\delta$.
-     A careful inspection of the result and its proof reveal that $K(\delta)$,
+     A careful inspection of the result in~\cite{BFLS20} and its proof reveal that $K(\delta)$,
      which depends on $\delta$ through the Poincaré constant of $\mu_{\delta}$ among other things,
      is in fact such that $\sup \{K(\delta): -1 \leq \delta \leq 1\} < \infty$.
      Therefore,
@@ -1879,16 +1905,16 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
     noting that $\grad_{\vect p} \phi_0^{\delta} = \grad_{\vect p} \phi_0$
     and using~\eqref{eq:convergence_l2},
-    we obtain
+    we obtain,
+    for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$,
     \begin{align*}
         \notag
         \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2
         &\leq \lvert \delta \rvert \norm*{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
         \label{eq:intermediate_delta}
         &\leq C \lvert \delta \rvert \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
-        &\leq  C \delta^2 \max\{\gamma, \gamma^{-1}\} \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2.
+        &\leq  C \delta^2 \max\{\gamma, \gamma^{-1}\} \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2,
     \end{align*}
-    for all $(\gamma, \delta) \in (0, \infty) \times [-1, 1]$,
     which gives the claimed result.
 \end{proof}
 
@@ -1900,7 +1926,7 @@ we have
 \begin{align*}
     \lim_{T \to \infty} \var \bigl[v(T)\bigr]
     &\leq 4 \gamma \beta^{-1} \norm{\grad_{\vect p} \phi_{\delta} - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2 (d[\phi_{\delta}] + d[\phi_0]) \\
-    &\leq 4 C \delta^2 \gamma^{-1} \beta^{-1} \norm{\grad_{\vect p} \psi_{0}}^2 (d[\phi_{\delta}] + d[\phi_0])
+    &\leq 4 C \delta^2 \gamma^{-1} \beta^{-1} \norm{\grad_{\vect p} \phi_{0}}^2 (d[\phi_{\delta}] + d[\phi_0])
     = 4 C \delta^2 \gamma^{-2} d[\phi_{0}] (d[\phi_{\delta}] + d[\phi_0]),
 \end{align*}
 which shows that, in this case,
@@ -1967,7 +1993,7 @@ further developments are necessary in order to develop efficient estimators in t
 \section{Conclusions and perspectives for future work}%
 \label{sec:conclusions_and_perspectives_for_future_work}
 In this work,
-we show how techniques based on control variates can be employed for improving estimators of dynamical properties, 
+we show how techniques based on control variates can be employed for improving estimators of dynamical properties,
 here the mobility of Langevin dynamics based on Einstein's formula.
 The control variate approach we propose requires the knowledge of an approximate solution to a Poisson equation involving the generator of the dynamics.
 We study several practical approaches for constructing this approximate solution,
@@ -2135,9 +2161,9 @@ The resolvent operator $\mathcal L_{\rm FD}^{-1} \colon L^2_0(\kappa) \to L^2_0(
 Therefore, by the spectral theorem,
 there exists an orthonormal basis of $L^2(\kappa)$ consisting of eigenfunctions of~$\mathcal L_{\rm FD}^{-1}$.
 % The eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
-These, which are also eigenfunctions of $\mathcal L_{\rm FD}$, are rescaled Hermite polynomials;
-the eigenvalue of~$\mathcal L_{\rm FD}$ associated with the constant polynomial is~0,
-and all the other eigenvalues are integer numbers less than or equal to $-1$.
+These, which are also eigenfunctions of $\mathcal L_{\rm FD}$, are given by rescaled Hermite polynomials.
+The eigenvalue of~$\mathcal L_{\rm FD}$ associated with the constant polynomial is~0,
+and all the other eigenvalues of this operator are integer numbers less than or equal to $-1$.
 % and that the associated eigenvalues natural numbers.
 We denote the normalized eigenfunctions by $(\mathscr H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
 and the corresponding eigenvalues by $(-\lambda_{\vect \alpha})_{\vect \alpha \in \nat^d}$.

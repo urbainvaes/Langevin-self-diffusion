@@ -12,8 +12,8 @@ include("lib_underdamped.jl")
 # PARAMETERS {{{1
 
 # Parse arguments
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .01;
-control_type = length(ARGS) > 1 ? ARGS[2] : "underdamped";
+γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .1;
+control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin";
 
 if control_type == "underdamped"
     Control = Underdamped
@@ -69,7 +69,7 @@ q, p, ξ = copy(q0), copy(p0), zeros(np);
 # Control
 # Dc, ψ, ∂ψ = Control.get_controls(γ, false)
 recalculate = true
-Dc, ψ, ∂ψ = Control.get_controls(γ, recalculate)
+Dc, ψ, ∂ψ = Control.get_controls(γ, 0,recalculate)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)

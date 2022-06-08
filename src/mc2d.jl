@@ -13,7 +13,7 @@ include("lib_underdamped.jl")
 
 # Parse arguments
 const γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1.;
-const δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .64;
+const δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .0;
 control_type = length(ARGS) > 2 ? ARGS[3] : "galerkin"
 
 # Batch number
@@ -76,7 +76,7 @@ q, p, ξ = copy(q0), copy(p0), zeros(np, 2);
 # Control
 if control_type == "galerkin"
     # !!! φ is solution of -Lφ = p (negative sign) !!!
-    Dc, ψ, ∂ψ = Spectral.get_controls(γ, δ, false)
+    Dc, ψ, ∂ψ = Spectral.get_controls(γ, δ, true)
 elseif control_type == "underdamped"
     Dc = (1/γ)*Underdamped.diff_underdamped(β);
     φ₀ = Underdamped.solution_underdamped();
@@ -96,7 +96,6 @@ nslice = niter ÷ nsave;
 # Write initial condition to file
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
-qper = q - 2π*floor.(Int, (q.+π)/2π);
 
 @views function main()
 
@@ -123,9 +122,9 @@ qper = q - 2π*floor.(Int, (q.+π)/2π);
         p[:, 2] .= α*p[:, 2] + sqrt(2γ/β)*gs₂
 
         if i % nslice == 0
-            # DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
-            # DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
-            # DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
             term11 = (q[:, 1] - q0[:, 1]).^2 / (2*i*Δt)
             term12 = (q[:, 1] - q0[:, 1]).*(q[:, 2] - q0[:, 2]) / (2*i*Δt)
             term22 = (q[:, 2] - q0[:, 2]).^2 / (2*i*Δt)

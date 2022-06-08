@@ -27,9 +27,9 @@ end
 
 @inbounds function bilinear_interpolant(values, q, p, Lp, dq, dp, qgrid, pgrid)
     q = q - 2π*floor(Int, (q+π)/2π);
-    # if abs(p) >= Lp
-    #     println("p is out of interpolation grid!")
-    # end
+    if abs(p) >= Lp
+        println("p is out of interpolation grid!")
+    end
     iq, ip = 1 + floor(Int, (q+π)/dq), 1 + floor(Int, (p+Lp)/dp);
     x, y = (q - qgrid[iq])/dq, (p - pgrid[ip])/dp
     a11 = values[iq, ip];
@@ -52,8 +52,8 @@ function get_controls(γ, δ, recalculate)
         Lp = pgrid[end]
     else
         _, solution_fun, dp_solution_fun = galerkin_solve(γ)
-        # nq, np, Lp = 300, 500, 9;
-        nq, np, Lp = 100, 100, 9; # Old parameters!
+        nq, np, Lp = 300, 500, 9;
+        # nq, np, Lp = 100, 100, 9; # Old parameters!
         dq, dp = 2π/nq, Lp/np;
         qgrid = -π .+ dq*collect(0:nq);
         pgrid = dp*collect(-np:np);
@@ -90,17 +90,12 @@ function get_controls(γ, δ, recalculate)
         Zδ, _ = Cubature.hcubature(q -> exp(-β*Vδ(q[1], q[2])), [-π, -π], [π, π])
         Zp = sqrt(2π/β)
 
-        nevals = 0
         function integrand(x)
-            global nevals += 1
-            if nevals % 100000 == 0
-                println(nevals)
-            end
             q₁, q₂, p₁ = x
             μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
             return φ(q₁, p₁)*p₁ * μ(q₁, q₂, p₁)
         end
-        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], reltol=1e-5)
+        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], reltol=1e-5)[1]
         println("Effective diffusion (Interpolant): $D")
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end
@@ -455,13 +450,6 @@ function galerkin_solve(γ)
     solution_fun = eval_series(solution);
     dp_solution_fun = eval_series(dp_solution);
     return (D, solution_fun, dp_solution_fun)
-end
-
-function series_eval(series, ps)
-    d = length(series.coeffs) - 1
-    hermite_evals = hermite_eval(d, ps/series.sigma)
-    factors = 1/(β*series.sigma^2)^(1/4) * exp.((β - 1/series.sigma^2)*ps.^2/4)
-    return (hermite_evals .* factors')' * series.coeffs
 end
 
 end

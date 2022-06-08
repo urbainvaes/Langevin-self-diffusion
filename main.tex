@@ -1692,17 +1692,19 @@ On one hand, Galerkin methods for the Poisson equation suffer from the curse of 
 on the other hand, the behavior of the solution to the Poisson equation is not well understood in the underdamped limit.
 In this section, we discuss alternative approaches.
 We begin by showing that,
-under a symmetry assumption on the potential~$V$,
+under symmetry assumptions on the potential~$V$,
 the diffusion tensor $\mat D^{\gamma}$ is isotropic.
 
 \begin{lemma}
     \label{lemma:diffusion_symmmetry}
-    Assume that $V(q_1, q_2) = V(q_2, q_1)$.
-    Then it holds that $D^{\gamma}_{11} = D^{\gamma}_{22}$ and $D^{\gamma}_{12} = 0$.
+    If $V$ satisfies the symmetry relation $V(q_1, q_2) = V(q_2, q_1)$,
+    then $D^{\gamma}_{11} = D^{\gamma}_{22}$.
+    In addition, if $V(q_1, q_2) = V(q_1, -q_2)$ or $V(q_1, q_2) = V(-q_1, q_2)$,
+    then $D_{12} = 0$.
 \end{lemma}
 \begin{proof}
-    We prove only that $D^{\gamma}_{12} = 0$,
-    the other claim being obvious by symmetry.
+    The first claim is obvious by symmetry.
+    Here we prove only that $D^{\gamma}_{12} = 0$ if the potential satisfies $V(q_1, q_2) = V(q_1, -q_2)$.
     To this end,
     let $\mathcal R$ be the operator on~$L^2_0(\mu)$ defined by $\mathcal R f(q_1, p_1, q_2, p_2) = f(q_1, p_1, -q_2, -p_2)$.
     A simple calculation shows that~$\mathcal R \mathcal L \mathcal R = \mathcal L$ and so,
@@ -2025,6 +2027,13 @@ and there is increasing evidence that these approaches are able to overcome the 
 % The
 % ~\cite{MR3847747,MR4338293,pmlr-v145-zhai22a}.
 
+\paragraph{Acknowledgements.}
+The work of GS and UV was partially funded by the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 810367),
+and by the Agence Nationale de la Recherche under grant ANR-21-CE40-0006 (SINEQ).
+The work of GAP was partially supported by JPMorgan Chase & Co under J.P. Morgan A.I. Research Awards in 2019 and 2021 and by the EPSRC, grant number EP/P031587/1.
+The work of UV was partially funded by the Fondation Sciences Mathématiques de Paris (FSMP),
+through a postdoctoral fellowship in the ``mathematical interactions'' programme.
+
 \appendix
 \section{Proof of \texorpdfstring{\cref{proposition:semigroup_meanzero_observable}}{Proposition 2.1}}%
 \label{sec:auxiliary_technical_results}
@@ -2063,14 +2072,14 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
     \label{lemma:semigroup}
     It holds that
     \[
-        D(\mathcal L_{\rm FD}) = \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\} = H^2(\kappa) \cap L^2_0(\kappa).
+        D(\mathcal L_{\rm FD}) := \Bigl\{ f \in L^2_0(\kappa): \mathcal L_{\rm FD} f \in L^2_0(\kappa) \Bigr\} = H^2(\kappa) \cap L^2_0(\kappa).
     \]
     In addition, the unbounded operator
     \(
         % \label{eq:unbounded_operator}
         \mathcal L_{\rm FD}
     \)
-    with domain $D(\mathcal L_{\rm FD})$
+    with domain $D(\mathcal L_{\rm FD})$ has a discrete spectrum and
     generates a contraction semigroup~$(\e^{t \mathcal L_{\rm FD}})_{t \geq 0}$ on $L^2_0(\kappa)$,
     with $\lVert \e^{t \mathcal L_{\rm FD}} f \rVert \leq \e^{-t} \lVert f \rVert$ for all $f \in L^2_0(\kappa)$ and $t \geq 0$.
 \end{lemma}
@@ -2153,18 +2162,20 @@ for example, from~\cite[Chapter 9]{lorenzi2006analytical}.
 %     Simple calculations similar to those in the proof of~\cref{lemma:semigroup} enable to show this equivalence for $i \in \{0, 1, 2\}$,
 %     which is sufficient for our purposes.
 % \end{remark}
-
-The resolvent operator $\mathcal L_{\rm FD}^{-1} \colon L^2_0(\kappa) \to L^2_0(\kappa)$ is compact and self-adjoint.
-Therefore, by the spectral theorem,
-there exists an orthonormal basis of $L^2(\kappa)$ consisting of eigenfunctions of~$\mathcal L_{\rm FD}^{-1}$.
+% The resolvent operator $\mathcal L_{\rm FD}^{-1} \colon L^2_0(\kappa) \to L^2_0(\kappa)$ is compact and self-adjoint.
+% Therefore, by the spectral theorem,
+% there exists an orthonormal basis of $L^2(\kappa)$ consisting of eigenfunctions of~$\mathcal L_{\rm FD}^{-1}$.
 % The eigenfunctions of $\mathcal L_{\rm FD}$ are rescaled Hermite polynomials,
-These, which are also eigenfunctions of $\mathcal L_{\rm FD}$, are given by rescaled Hermite polynomials.
-The eigenvalue of~$\mathcal L_{\rm FD}$ associated with the constant polynomial is~0,
-and all the other eigenvalues of this operator are integer numbers less than or equal to $-1$.
+
+The eigenfunctions of $\mathcal L_{\rm FD}$ are given by rescaled Hermite polynomials,
+which form a complete orthonormal set of~$L^2(\kappa)$.
+The eigenvalue associated with the constant polynomial is~0,
+and all the other eigenvalues are integer numbers less than or equal to $-1$.
 % and that the associated eigenvalues natural numbers.
 We denote the normalized eigenfunctions by $(\mathscr H_{\vect \alpha})_{\vect \alpha \in \nat^d}$
 and the corresponding eigenvalues by $(-\lambda_{\vect \alpha})_{\vect \alpha \in \nat^d}$.
-Then, by continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$ for fixed $t \geq 0$,
+Then
+% , by continuity of~$\e^{t \mathcal L_{\rm FD}}$ on~$L^2_0(\kappa)$ for fixed $t \geq 0$,
 \begin{equation}
     \label{eq:series_expansion}
     \forall f \in L^2_0(\kappa), \qquad
@@ -2208,7 +2219,7 @@ This formula can be employed to show the following estimates.
         \lambda \e^{- 2\lambda t} \leq \frac{\e^{-1}}{2 t},
     \)
     which is valid for all $\lambda \in \real$.
-    The second claim follows from the fact that $\e^{-2\lambda_n t} \leq \e^{-2t}$ for all $n \in \nat^*$.
+    The second claim follows from the fact that $\e^{-2\lambda_{\vect \alpha} t} \leq \e^{-2t}$ for all $|\vect \alpha| \geq 1$.
 
 
     Consider now the case where $f \in L^2(\kappa)$ does not necessarily belong to $D(\mathcal L_{\rm FD})$

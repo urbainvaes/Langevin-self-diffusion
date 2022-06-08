@@ -490,13 +490,13 @@ and so the estimator $v(T)$ can be employed in practice.
     The expectation of the third term converges to zero by the Cauchy--Schwarz inequality,
     which concludes the proof of~\eqref{eq:explicit_limit}.
 \end{proof}
-Repeating verbatim the reasoning of~\cref{lemma:explicit_limit} with~$\phi_{\vect e}$ instead of $\psi_{\vect e}$ and $\vect e^\t (\vect q_T - \vect q_0)$ instead of $\xi_T$,
+Repeating verbatim the reasoning in the proof of~\cref{lemma:explicit_limit} with~$\phi_{\vect e}$ instead of $\psi_{\vect e}$ and $\vect e^\t (\vect q_T - \vect q_0)$ instead of $\xi_T$,
 we obtain that
 \[
     \lim_{T \to \infty} \expect [u(T)] = d[\phi_{\vect e}],
 \]
 implying that $d[\phi_{\vect e}] = D^{\gamma}_{\vect e}$,
-since the limit on the left-hand side of this equation is $D^{\gamma}_{\vect e}$ by~\eqref{eq:einsteins_formula}.
+since the limit on the left-hand side of this equation is by definition $D^{\gamma}_{\vect e}$ in view of~\eqref{eq:einsteins_formula}.
 This equality can also be shown from~\eqref{eq:effective_diffusion_poisson} by integrating by parts in the formula for $d[\phi_{\vect e}]$:
 \begin{align}
     \notag
@@ -570,13 +570,13 @@ constant potential and quadratic potential (for systems in $\real^d$ rather than
 In the rest of this section,
 we employ the notation $\e^{\mathcal L t}$ to denote the Markov semigroup corresponding to the stochastic dynamics~\eqref{eq:langevin}:
 \[
-    \e^{\mathcal L t} \varphi(\vect q, \vect p) = \expect \bigl(\varphi(\vect q_t, \vect p_t) | (\vect q_0, \vect p_0) = (\vect q, \vect p)\bigr).
+    \left(\e^{\mathcal L t} \varphi\right) (\vect q, \vect p) = \expect \bigl(\varphi(\vect q_t, \vect p_t) \big| (\vect q_0, \vect p_0) = (\vect q, \vect p)\bigr).
 \]
 % , or of the velocity auto-correlation function,
 \begin{example}
     [Constant potential]
     \label{example:constant}
-    Consider the case where $V(q) = 0$ in $d = 1$ dimension
+    Consider the case where $V(q) = 0$ in dimension $d = 1$ 
     (henceforth we drop the $\vect e$ subscript and the bold notation for $\vect q$ and $\vect p$).
     In this case, the solution to the Poisson equation $- \mathcal L \phi = p$ is given by $\phi(q, p) = \gamma^{-1} p$,
     and applying Itô's formula to this function we obtain
@@ -737,7 +737,7 @@ it holds that
 since the contribution of the domain $0 \leq t \leq s \leq T$ is the same as that of $0 \leq s \leq t \leq T$.
 The stationarity of the velocity process implies that, for ~$t \geq s$,
 \begin{align*}
-    \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right] 
+    \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right]
     &= \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \right]
     = \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \middle| (\vect q_0, \vect p_0) \right] \right] \\
     &= \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right)  \middle| (\vect q_0, \vect p_0) \right] \left(\vect e^\t \vect p_0\right)\right] \\
@@ -791,7 +791,7 @@ Noting that
     \label{eq:petit_calcul}
     \forall \lambda > 0, \qquad
     \int_{0}^{\infty} \e^{-\lambda \theta} \min\left\{ 1, \frac{\theta}{T} \right\} \, \d \theta
-    % \leq \frac{1}{T} \int_{0}^{\infty} \theta \e^{-\lambda \theta} \, \d \theta 
+    % \leq \frac{1}{T} \int_{0}^{\infty} \theta \e^{-\lambda \theta} \, \d \theta
     = \frac{1 - \e^{- \lambda T}}{\lambda^2 T} \leq \frac{1}{\lambda^2 T},
 \end{equation}
 we obtain~\eqref{eq:bias_simple}.
@@ -1197,8 +1197,8 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
         2 \norm{a}^4 + 2 \norm{b}^4 - 4\ip{a}{b}^2
         &= 2 \norm{a}^4 + 2 \norm{b}^4 - \bigl(\ip{a}{a} + \ip{b}{b} - \ip{a-b}{a-b} \bigr)^2 \\
         &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + 2 \norm{a-b}^2 \bigl(\norm{a}^2 + \norm{b}^2 \bigr) - \norm{a-b}^4 \\
-        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2 \\ 
-        &= \ip{a - b}{a + b}^2 + \norm{a-b}^2 \norm{a + b}^2 \\ 
+        &= \bigl(\norm{a}^2 - \norm{b}^2 \bigr)^2 + \norm{a-b}^2 \norm{a + b}^2 \\
+        &= \ip{a - b}{a + b}^2 + \norm{a-b}^2 \norm{a + b}^2 \\
         &\leq 2 \norm{a - b}^2 \norm{a + b}^2
         \leq 4 \norm{a - b}^2 \bigl(\norm{a}^2 + \norm{b}^2\bigr).
     \end{align*}

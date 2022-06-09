@@ -38,6 +38,7 @@
 % \end{itemize}
 
 \section{Introduction}%
+\label{sec:introduction}
 Langevin dynamics model the evolution of a system of particles interacting with an environment at fixed temperature.
 They are widely used for the calculation of macroscopic properties of matter in molecular simulation~\cite{MR2723222,allen2017computer}.
 Assuming a diagonal mass matrix,
@@ -143,7 +144,8 @@ to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamm
 The matrix $\mat D^{\gamma}$ is known as the effective diffusion matrix associated with the dynamics.
 This result may be obtained by using the homogenization technique pioneered by Bhattacharya in~\cite{MR663900},
 which hinges on the functional central limit theorem for martingales~\cite{MR668684};
-see also~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
+see also the early reference~\cite[Chapter~3]{MR503330},
+the book~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
 and~\cite[Theorem 2.5]{MR2793823} for a detailed proof of the homogenization theorem for the Markovian approximation of the generalized Langevin equation.
 The precise statement of Einstein's relation is then that
 \[
@@ -286,7 +288,7 @@ His results suggest that, for a wide range of friction coefficients in the inter
 and in the particular case of the potential
 \begin{equation}
     \label{eq:potential_julien}
-    V(\vect q) = - \frac{1}{2} \bigl( \cos(q_1) + \cos(q_2) \bigr) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
+    V(\vect q) = - \bigl( \cos(q_1) + \cos(q_2) \bigr) + \delta \exp \bigl(\sin(q_1 + q_2)\bigr),
 \end{equation}
 the mobility scales as $\gamma^{- \sigma}$,
 with an exponent $\sigma \in [0, 1]$ that depends on the degree $\delta$ of non-separability of the potential. Despite claims in the physics literature, it is not expected that a universal scaling of mobility, or, equivalently, the effective diffusion coefficient, exists for general classes of non-separable potentials in dimensions higher than one.
@@ -435,12 +437,15 @@ More precisely, we consider the following estimator instead of~$u(T)$:
 Clearly, this estimator and $u(T)$ have the same expectation, and thus the same bias.
 By standard properties of control variates~\cite{kroese2013handbook},
 the value of $\alpha$ minimizing the variance can be expressed in terms of the variance of $u(T)$ and
-the covariance between $u(T)$ and $\widehat u(T)$,
-but for simplicity of the analysis we consider only the case $\alpha = 1$.
-This is the variance-minimizing choice when~$\widehat u(T) = u(T)$,
-and it yields good results as long as $\widehat u(T)$ is a good approximation of~$u(T)$.
+the covariance between $u(T)$ and $\widehat u(T)$.
+For simplicity of the analysis,
+we consider only the case $\alpha = 1$,
+which is the variance-minimizing choice when~$\widehat u(T) = u(T)$.
+% and it yields good results as long as $\widehat u(T)$ is a good approximation of~$u(T)$.
 We mention in passing that the idea of constructing control variates by means of approximate solutions of an appropriate Poisson equation forms the basis of the so-called zero variance Markov Chain Monte Carlo methodology~\cite{papamarkou_al_2014}.
-The estimator can be further modified by replacing the expectation in~\eqref{eq:simple_estimator_improvement_1} by its value in the limit as $T \to \infty$;
+The estimator can be further modified by replacing the expectation in~\eqref{eq:simple_estimator_improvement_1},
+which is intractable analytically,
+by its value in the limit as $T \to \infty$;
 that is, we define
 \begin{equation}
     \label{eq:improved_estimator}
@@ -490,13 +495,14 @@ and so the estimator $v(T)$ can be employed in practice.
     The expectation of the third term converges to zero by the Cauchy--Schwarz inequality,
     which concludes the proof of~\eqref{eq:explicit_limit}.
 \end{proof}
-Repeating verbatim the reasoning in the proof of~\cref{lemma:explicit_limit} with~$\phi_{\vect e}$ instead of $\psi_{\vect e}$ and $\vect e^\t (\vect q_T - \vect q_0)$ instead of $\xi_T$,
+Repeating verbatim the reasoning in the proof of~\cref{lemma:explicit_limit} with~$\phi_{\vect e}$ instead of $\psi_{\vect e}$ and $\vect e^\t (\vect q_T - \vect q_0)$ instead of $\xi_T$
+(see~\eqref{eq:ito_for_phi}),
 we obtain that
 \[
     \lim_{T \to \infty} \expect [u(T)] = d[\phi_{\vect e}],
 \]
 implying that $d[\phi_{\vect e}] = D^{\gamma}_{\vect e}$,
-since the limit on the left-hand side of this equation is by definition $D^{\gamma}_{\vect e}$ in view of~\eqref{eq:einsteins_formula}.
+since the limit on the left-hand side of this equation is by definition~$D^{\gamma}_{\vect e}$ in view of~\eqref{eq:einsteins_formula}.
 This equality can also be shown from~\eqref{eq:effective_diffusion_poisson} by integrating by parts in the formula for $d[\phi_{\vect e}]$:
 \begin{align}
     \notag
@@ -709,7 +715,7 @@ we prove a finer bound on the bias in~\cref{corollary:better_bias}.
 \begin{lemma}
     [Preliminary bound on the bias of the standard estimator]
     \label{lemma:easy_lemma}
-    There exists a constant~$C$such that
+    There exists a positive constant~$C$such that
     \begin{equation}
         \label{eq:bias_simple}
         \forall \gamma \in (0, \infty),
@@ -739,9 +745,9 @@ The stationarity of the velocity process implies that, for ~$t \geq s$,
 \begin{align*}
     \expect \left[ \left(\vect e^\t \vect p_t\right) \left(\vect e^\t \vect p_s\right) \right]
     &= \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \right]
-    = \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \middle| (\vect q_0, \vect p_0) \right] \right] \\
-    &= \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right)  \middle| (\vect q_0, \vect p_0) \right] \left(\vect e^\t \vect p_0\right)\right] \\
-    &= \expect \left[ \Bigl( \e^{(t-s) \mathcal L} \left(\vect e^\t \vect p\right) \Bigr) (\vect q_0,\vect p_0) \left(\vect e^\t \vect p_0\right)\right]
+    % = \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right) \left(\vect e^\t \vect p_0\right) \middle| (\vect q_0, \vect p_0) \right] \right] \\
+    % &= \expect \left[ \expect \left[ \left(\vect e^\t \vect p_{t-s}\right)  \middle| (\vect q_0, \vect p_0) \right] \left(\vect e^\t \vect p_0\right)\right] \\
+    % &= \expect \left[ \Bigl( \e^{(t-s) \mathcal L} \left(\vect e^\t \vect p\right) \Bigr) (\vect q_0,\vect p_0) \left(\vect e^\t \vect p_0\right)\right]
     = \ip{\e^{(t-s) \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p}.
 \end{align*}
 Substituting this expression in~\eqref{eq:first_equation_bias} and letting $\theta = t-s$ leads to
@@ -759,7 +765,7 @@ As we shall demonstrate, the second term tends to 0 in the limit as $T \to \inft
 Therefore, since the estimator $u(T)$ is asymptotically unbiased,
 the first term must coincide with the effective diffusion coefficient~$D^{\gamma}_{\vect e}$
 -- this is in fact the well known Green--Kubo formula for the effective diffusion coefficient, see e.g.~\cite{pavliotis2011applied,MR3509213}.
-The Green--Kubo formula can also be derived from~\eqref{eq:effective_diffusion_poisson} with the representation formula $\phi_{\vect e} = \int_{0}^{\infty} \e^{\theta \mathcal L} \left(\vect e^\t \vect p\right) \, \d \theta$,
+The Green--Kubo formula can also be derived from~\eqref{eq:effective_diffusion_poisson} by using the representation formula $\phi_{\vect e} = \int_{0}^{\infty} \e^{\theta \mathcal L} \left(\vect e^\t \vect p\right) \, \d \theta$,
 which is well defined in view of the exponential decay of $\e^{\theta \mathcal L}$ on $L^2_0(\mu)$,
 see~\eqref{eq:decay_semigroup_general} below.
 The second term in~\eqref{eq:bias_without_control} is the bias.
@@ -810,13 +816,13 @@ with
 \]
 The operators $\Pi_{\vect p}$ and $\Pi_{\vect p}^\perp$ are respectively the $L^2(\mu)$ projection operators onto
 the subspace of functions depending only on $\vect q$,
-and the subspace of functions with average $0$ in $\vect p$ (with respect to the marginal distribution $\kappa$, defined in Eqn.~\eqref{eq:definition_prob_measures}, and for almost every $\vect q \in \torus^d$).
+and the subspace of functions with average $0$ in $\vect p$ (with respect to the marginal distribution $\kappa$, defined in~\eqref{eq:definition_prob_measures}, and for almost every $\vect q \in \torus^d$).
 We also introduce the space $H^{1,\vect q}(\mu)$ of functions in $L^2(\mu)$ with their $\vect q$-gradient also in $L^2(\mu)$,
 and the associated norm $\norm{\dummy}[1,\vect q] = \norm{\dummy} + \norm{\grad_{\vect q} \dummy}$.
 \begin{proposition}
     \label{proposition:semigroup_meanzero_observable}
     Assume that $f \in H^{1,\vect q}(\mu)$ and $h \in H^{1,\vect q}(\mu)$ are smooth functions in~$\Pi_{\vect p}^\perp \lp{2}{\mu}$.
-    Then there exist constants $A$ and $a$, independent of $f$ and $h$, such that
+    Then there exist positive constants $A$ and $a$, independent of $f$ and $h$, such that
     \begin{equation}
         \label{eq:optimal_decay_correlation}
         \forall \gamma \geq 1, \quad
@@ -831,13 +837,13 @@ enables to show the following bound on the bias of~$u(T)$,
 which is better than~\cref{lemma:easy_lemma} in the large $\gamma$ regime.
 Roughly speaking, \cref{proposition:semigroup_meanzero_observable} states that,
 when $\gamma \gg 1$ and $f$ and $h$ are mean-zero in $\vect p$,
-correlations of the form $\expect \bigl[ f(\vect p_t) h(\vect p_0) \bigr]$ are~$\mathcal O(\gamma^{-2})$ small after a small $\mathcal O(\gamma^{-1} \log \gamma)$ time,
+correlations of the form $\expect \bigl[ f(\vect p_t) h(\vect p_0) \bigr]$ are~$\mathcal O(\gamma^{-2})$ small after a small time of order $\mathcal O(\gamma^{-1} \log \gamma)$,
 despite the fact that their asymptotic decay as~$\e^{- a \gamma^{-1} t}$ is slow.
 % In other words, information on the starting $p$ is quickly forgotten.
 \begin{corollary}
     [Bias of the standard estimator]
     \label{corollary:better_bias}
-    There exists a constant~$\widehat C$ such that
+    There exists a positive constant~$\widehat C$ such that
     \begin{equation}
         \label{eq:bias}
         \forall \gamma \in (0, \infty),
@@ -851,13 +857,16 @@ despite the fact that their asymptotic decay as~$\e^{- a \gamma^{-1} t}$ is slow
     \end{equation}
 \end{corollary}
 \begin{proof}
-    Applying \cref{proposition:semigroup_meanzero_observable} with $f(\vect q, \vect p) = h(\vect q, \vect p) = \vect e^\t \vect p$, we obtain
-    \begin{equation}
+    Applying \cref{proposition:semigroup_meanzero_observable} with $f(\vect q, \vect p) = h(\vect q, \vect p) = \vect e^\t \vect p$,
+    and recalling that the bias coincides with the second term on the right-hand side of~\eqref{eq:bias_without_control},
+    we obtain
+    \begin{align}
         \label{eq:refined_bound_for_u}
         \abs{\expect \bigl[u(T)\bigr] - D^{\gamma}_{\vect e}}
-        \leq \frac{A}{\beta T} \int_{0}^{\infty} \left( \gamma^{-2} \e^{- a \gamma^{-1} \theta} + \e^{-a  \gamma \theta} \right)  \theta \, \d \theta
+        &\leq \frac{A}{\beta} \int_{0}^{\infty} \left( \gamma^{-2} \e^{- a \gamma^{-1} \theta} + \e^{-a  \gamma \theta} \right)  \min \left\{1,  \frac{\theta}{T} \right\} \, \d \theta \\
+        &\leq \frac{A}{\beta T} \int_{0}^{\infty} \left( \gamma^{-2} \e^{- a \gamma^{-1} \theta} + \e^{-a  \gamma \theta} \right)  \theta \, \d \theta
         \leq \frac{A}{\beta a^2 T} \left(1 + \frac{1}{\gamma^2} \right),
-    \end{equation}
+    \end{align}
     which directly yields the result.
     % Combining this inequality with \cref{lemma:easy_lemma},
     % we obtain the result.
@@ -866,7 +875,7 @@ despite the fact that their asymptotic decay as~$\e^{- a \gamma^{-1} t}$ is slow
     % because the time step must scale as $\gamma^{-1}$ in order to accurately integrate the Langevin dynamics,
     % leading to a computational cost in the overdamped limit scaling as $\gamma^2$.
 \end{proof}
-This shows that the relative bias in fact scales as~$\max\{\gamma^{-1}, \gamma\} T^{-1}$,
+The estimate~\eqref{eq:bias} shows that the relative bias in fact scales as~$\max\{\gamma^{-1}, \gamma\} T^{-1}$,
 and so it is sufficient to take~$T \propto \gamma$ in order to control the bias in the overdamped limit.
 
 \begin{remark}
@@ -887,7 +896,7 @@ which is recovered in the particular case when $\psi_{\vect e} = 0$.
     Assume that $\mathcal L \psi_{\vect e} \in \lp{2}{\mu}$.
     % \begin{itemize}
     % \item \textbf{General bound for $\gamma \in (0, \infty)$:}
-    With the same notation as in~\eqref{eq:bias},
+    With the same notation as in~\eqref{eq:decay_semigroup_general},
     it holds that
     \begin{align}
         \label{eq:basic_bound_bias}
@@ -912,29 +921,25 @@ Note that the right-hand side of~\eqref{eq:basic_bound_bias} is small when $\mat
     &= d[\psi_{\vect e}] +  \int_{0}^{T} \Bigl( \ip{\e^{\theta \mathcal L}\bigl(\vect e^\t \vect p\bigr)}{\vect e^\t \vect p} - \ip{\e^{\theta \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \Bigr) \left( 1 - \frac{\theta}{T} \right) \d \theta \\
     &= D^{\gamma}_{\vect e} - \int_{0}^{\infty} \min\left\{1, \frac{\theta}{T}\right\} \Bigl( \ip{\e^{\theta \mathcal L}\bigl(\vect e^\t \vect p\bigr)}{\vect e^\t  \vect p} - \ip{\e^{\theta \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \Bigr) \, \d \theta.
     \end{align*}
-    In order to obtain~\eqref{eq:basic_bound_bias},
     we denote the $L^2(\mu)$ of the generator $\mathcal L$ by~
     \(
         \mathcal L^* = - \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}
     \).
     We have
     \begin{align*}
-        \left\lvert \ip{\e^{t \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \right\rvert
-    &= \ip{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}{\e^{t \mathcal L} (\vect e^\t \vect p) - \e^{t \mathcal L^*} \mathcal  L\psi_{\vect e}} \\
-    &\hspace{-1cm} \leq \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}
-    \left( \norm*{\e^{t \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \, \norm*{\vect e^\t \vect p} + \norm*{\e^{t \mathcal L^*}}[\mathcal B\left(L^2_0(\mu) \right)] \norm{\mathcal L \psi_{\vect e}} \right) \\
-    &\hspace{-1cm} \leq L \e^{- \ell \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t \vect p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
+         \left\lvert \ip{\e^{t \mathcal L}(\vect e^\t \vect p)}{\vect e^\t \vect p} - \ip{\e^{t \mathcal L} \mathcal L \psi_{\vect e}}{\mathcal L \psi_{\vect e}} \right\rvert
+        &= \abs{\ip{\e^{t \mathcal L} (\vect e^\t \vect p)}{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}- \ip{\e^{t \mathcal L} \left(\vect e^\t \vect p + \mathcal L \psi_{\vect e}\right)}{\mathcal  L\psi_{\vect e}}} \\
+    &\qquad \leq \norm{\e^{t \mathcal L}}[\mathcal B\left(L^2_0(\mu) \right)] \norm*{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}
+     \left(\norm*{\vect e^\t \vect p} + \norm{\mathcal L \psi_{\vect e}} \right) \\
+    &\qquad \leq L \e^{- \ell \min\{\gamma, \gamma^{-1}\} t} \norm*{\vect e^\t \vect p + \mathcal L\psi_{\vect e}}  \left(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}} \right),
     \end{align*}
-    where the first inequality is justified in view of the fact that,
-    being adjoints of one another,
-    the operators $\e^{t \mathcal L^*}$ and $\e^{t \mathcal L}$ have the same norm.
-    The constants $L$ and $\ell$ are the same as in~\eqref{eq:decay_semigroup_general}.
+    where $L$ and $\ell$ are the same constants as in~\eqref{eq:decay_semigroup_general}.
     We finally obtain~\eqref{eq:basic_bound_bias} in view of~\eqref{eq:petit_calcul}.
 \end{proof}
 
 \Cref{lemma:bias_improved} suffers from the same shortcoming as~\cref{lemma:easy_lemma}:
 it is not optimal in the large $\gamma$ regime.
-Employing~\cref{proposition:semigroup_meanzero_observable} is a similar manner as in the proof of~\cref{corollary:better_bias},
+Employing~\cref{proposition:semigroup_meanzero_observable} in a similar manner as in the proof of~\cref{corollary:better_bias},
 we prove in~\cref{sec:proof_technical_result} that,
 if $\mathcal L \psi_{\vect e} \in H^{1,\vect q}(\mu)$,
 then there is $C$ independent of $\psi_{\vect e}$ such that
@@ -944,23 +949,22 @@ then there is $C$ independent of $\psi_{\vect e}$ such that
     \forall T > 0, \qquad
     \abs{\expect \bigl[ v(T) \bigr] - D_{\vect e}^{\gamma}}
         &\leq C T^{-1}
-        \norm*{\vect e^\t \vect p +  \mathcal L \psi_{\vect e}}[1,\vect q] \, \bigl(1 + \norm{\mathcal L \psi_{\vect e}}[1,\vect q] \bigr) \\
+        \norm*{\vect e^\t \vect p +  \mathcal L \psi_{\vect e}}[1,\vect q] \, \bigl(\beta^{-1/2} + \norm{\mathcal L \psi_{\vect e}}[1,\vect q] \bigr) \\
         \label{eq:refined_bound}
         &\quad + C T^{-1} \gamma^2 \norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} \norm{\mathcal L \psi_{\vect e}},
 \end{align}
 This bound is not as satisfying as~\cref{corollary:better_bias},
-because a $\gamma^2$ factor remains in the second term on the right-hand side.
-
-    Notice that $\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} = \norm{\Pi_{\vect p} (\vect e^\t \vect p + \mathcal L \psi_{\vect e})} \leq \norm{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}$,
-    so the bound~\eqref{eq:refined_bound} is indeed an improvement over~\eqref{eq:basic_bound_bias} for large $\gamma$.
-    However,
-    unless $\Pi_{\vect p} \mathcal L \psi_{\vect e} = \Pi_{\vect p} \mathcal L_{\rm ham} \psi_{\vect e} = \mathcal O(\gamma^{-2})$,
-    the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit $\gamma \to \infty$
-    than that of the simple estimator $u(T)$, see~\eqref{eq:bias}.
-    It is then not clear that employing a control variate is useful in this limit.
-    Since our focus in this work is on the underdamped limit $\gamma \to 0$,
-    and since the overdamped limit $\gamma \to \infty$ for one or two-dimensional systems is more easily studied numerically through deterministic methods anyway,
-    we do not further investigate this issue.
+because a $\gamma^2$ factor remains in the second term on the right-hand side,
+although the prefactor $\norm{\Pi_{\vect p} \mathcal  L \psi_{\vect e}}$ is expected to be small as~$\norm{\Pi_{\vect p} \mathcal L \psi_{\vect e}} = \norm{\Pi_{\vect p} (\vect e^\t \vect p + \mathcal L \psi_{\vect e})} \leq \norm{\vect e^\t \vect p + \mathcal L \psi_{\vect e}}$.
+The bound~\eqref{eq:refined_bound} is therefore an improvement over~\eqref{eq:basic_bound_bias} for large $\gamma$.
+However,
+unless $\Pi_{\vect p} \mathcal L \psi_{\vect e} = \Pi_{\vect p} \mathcal L_{\rm ham} \psi_{\vect e} = \mathcal O(\gamma^{-2})$,
+the dependence on $\gamma$ of the bias in~\eqref{eq:refined_bound} is worse in the limit $\gamma \to \infty$
+than that of the simple estimator $u(T)$, see~\eqref{eq:bias}.
+It is then not clear that employing a control variate is useful in this limit.
+Since our focus in this work is on the underdamped limit $\gamma \to 0$,
+and since the overdamped limit $\gamma \to \infty$ for one or two-dimensional systems is more easily studied numerically through deterministic methods anyway,
+we do not further investigate this issue.
 
 % \begin{remark}
 %     In one spatial dimension, it is possible to modify a control variate $\psi$ in such a way that $\Pi_{\vect p} \mathcal L \psi = 0$.
@@ -1012,7 +1016,7 @@ as this is the regime where our approach is of practical interest.
 
 \begin{proposition}
     \label{proposition:variance}
-    There exists $C$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
+    There exists $C > 0$ independent of $\gamma$, $T$ and $\psi_{\vect e}$ such that
     \begin{equation}
         \label{eq:statement_variance}
         \begin{aligned}[b]
@@ -1063,7 +1067,7 @@ as this is the regime where our approach is of practical interest.
     \begin{align}
         \notag
         \var \bigl[v(T)\bigr]
-        &= \min_{\mathscr V \in \real} \expect \Bigl[\left(v(T) - \mathscr V\right)^2\Bigr]
+        &= \min_{\mathscr V \in \real} \expect \Bigl[\bigl(v(T) - \mathscr V\bigr)^2\Bigr]
         \leq \expect \left[ \bigl( v(T) - d[\psi_{\vect e}] \bigr)^2 \right] \\
         &= \frac{1}{4 T^2} \expect \left[ \left\lvert \vect e^\t (\vect q_T - \vect q_0) - \xi_T \right\rvert^2 \, \left\lvert \vect e^\t (\vect q_T - \vect q_0) + \xi_T \right\rvert^2 \right] \\
         \label{eq:bound_variance_two_factors}
@@ -1072,16 +1076,14 @@ as this is the regime where our approach is of practical interest.
         {\left(\expect \left[ \left\lvert \vect e^\t (\vect q_T - \vect q_0) + \xi_T \right\rvert^{2b} \right]\right)^{\frac{1}{b}}},
     \end{align}
     for any $(a, b) \in (1, \infty)^2$ such that $\frac{1}{a} + \frac{1}{b} = 1$.
-    We recall that, by It\^o's formula, it holds
-    \begin{align*}
-        \phi_{\vect e}(\vect q_T, \vect p_T) - \phi_{\vect e}(\vect q_0, \vect p_0)
-        &= - \int_{0}^{T} \, (\vect e^\t \vect p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_{\vect p} \phi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t, \\
-        \psi_{\vect e}(\vect q_T, \vect p_T) - \psi_{\vect e}(\vect q_0, \vect p_0)
-        &= \int_{0}^{T} \, \mathcal L \psi_{\vect e}(\vect q_t, \vect p_t) \, \d t + \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_{\vect p} \psi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t.
-    \end{align*}
-    Denoting the It\^o integrals in these equations by $I_{\phi}$ and $I_{\psi}$ respectively,
-    and using the short-hand notations $\phi_{s} = \phi_{\vect e}(\vect q_s, \vect p_s)$ and $\psi_{s} = \psi_{\vect e}(\vect q_s, \vect p_s)$,
-    we bound
+    We will use the notation
+    \[
+        I_{\phi} = \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_{\vect p} \phi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t,
+        \qquad
+        I_{\psi} = \sqrt{2 \gamma \beta^{-1}} \int_{0}^{T} \, \grad_{\vect p} \psi_{\vect e} (\vect q_t, \vect p_t) \cdot \d \vect w_t.
+    \]
+    Using the short-hand notations $\phi_{s} = \phi_{\vect e}(\vect q_s, \vect p_s)$ and $\psi_{s} = \psi_{\vect e}(\vect q_s, \vect p_s)$,
+    we have by~\eqref{eq:ito_for_phi} and~\eqref{eq:definition_control_variate}
     \begin{align*}
         \expect \left[ |\vect e^\t(\vect q_T - \vect q_0) - \xi_T|^{2 a} \right]
         &= \expect \left[ \abs{\phi_{0} - \phi_{T} - \psi_{0} + \psi_{T}  + I_{\phi} - I_{\psi}}^{2 a} \right] \\
@@ -1116,7 +1118,7 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \begin{proposition}
     [Asymptotic value of the variance]
     \label{proposition:asymptotic_variance}
-    Assume that there is $\varepsilon > 0$ such that
+    Assume that there exists $\varepsilon > 0$ such that
     \begin{equation}
         \label{eq:regularity_solution}
         \phi_{\vect e} \in L^{4+\varepsilon}(\mu),
@@ -1151,23 +1153,25 @@ we quantify more precisely the asymptotic variance of $v(T)$ in the limit as $T 
 \begin{proof}
     Using It\^o's isometry and the martingale central limit theorem~(see, for instance, \cite{MR668684} or \cite[Theorem 3.3]{pavliotis2008multiscale}),
     we obtain that
-    \[
-        X^T :=
-        \frac{1}{\sqrt{2T}}
-        \begin{pmatrix}
-            \vect e^\t (q_T - q_0) \\
-            \xi_T
-        \end{pmatrix}
-        \xrightarrow[T \to \infty]{\rm Law}
-        X^{\infty} \sim
-        \mathcal N \left(0,
-            \gamma \beta^{-1}
+    {\small%
+        \[
+            X^T :=
+            \frac{1}{\sqrt{2T}}
             \begin{pmatrix}
-                \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \phi_{\vect e} \, \d \mu & \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu \\
-                \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu & \int \grad_{\vect p} \psi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu
+                \vect e^\t (q_T - q_0) \\
+                \xi_T
             \end{pmatrix}
-        \right),
-    \]
+            \xrightarrow[T \to \infty]{\rm Law}
+            X^{\infty} \sim
+            \mathcal N \left(0,
+                \gamma \beta^{-1}
+                \begin{pmatrix}
+                    \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \phi_{\vect e} \, \d \mu & \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu \\
+                    \int \grad_{\vect p} \phi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu & \int \grad_{\vect p} \psi_{\vect e} \cdot \grad_{\vect p} \psi_{\vect e} \, \d \mu
+                \end{pmatrix}
+            \right),
+        \]
+    }
     where the domain of integration of all the integrals in the covariance matrix is $\torus^d \times \real^d$.
     For a bivariate Gaussian vector $X^{\infty} \sim \mathcal N(0, \Sigma)$ with density $g_{\Sigma}$,
     it holds by the general formula for the higher-order moments of multivariate Gaussians (Isserlis' theorem)
@@ -1249,7 +1253,7 @@ find~$\Psi_N \in V_N$ such that
   \left\{
     \begin{aligned}
        & - \mathscr P_N \, \mathcal L \, \mathscr P_N \Psi_N + \alpha_N u_N = \mathscr P_N p, \\
-       & \Psi_N^\t u_N = 0,
+       & \ip{\Psi_N}{u_N} = 0,
     \end{aligned}
   \right.
 \end{align}
@@ -1259,15 +1263,16 @@ $\mathscr P_N$ is the $\lp{2}{\mu}$ projection operator onto~$V_N$,
 $u_N = \mathscr P_N 1 / \norm{\mathscr P_N 1} \in V_N$
 and $\alpha_N$ is a Lagrange multiplier.
 As above,
-$\ip{\cdot}{\cdot}$ and $\norm{\cdot}$ denote respectively the standard inner product and norm of $\lp{2}{\mu}$.
+$\ip{\cdot}{\cdot}$ and~$\norm{\cdot}$ denote respectively the standard inner product and norm of $\lp{2}{\mu}$.
 The formulation~\eqref{eq:saddle_point_formutation} ensures
 that the system is well-conditioned at the finite dimensional level.
 % with a solution satisfying the centering constraint $\ip{\Psi_N}{1} = 0$.
 The solution $\Psi_N$ to~\eqref{eq:saddle_point_formutation} equivalently solves
 \[
-    - \mathcal P_N \, \mathcal L \, \mathcal P_N \Psi_N = \mathcal P_N p,
+    - \mathcal P_N \, \mathcal L \, \mathcal P_N \Psi_N = \mathcal P_N p, \qquad \Psi_N \in \{\phi - \ip{u_N}{\phi} u_N : \phi \in V_N\} =: W_N,
 \]
-where now $\mathcal P_N$ is the $L^2(\mu)$ projection on $\{\phi - \ip{u_N}{\phi} u_N : \phi \in V_N\}$.
+where now $\mathcal P_N$ is the $L^2(\mu)$ projection onto $W_N$.
+In practice, we solve~\eqref{eq:saddle_point_formutation}.
 As in~\cite{roussel2018spectral},
 we choose $V_N$ to be the subspace of $\lp{2}{\mu}$ spanned by the orthonormal basis of functions
 \begin{equation}
@@ -1303,12 +1308,14 @@ then the evaluation of $\partial_p \Psi_N$ at a configuration $(q, p)$ is comput
 because it requires to evaluate all the basis functions~\eqref{eq:basis_functions} at this configuration.
 Therefore, in practice, the approximate solution~$\Psi_N$ and its gradient are discretized, in a preprocessing step,
 over a Cartesian grid with vertices
-\[
+\begin{equation}
+    \label{eq:discretization_points}
     (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
-\]
+\end{equation}
 The domain in the $p$ direction is truncated at $-L_p$ and $L_p$,
-and the parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation.
-From the values of~$\Psi_N$ at these points,
+and the parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation of the Langevin dynamics.
+% Since the function $\Psi_N$ is $2\pi$-periodic in $q$,
+From the values of~$\Psi_N$ at the points~\eqref{eq:discretization_points},
 a bilinear interpolant $\widehat \Psi_N$ is constructed over the domain $[-\pi, \pi] \times [-L_p, L_p]$ as follows:
 \begin{align*}
     \widehat \Psi_N(q, p)
@@ -1381,10 +1388,10 @@ and in general this function can be approximated accurately by numerical quadrat
 For the potential $V(q) = \frac{1}{2} \bigl(1 - \cos(q)\bigr)$ considered in~\cref{sub:numerical_results},
 for example, $S_{\rm und}$ admits an explicit expression in terms of an elliptic integral of the second kind~\cite{MR2427108}.
 In practice, given an explicit expression or implementation of~$S_{\rm und}$,
-we calculate~$\varphi_0$ over a large interval $[0, E_{\max}]$ with $E_{\max} = 100$
+we calculate~$\varphi_0$ over a large interval $[0, E_{\max}]$ with $E_{\max} = 100 \beta$
 using the ODE solver from the Julia module \texttt{DifferentialEquations.jl}~\cite{rackauckas2017differentialequations} with default parameters.
 This returns an object containing an approximation of $\varphi_0$ at discrete values of $E$ automatically selected in order to meet a default accuracy threshold.
-Conveniently, this object can be evaluated at any $E \in [0, E_{\max}]$,
+Conveniently, this object can be evaluated at any~$E \in [0, E_{\max}]$,
 in which case an approximation $\varphi_0(E)$ automatically obtained by a high-order interpolation from the discrete solution is returned.
 
 \begin{remark}
@@ -1428,14 +1435,15 @@ because these are correlated with the Brownian increments necessary for construc
 Specifically, the It\^o integral in the definition~\eqref{eq:definition_control_variate} of $\xi$ is approximated using the explicit scheme
 \[
     I_{\psi}^{n+1} = I_{\psi}^n + \sqrt{2 \gamma \beta^{-1}} \, \grad_{\vect p} \psi(\vect q^{n}, \vect p^{n}) \cdot
-    \widetilde {\vect g}^n, \qquad \widetilde {\vect g}^n = \vect w_{t_{n+1}} - \vect w_{t_n},
+    \widetilde {\vect g}^n, \qquad \widetilde {\vect g}^n = \vect w_{(n+1)\Delta t} - \vect w_{n \Delta t},
 \]
 where $(\widetilde {\vect g}^n)_{n \geq 0}$ are $d$-dimensional standard Gaussian random variables correlated with $(\vect g^n)_{n \geq 0}$
-and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{t_n} \grad_{\vect p} \psi_{\vect e}(q_t, p_t) \cdot \d \vect w_t$.
+and $I_{\psi}^{n}$ is an approximation of $\sqrt{2 \gamma \beta^{-1}} \int_{0}^{n \Delta t} \grad_{\vect p} \psi_{\vect e}(q_t, p_t) \cdot \d \vect w_t$.
 An explicit calculation using It\^o's isometry shows that the vectors $(\vect g^n, \widetilde {\vect g}^n)_{n \geq 0}$,
 which are independent and identically distributed for different values of $n$,
 are normally distributed with mean 0 and covariance matrix
 \[
+    \mat S =
     \begin{pmatrix}
         \displaystyle \frac{1}{2 \gamma} \bigl(1 - \e^{-2 \gamma \Delta t}\bigr) \mat I_d
         & \displaystyle \frac{1}{\gamma}\bigl(1 - \e^{-\gamma \Delta t}\bigr) \mat I_d \\[.4cm]
@@ -1443,6 +1451,27 @@ are normally distributed with mean 0 and covariance matrix
         & \displaystyle \Delta t \, \mat I_d
     \end{pmatrix}.
 \]
+In practice, we generate $(\vect g^n, \widetilde {\vect g}^n)$ as
+\[
+    \begin{pmatrix}
+        \vect g^n \\
+        \widetilde {\vect g}^n 
+    \end{pmatrix}
+    =
+    \sqrt{\mat S}
+    \begin{pmatrix}
+        \mathcal  G^n \\
+        \widetilde {\mathcal  G}^n
+    \end{pmatrix},
+    \qquad 
+    \begin{pmatrix}
+        \mathcal  G^n \\
+        \widetilde {\mathcal  G}^n
+    \end{pmatrix}
+    \overset{\rm iid} \sim
+    \mathcal N(0, \mat I_{2d}),
+\]
+where $\sqrt{\mat S}$ is the unique symmetric, positive definite matrix square root of $\mat S$.
 
 % The correlation is obtained from It\^o's isometry:
 % \[
@@ -1453,7 +1482,7 @@ are normally distributed with mean 0 and covariance matrix
 % which are independent, is given by
 
 For a given final time $T$,
-the expectations and standard deviation of the estimators~$u(T)$ and $v(T)$,
+the expectations and standard deviation of the estimators~$u(T)$ and~$v(T)$,
 defined respectively in~\eqref{eq:simple_estimator} and~\eqref{eq:improved_estimator},
 are estimated from a number $J$ of realizations.
 The parameters employed in the simulation are summarized in~\cref{table:parameters_employed_for_mc},
@@ -1488,14 +1517,14 @@ This is not surprising since,
 if the basis~\eqref{eq:basis_functions} is fixed with respect to~$\gamma$,
 then the accuracy of the Galerkin method~\eqref{eq:saddle_point_formutation} becomes worse and worse as $\gamma \to 0$;
 see~\cite{roussel2018spectral}.
-In contrast, the control variate constructed using the ``underdamped'' strategy of \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered ($10^{-5}$),
+In contrast, the control variate constructed using the ``underdamped'' strategy of \cref{sub:underdamped_approach} enables a variance reduction by a factor close to 100 for the smallest value of $\gamma$ considered (namely $10^{-5}$),
 but the benefits decrease as $\gamma$ increases.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/underdamped_1d.pdf}
     \caption{
-        Effective diffusion coefficient and relative standard deviation $\frac{\sqrt{\var\bigl[v(T)\bigr]}} {D^{\gamma}}$ of the estimators considered.
+        Effective diffusion coefficient and relative standard deviation $\frac{\sqrt{\var\bigl[v(T)\bigr]}} {D^{\gamma}}$ of the estimators considered at time $T = 100/\gamma$.
         The data labeled ``MC/No control'' correspond to Monte Carlo simulations without a control variate,
         i.e.\ to the estimator $u(T)$ given in~\eqref{eq:simple_estimator}.
         The data labeled ``MC/Galerkin'' and ``MC/Underdamped'' correspond to the improved estimator~\eqref{eq:definition_control_variate},
@@ -1510,7 +1539,7 @@ but the benefits decrease as $\gamma$ increases.
 \end{figure}
 
 \Cref{fig:time_bias_variance} illustrates the evolution of the expectation and standard deviation of the estimators~$u(t)$ given in~\eqref{eq:simple_estimator} and~$v(t)$ given in~\eqref{eq:improved_estimator},
-estimated from 5000 realizations,
+empirically estimated from $J = 5000$ realizations,
 with respect to the integration time~$t$.
 It appears clearly that,
 for the value $\gamma = 10^{-3}$ considered,
@@ -1520,7 +1549,7 @@ have a much smaller variance than~$u(t)$ throughout the simulation.
     \centering
     \includegraphics[width=0.99\linewidth]{figures/time.pdf}
     \caption{
-        Sample mean and sample standard deviation of the estimators $u(t)$~\eqref{eq:simple_estimator} and $v(t)$~\eqref{eq:improved_estimator},
+        Sample mean and sample standard deviation of the estimators $u(t)$ in~\eqref{eq:simple_estimator} and $v(t)$ in~\eqref{eq:improved_estimator},
         for the friction parameter $\gamma = 10^{-3}$.
         The approximate solution to the Poisson equation used for constructing the control variate appearing in $v(t)$ here
         is that given in \cref{sub:underdamped_approach}.
@@ -1598,10 +1627,10 @@ we employed an asymptotic expansion of the form
 \)
 in order to study the underdamped limit
 and we derived expressions for $\phi_0$ and $\phi_1$
-which enabled us to show formally that $D^{\gamma, \nu}$ behaves as $1/\gamma$ in the limit as $\gamma \to 0$,
-with diffusion coefficient $D^{\rm und}_{\nu}$ that can be calculated efficiently and is different from $D^{\rm und}$.
-We recall from the introduction that the diffusion coefficient $D^{\rm und}$ is defined as~$D^{\rm und} = \lim_{\gamma \to 0} \gamma D^{\gamma}$,
-where $D^{\gamma}$ is the effective diffusion coefficient of the one-dimensional overdamped Langevin dynamics~\eqref{eq:effective_diffusion_poisson}.
+which enable to show formally that $D^{\gamma, \nu}$ behaves as $1/\gamma$ in the limit as $\gamma \to 0$,
+with a prefactor $D^{\rm und}_{\nu}$ that can be efficiently calculated and is different from $D^{\rm und}$.
+(Recall from~\cref{sec:introduction} that the diffusion coefficient $D^{\rm und}$ is defined as~$D^{\rm und} = \lim_{\gamma \to 0} \gamma D^{\gamma}$,
+where $D^{\gamma}$ is the effective diffusion coefficient of the one-dimensional Langevin dynamics~\eqref{eq:effective_diffusion_poisson}.)
 Although the assumed asymptotic expansion is shown to be invalid in~\cite{GPGSUV21}
 because $\mathcal L_{\rm GLE} \phi_1 \notin \lp{2}{\mu}$,
 our numerical results in this section demonstrate that this expansion can still be leveraged for constructing an efficient control variate $\xi_T$ in~\eqref{eq:definition_control_variate_gle}.
@@ -1615,30 +1644,38 @@ The scheme we use may be abbreviated as BABO using the terminology of~\cite{MR43
 although it is not explicitly studied in that paper.
 More precisely, compared to the scheme used in~\cref{sub:numerical_results},
 the last update for $p$ is replaced by the following simultaneous update for $p$ and $z$,
-corresponding to the Ornstein--Uhlenbeck part of the dynamics:
-\[
+corresponding to the analytical integration of the Ornstein--Uhlenbeck part of the dynamics:
+\begin{equation*}
     \begin{pmatrix}
         p^{n+1} \\
         z^{n+1}
     \end{pmatrix}
     =
-    \e^{M \Delta t}
+    \e^{\mat M \Delta t}
     \begin{pmatrix}
         p^{n} \\
         z^{n}
     \end{pmatrix}
-    + \int_{n \Delta t}^{(n+1)\Delta t} \e^{M \bigl((n+1) \Delta t - s\bigr)}
+    + \int_{n \Delta t}^{(n+1)\Delta t} \e^{\mat M \bigl((n+1) \Delta t - s\bigr)}
     \begin{pmatrix}
         0 \\
         \sqrt{\frac{2 \beta^{-1}}{\nu^2}}
     \end{pmatrix}
     \, \d w_s,
-    \qquad M =
+    \qquad \mat M =
     \begin{pmatrix}
         0 & \frac{\sqrt{\gamma}}{\nu} \\
         - \frac{\sqrt{\gamma}}{\nu} & -   \frac{1}{\nu^2}
     \end{pmatrix}.
-\]
+\end{equation*}
+The It\^o integral in this equation, which we denote by $\vect I_n$,
+is a bivariate Gaussian with mean~0 and a covariance matrix independent of~$n$.
+The covariance matrix is calculated from It\^o's isometry only once, at the beginning of the simulation.
+Likewise, the matrix exponential $\e^{\mat M \Delta t}$ is precalculated before simulating the GLE dynamics.
+
+The It\^o integral in~\eqref{eq:definition_control_variate_gle} is discretized by using the Euler--Maruyama method. 
+Since the Brownian increment $w_{(n+1)\Delta t} - w_{n \Delta t}$ is correlated to the It\^o integral~$\vect I_n$,
+a technique similar to that presented~\cref{sub:numerical_results} is required in order to generate $(\vect I_n, w_{(n+1)\Delta t} - w_{n \Delta t})$ at each iteration.
 
 \Cref{fig:effective_diffusion_time_gle} illustrates the evolution of $\expect \bigl[ u(t) \bigr]$ and $\expect \bigl[ v(t) \bigr]$,
 given in~\eqref{eq:simple_estimator} and~\eqref{eq:improved_estimator_gle},
@@ -2028,9 +2065,9 @@ and there is increasing evidence that these approaches are able to overcome the 
 % ~\cite{MR3847747,MR4338293,pmlr-v145-zhai22a}.
 
 \paragraph{Acknowledgements.}
-The work of GS and UV was partially funded by the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 810367),
+The work of GS and UV was partially funded by the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 810367).
 and by the Agence Nationale de la Recherche under grant ANR-21-CE40-0006 (SINEQ).
-The work of GAP was partially supported by JPMorgan Chase & Co under J.P. Morgan A.I. Research Awards in 2019 and 2021 and by the EPSRC, grant number EP/P031587/1.
+The work of GAP was partially supported by JPMorgan Chase \& Co under J.P. Morgan A.I. Research Awards in 2019 and 2021 and by the EPSRC, grant number EP/P031587/1.
 The work of UV was partially funded by the Fondation Sciences Mathématiques de Paris (FSMP),
 through a postdoctoral fellowship in the ``mathematical interactions'' programme.
 
@@ -2529,7 +2566,11 @@ We are now ready to prove~\cref{proposition:semigroup_meanzero_observable}.
     \end{align}
     The first term is bounded as in~\eqref{eq:bound_first_term}.
     In order to bound the second term,
-    we employ the fact that \cref{lemma:initial_lemma} is valid also with $\mathcal L^*$ substituted for $\mathcal L$,
+    we denote the $L^2(\mu)$ adjoint of the generator $\mathcal L$ by~
+    \(
+        \mathcal L^* = - \mathcal L_{\rm Ham} + \gamma \mathcal L_{\rm FD}
+    \),
+    and employ the fact that \cref{lemma:initial_lemma} is valid also with $\mathcal L^*$ substituted for $\mathcal L$,
     and so
     \[
         \forall \gamma \geq 1, \quad

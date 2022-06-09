@@ -1,5 +1,6 @@
 module Underdamped
 
+import Cubature
 import DelimitedFiles
 import DifferentialEquations
 import Elliptic
@@ -19,21 +20,33 @@ function ∂φ₀(q, p)
     E > E₀ ? sign(p)*p*2π/S(E) : 0.0
 end
 
+# This is only for the case of the cosine potential!
+# V(q) = (1 - cos(q))/2
+function diff_underdamped_0(β)
+    inf = 100;
+    Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besseli(0, β/2);
+    integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1];
+    D1 = (1/Zb)*(1/β)*8*π^2*integral;
+end
+
+function diff_underdamped(β, δ)
+    Vδ(q₁, q₂) = - cos(q₁)/2 - cos(q₂)/2 - δ*cos(q₁)*cos(q₂);
+    Zδ, _ = Cubature.hcubature(q -> exp(-β*Vδ(q[1], q[2])), [-π, -π], [π, π])
+    Zp = sqrt(2π/β)
+    function integrand(x)
+        q₁, q₂, p₁ = x
+        μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
+        return (1/β) * ∂φ₀(q₁, p₁)^2 * μ(q₁, q₂, p₁)
+    end
+    Lp = 9
+    Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], maxevals=10^8)[1]
+end
+
 # The last argument is required by the API
 function get_controls(γ, δ, recalculate)
 
     # Inverse temperature
     β = 1
-
-    # This is only for the case of the cosine potential!
-    # V(q) = (1 - cos(q))/2
-    function diff_underdamped(β)
-        inf = 100;
-        Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besseli(0, β/2);
-        S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
-        integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1];
-        (1/Zb)*(1/β)*8*π^2*integral;
-    end
 
     # This takes vectors!
     function solution_underdamped()
@@ -49,7 +62,7 @@ function get_controls(γ, δ, recalculate)
     end
 
     φ₀ = solution_underdamped();
-    Dc = (1/γ)*diff_underdamped(β);
+    Dc = (1/γ)*diff_underdamped(β, δ);
     ψ = let φ₀ = φ₀, γ = γ
         (q, p) -> φ₀(q, p)/γ
     end

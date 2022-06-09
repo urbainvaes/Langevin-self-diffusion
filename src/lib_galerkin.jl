@@ -95,7 +95,7 @@ function get_controls(γ, δ, recalculate)
             μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
             return φ(q₁, p₁)*p₁ * μ(q₁, q₂, p₁)
         end
-        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], reltol=1e-5)[1]
+        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], maxevals=10^8)[1]
         println("Effective diffusion (Interpolant): $D")
         DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
     end

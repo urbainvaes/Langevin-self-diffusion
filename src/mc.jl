@@ -4,6 +4,7 @@ import Random
 import Statistics
 import DelimitedFiles
 import Printf
+using ProfileCanvas
 include("lib_gridap.jl")
 include("lib_galerkin.jl")
 include("lib_sampling.jl")
@@ -12,8 +13,8 @@ include("lib_underdamped.jl")
 # PARAMETERS {{{1
 
 # Parse arguments
-γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .1;
-control_type = length(ARGS) > 1 ? ARGS[2] : "galerkin";
+const γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : .1;
+control_type = length(ARGS) > 1 ? ARGS[2] : "underdamped";
 
 if control_type == "underdamped"
     Control = Underdamped
@@ -55,6 +56,7 @@ np = ceil(Int, (np_total / nbatches))
 
 # Time step and final time
 Δt = .01 / max(1, γ);
+
 # Δt = .01;
 tf = ceil(Int, 100*max(1/γ, γ));
 
@@ -67,9 +69,8 @@ q0, p0 = Sampling.sample_gibbs(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np);
 
 # Control
-# Dc, ψ, ∂ψ = Control.get_controls(γ, false)
-recalculate = true
-Dc, ψ, ∂ψ = Control.get_controls(γ, 0,recalculate)
+recalculate = false
+Dc, ψ, ∂ψ = Control.get_controls(γ, 0, recalculate)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
@@ -83,38 +84,41 @@ nslice = niter ÷ nsave;
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-q0.txt", q0)
 DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
 
-# Integrate the evolution
-for i = 1:niter
-    if i % 1000 == 0
+function main()
+
+    # Integrate the evolution
+    for i = 1:niter
+        if i % 1000 == 0
+            print(".")
+        end
         print(".")
-    end
-    global p, q, ξ
+        global p, q, ξ
 
-    # Generate Gaussian increments
-    gaussian_increments = rt_cov*Random.randn(2, np)
-    Δw, gs = gaussian_increments[1, :], gaussian_increments[2, :]
+        # Generate Gaussian increments
+        gaussian_increments = rt_cov*Random.randn(2, np)
+        Δw, gs = gaussian_increments[1, :], gaussian_increments[2, :]
 
-    ξ += ∂ψ.(q, p) .* (sqrt(2γ/β)*Δw)
-    p += - (Δt/2)*dV.(q);
-    q += Δt*p;
-    p += - (Δt/2)*dV.(q);
-    p = exp(-γ*Δt)*p + sqrt(2γ/β)*gs
+        ξ .+= ∂ψ.(q, p) .* (sqrt(2γ/β)*Δw)
+        p .+= - (Δt/2)*dV.(q);
+        q .+= Δt*p;
+        p .+= - (Δt/2)*dV.(q);
+        p .= exp(-γ*Δt)*p + sqrt(2γ/β)*gs
 
-    if i % nslice == 0
-        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
-        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
-        DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
-        print("Pogress: ", (1000*i) ÷ niter, "‰. ")
-        control = ξ + ψ.(q0, p0) - ψ.(q, p);
-        D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
-        D2 = Dc + D1 - Statistics.mean(control.^2)/(2*i*Δt);
-        σ1 = Statistics.std((q - q0).^2/(2*i*Δt))
-        σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*i*Δt))
-        println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
-                                D1, D2, σ1, σ2))
+        if i % nslice == 0
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-p.txt", p)
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-q.txt", q)
+            DelimitedFiles.writedlm("$datadir/Δt=$Δt-i=$i-ξ.txt", ξ)
+            print("Pogress: ", (1000*i) ÷ niter, "‰. ")
+            control = ξ + ψ.(q0, p0) - ψ.(q, p);
+            D1 = Statistics.mean((q - q0).^2) / (2*i*Δt)
+            D2 = Dc + D1 - Statistics.mean(control.^2)/(2*i*Δt);
+            σ1 = Statistics.std((q - q0).^2/(2*i*Δt))
+            σ2 = Statistics.std(((q - q0).^2 - control.^2)/(2*i*Δt))
+            println(@Printf.sprintf("D₁ = %.3E, D₂ = %.3E, σ₁ = %.3E, σ₂ = %.3E",
+                                    D1, D2, σ1, σ2))
+        end
     end
 end
-
 # control = ξ + ψ.(q0, p0) - ψ.(q, p);
 
 # dx, xmax = .1, 5

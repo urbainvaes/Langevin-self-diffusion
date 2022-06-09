@@ -62,6 +62,8 @@ def get_diff(γ, plot=True):
                         color='green', alpha=.2)
         ax.set_xlim([underdamped_ts[0], underdamped_ts[-1]])
         ax.set_ylim([.2/γ, .4/γ])
+        if γ == 1e-5:
+            ax.set_ylim([28000, 36000])
         ax.legend(loc="lower right")
         ax.grid()
         fig.savefig("time-gle" + str(int(np.log10(γ))) + ".pdf", bbox_inches='tight')

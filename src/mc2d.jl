@@ -16,6 +16,12 @@ const γ = length(ARGS) > 0 ? parse(Float64, ARGS[1]) : 1.;
 const δ = length(ARGS) > 1 ? parse(Float64, ARGS[2]) : .0;
 control_type = length(ARGS) > 2 ? ARGS[3] : "galerkin"
 
+if control_type == "underdamped"
+    Control = Underdamped
+elseif control_type == "galerkin"
+    Control = Spectral
+end
+
 # Batch number
 batches = length(ARGS) > 3 ? ARGS[4] : "1/1";
 ibatch = parse(Int, match(r"^[^/]*", batches).match);
@@ -74,15 +80,7 @@ q0, p0 = Sampling.sample_gibbs_2d(V, β, np);
 q, p, ξ = copy(q0), copy(p0), zeros(np, 2);
 
 # Control
-if control_type == "galerkin"
-    # !!! φ is solution of -Lφ = p (negative sign) !!!
-    Dc, ψ, ∂ψ = Spectral.get_controls(γ, δ, true)
-elseif control_type == "underdamped"
-    Dc = (1/γ)*Underdamped.diff_underdamped(β);
-    φ₀ = Underdamped.solution_underdamped();
-    ψ(q, p) = Underdamped.φ₀(q, p)/γ
-    ∂ψ(q, p) = Underdamped.∂φ₀(q, p)/γ
-end
+Dc, ψ, ∂ψ = Control.get_controls(γ, δ, recalculate)
 println(@Printf.sprintf("Dc = %.3E", Dc))
 
 # Covariance matrix of (Δw, ∫ e¯... dW)
@@ -150,3 +148,5 @@ DelimitedFiles.writedlm("$datadir/Δt=$Δt-p0.txt", p0)
         end
     end
 end
+
+@time main()

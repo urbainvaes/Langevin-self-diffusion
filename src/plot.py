@@ -1,3 +1,5 @@
+from scipy.interpolate import interp1d
+from scipy.optimize import fsolve
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -131,7 +133,6 @@ ax.set_title("$\delta = {}$".format(δ))
 plt.legend()
 plt.savefig("var-delta={}.pdf".format(iδ))
 
-
 fig, ax = plt.subplots()
 ax.plot(γs_underdamped, np.sqrt(2) + 0*γs_underdamped, "k-", lw=3, label="No control")
 # ax.plot(0, 0, "k-", label="MC/Galerkin")
@@ -141,36 +142,39 @@ for iδ, δ in enumerate(δs_galerkin):
     iu = np.nonzero(σ11_wo_underdamped[:, iδ])[0]
     γu = γs_underdamped[iu]
     yu = σ11_wo_underdamped[:, iδ][iu]
-    # plot1 = ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu], "o--", label="MC/Underdamped, $\delta = {}$".format(δ))
+    plot1 = ax.loglog(γu, σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu], "o--", label="MC/Underdamped, $\delta = {}$".format(δ))
+    f = interp1d(np.log10(γu), np.log10(σ11_wi_underdamped[:, iδ][iu]/D11_wo_underdamped[:, iδ][iu]), bounds_error=False, fill_value=(5, 5))
+    x = 10**fsolve(lambda x: f(x) - np.log10(np.sqrt(2)), -3)
+    print(x)
     ig = np.nonzero(σ11_wo_galerkin[:, iδ])[0]
     γg = γs_galerkin[ig]
     yg = σ11_wo_galerkin[:, iδ][ig]
     # ax.loglog(γg, σ11_wo_galerkin[:, iδ][ig])
-    plot1 = ax.loglog(0, 0)
-    plot2 = ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig]/D11_wo_galerkin[:, iδ][ig], "o--", color=plot1[0].get_color(), label="MC/Galerkin, $\delta = {}$".format(δ))
+    # plot1 = ax.loglog(0, 0)
+    # plot2 = ax.loglog(γg, σ11_wi_galerkin[:, iδ][ig]/D11_wo_galerkin[:, iδ][ig], "o--", color=plot1[0].get_color(), label="MC/Galerkin, $\delta = {}$".format(δ))
 plt.legend()
 ax.set_title("Relative standard deviation")
 ax.set_xlim([1e-4, 1])
 ax.set_xlabel(r"$\gamma$")
 plt.savefig("var-delta.pdf", bbox_inches='tight')
 
-fig, ax = plt.subplots()
-ax.set_prop_cycle(None)
-for iδ, δ in enumerate(δs):
-    if δ < 0:
-        continue
-    coeffs = np.polyfit(np.log10(γs[:7]), np.log10(D11_wo[:7, iδ]), deg=1)
-    ax.loglog(γs, D11_wo[:, iδ], ".-",
-            label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, coeffs[0]))
-ax.set_prop_cycle(None)
-for iδ, δ in enumerate(δs):
-    if δ < 0:
-        continue
-    ax.loglog(γs, D11_wi[:, iδ], ".--")
-ax.set_xlabel("$γ$")
-plt.legend()
-plt.savefig("diffusion.pdf")
-plt.show()
+# fig, ax = plt.subplots()
+# ax.set_prop_cycle(None)
+# for iδ, δ in enumerate(δs):
+#     if δ < 0:
+#         continue
+#     coeffs = np.polyfit(np.log10(γs[:7]), np.log10(D11_wo[:7, iδ]), deg=1)
+#     ax.loglog(γs, D11_wo[:, iδ], ".-",
+#             label="$\delta = {}, D \propto \gamma^{{ {:.2f} }}$".format(δ, coeffs[0]))
+# ax.set_prop_cycle(None)
+# for iδ, δ in enumerate(δs):
+#     if δ < 0:
+#         continue
+#     ax.loglog(γs, D11_wi[:, iδ], ".--")
+# ax.set_xlabel("$γ$")
+# plt.legend()
+# plt.savefig("diffusion.pdf")
+# plt.show()
 
 # for iδ, δ in enumerate(δs):
 #     fig, ax = plt.subplots()
@@ -183,15 +187,15 @@ plt.show()
 #     plt.legend()
 #     plt.show()
 
-fig, ax = plt.subplots()
-for iδ, δ in enumerate(δs):
-    if δ < 0:
-        continue
-    fig, ax = plt.subplots()
-    ax.set_title("$\delta = {}$".format(δ))
-    ax.loglog(γs, σ11_wo[:, iδ], ".-")
-    ax.set_prop_cycle(None)
-    ax.loglog(γs, σ11_wi[:, iδ], ".--")
-    # ax.plot(γs, σ11_wo[:, iδ]/σ11_wi[:, iδ], ".-")
-    ax.set_xlabel("$γ$")
-    plt.show()
+# fig, ax = plt.subplots()
+# for iδ, δ in enumerate(δs):
+#     if δ < 0:
+#         continue
+#     fig, ax = plt.subplots()
+#     ax.set_title("$\delta = {}$".format(δ))
+#     ax.loglog(γs, σ11_wo[:, iδ], ".-")
+#     ax.set_prop_cycle(None)
+#     ax.loglog(γs, σ11_wi[:, iδ], ".--")
+#     # ax.plot(γs, σ11_wo[:, iδ]/σ11_wi[:, iδ], ".-")
+#     ax.set_xlabel("$γ$")
+#     plt.show()

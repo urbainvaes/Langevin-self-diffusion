@@ -144,7 +144,7 @@ to a Brownian motion in $\real^d$ with a matrix prefactor~$\sqrt{2 \mat D^{\gamm
 The matrix $\mat D^{\gamma}$ is known as the effective diffusion matrix associated with the dynamics.
 This result may be obtained by using the homogenization technique pioneered by Bhattacharya in~\cite{MR663900},
 which hinges on the functional central limit theorem for martingales~\cite{MR668684};
-see also the early reference~\cite[Chapter~3]{MR503330},
+see also~\cite[Chapter~3]{MR503330} for early results concerning the asymptotic analysis of SDEs,
 the book~\cite[Chapter 18]{pavliotis2008multiscale} for a pedagogical presentation of homogenization for stochastic differential equations,
 and~\cite[Theorem 2.5]{MR2793823} for a detailed proof of the homogenization theorem for the Markovian approximation of the generalized Langevin equation.
 The precise statement of Einstein's relation is then that
@@ -1310,7 +1310,7 @@ Therefore, in practice, the approximate solution~$\Psi_N$ and its gradient are d
 over a Cartesian grid with vertices
 \begin{equation}
     \label{eq:discretization_points}
-    (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q, \quad 0 \leq j \leq N_p.
+    (q_i, p_j) = \bigl(- \pi + 2\pi(i/N_q) , - L_p + 2L_p (j/N_p) \bigr), \qquad 0 \leq i \leq N_q - 1, \quad 0 \leq j \leq N_p.
 \end{equation}
 The domain in the $p$ direction is truncated at $-L_p$ and $L_p$,
 and the parameter~$L_p$ is chosen sufficiently large that escaping the domain is unlikely during a simulation of the Langevin dynamics.
@@ -1325,6 +1325,7 @@ a bilinear interpolant $\widehat \Psi_N$ is constructed over the domain $[-\pi, 
 \end{align*}
 where $i = \lfloor (q + \pi) / \Delta q \rfloor$ and $j = \lfloor (p+L_p) / \Delta p \rfloor$,
 with $\Delta q = 2\pi/N_q$ and $\Delta p = 2L_p/N_p$.
+Here we use the convention that $q_{N_q} = q_{0}$ in view of the $2\pi$ periodicity of $\Psi_N$ in direction $q$.
 We emphasize that,
 since accessing an array element is an operation with time complexity~$\mathcal O(1)$ with respect to the length of the array,
 the computational cost of evaluating~$\widehat \Psi_N$ at a point $(q,p)$ is independent of $N_q$ and $N_p$.
@@ -1455,7 +1456,7 @@ In practice, we generate $(\vect g^n, \widetilde {\vect g}^n)$ as
 \[
     \begin{pmatrix}
         \vect g^n \\
-        \widetilde {\vect g}^n 
+        \widetilde {\vect g}^n
     \end{pmatrix}
     =
     \sqrt{\mat S}
@@ -1463,7 +1464,7 @@ In practice, we generate $(\vect g^n, \widetilde {\vect g}^n)$ as
         \mathcal  G^n \\
         \widetilde {\mathcal  G}^n
     \end{pmatrix},
-    \qquad 
+    \qquad
     \begin{pmatrix}
         \mathcal  G^n \\
         \widetilde {\mathcal  G}^n
@@ -1673,7 +1674,7 @@ is a bivariate Gaussian with mean~0 and a covariance matrix independent of~$n$.
 The covariance matrix is calculated from It\^o's isometry only once, at the beginning of the simulation.
 Likewise, the matrix exponential $\e^{\mat M \Delta t}$ is precalculated before simulating the GLE dynamics.
 
-The It\^o integral in~\eqref{eq:definition_control_variate_gle} is discretized by using the Euler--Maruyama method. 
+The It\^o integral in~\eqref{eq:definition_control_variate_gle} is discretized by using the Euler--Maruyama method.
 Since the Brownian increment $w_{(n+1)\Delta t} - w_{n \Delta t}$ is correlated to the It\^o integral~$\vect I_n$,
 a technique similar to that presented~\cref{sub:numerical_results} is required in order to generate $(\vect I_n, w_{(n+1)\Delta t} - w_{n \Delta t})$ at each iteration.
 
@@ -1815,21 +1816,22 @@ The following result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^
     these equations being posed in $L^2_0(\mu_{\delta})$ and $L^2_0(\mu_0)$, respectively.
     Then there exists $C > 0$ independent of $\delta$ and $\gamma$ such that
     \begin{align}
+        \notag
+        &\forall (\gamma, \delta) \in (0, \infty) \times [-1, 1], \qquad \\
         \label{eq:convergence_delta}
-        \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
-        \norm*{\phi_\delta - \phi_0}[L^2(\mu_{\delta})]
+        &\qquad \norm*{\phi_\delta - \phi_0}[L^2(\mu_{\delta})]
         \leq C\lvert \delta \rvert \left(
-              \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
+            \max\bigl\{\gamma,\gamma^{-1}\bigr\} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
             + \norm{\phi_0}[L^2(\mu_{\delta})]
         \right),
     \end{align}
     and
     \begin{align}
         \label{eq:convergence_gradient}
-        \forall (\gamma, \delta) \in (0, 1) \times [-1, 1], \qquad
+        \forall (\gamma, \delta) \in (0, \infty) \times [-1, 1], \qquad
         % &\norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})]
         \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]
-        \leq C \lvert \delta \rvert  \gamma^{-1} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] .
+        \leq C \lvert \delta \rvert  \max\bigl\{1,\gamma^{-1}\bigr\} \norm{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] .
     \end{align}
     % and denote
     % \[
@@ -1841,7 +1843,8 @@ The following result establishes that~$\phi_\delta$ converges to $\phi_0$ in $L^
 Before we present the proof of this result,
 a couple of remarks are in order.
 \begin{remark}
-    There exist appropriate constants $c_1, c_2 > 0$ such that
+    \label{remark:norms_equivalent}
+    There exist constants $c_1, c_2 > 0$ such that
     \[
         \forall \delta \in [-1, 1], \qquad
         c_1 \norm{\dummy}[L^2(\mu_{\delta})] \leq \norm{\dummy}[L^2(\mu_0)] \leq c_2 \norm{\dummy}[L^2(\mu_{\delta})],
@@ -1919,7 +1922,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     \]
     Denoting by $M$ the supremum of $\beta |\mathcal W|$ over $\torus^2$,
     we have $\e^{-\lvert \delta \rvert M} \leq Z(\delta)/Z(0) \leq \e^{\lvert \delta \rvert M}$,
-    which implies that $\lvert f_{\delta}(q_1, q_2) \rvert \leq \lvert \delta \rvert^{-1}(\e^{2 \lvert \delta \rvert M} - 1) \leq \e^{2M} -1$
+    which implies that $\lvert f_{\delta}(q_1, q_2) \rvert \leq \lvert \delta \rvert^{-1}(\e^{2 \lvert \delta \rvert M} - 1) \leq 2M\e^{2M}$
     uniformly for $(\delta, q_1, q_2) \in [-1, 1] \times \torus \times \torus$.
     % The maximum of the right-hand side over the interval $\lvert \delta \rvert \in (0, 1]$ is achieved for $\lvert \delta \rvert = 1$,
     % and so $\norm{f_{\delta}}_{L^{\infty}(\torus^2)} \leq \e^{2M}-1$ uniformly in $\delta \in [-1, 1]$.
@@ -1935,10 +1938,10 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
         = \abs{ \int_{\torus^2 \times \real^2} \phi_0 \,\bigl( 1 + \delta f_{\delta}(q_1, q_2) \bigr)\d \mu_{0}}
         \leq C \lvert \delta \rvert \norm{\phi_0}[L^2(\mu_0)].
     \]
-    which leads to~\eqref{eq:convergence_delta}.
+    which leads to~\eqref{eq:convergence_delta} in view of~\cref{remark:norms_equivalent}.
 
     We now show~\eqref{eq:convergence_gradient}.
-    Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $(\phi_\delta - \phi_0^{\delta})$,
+    Taking the $L^2(\mu_{\delta})$ inner product of both sides of~\eqref{eq:remainder_expansion} with $\phi_\delta - \phi_0^{\delta}$,
     noting that $\grad_{\vect p} \phi_0^{\delta} = \grad_{\vect p} \phi_0$
     and using~\eqref{eq:convergence_l2},
     we obtain,
@@ -1946,7 +1949,7 @@ that is, the effective diffusion coefficient scales as $\gamma^{-1}$ in this cas
     \begin{align*}
         \notag
         \gamma \beta^{-1} \norm*{\grad_{\vect p} \phi_\delta - \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2
-        &\leq \lvert \delta \rvert \norm*{\grad \mathcal W(q_1, q_2) \, \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
+        &\leq \lvert \delta \rvert \norm*{\grad \mathcal W \cdot \grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
         \label{eq:intermediate_delta}
         &\leq C \lvert \delta \rvert \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})] \norm*{\phi_\delta - \phi_0^{\delta}}[L^2(\mu_{\delta})] \\
         &\leq  C \delta^2 \max\{\gamma, \gamma^{-1}\} \norm*{\grad_{\vect p} \phi_0}[L^2(\mu_{\delta})]^2,
@@ -1966,7 +1969,7 @@ we have
     & = 4 C \delta^2 \gamma^{-2} d[\phi_{0}] (d[\phi_{\delta}] + d[\phi_0]),
 \end{align*}
 which shows that, in this case,
-the relative standard deviation admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
+the asymptotic relative standard deviation admits an upper bound scaling as $\lvert \delta \rvert / \gamma$
 in the limit as $\lvert \delta \rvert/\gamma \to 0$,
 provided that $\delta \in [-1, 1]$ and $\gamma \in (0, 1)$.
 
@@ -2065,7 +2068,7 @@ and there is increasing evidence that these approaches are able to overcome the 
 % ~\cite{MR3847747,MR4338293,pmlr-v145-zhai22a}.
 
 \paragraph{Acknowledgements.}
-The work of GS and UV was partially funded by the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 810367).
+The work of GS and UV was partially funded by the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 810367),
 and by the Agence Nationale de la Recherche under grant ANR-21-CE40-0006 (SINEQ).
 The work of GAP was partially supported by JPMorgan Chase \& Co under J.P. Morgan A.I. Research Awards in 2019 and 2021 and by the EPSRC, grant number EP/P031587/1.
 The work of UV was partially funded by the Fondation Sciences Mathématiques de Paris (FSMP),

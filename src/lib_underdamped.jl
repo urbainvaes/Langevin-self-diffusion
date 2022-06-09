@@ -11,8 +11,16 @@ include("lib_sampling.jl")
 export get_controls
 
 V(q) = (1 - cos(q))/2;
+S(z) = 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
+const E₀ = 1
 
-function get_controls(γ, δ,_required_by_api)
+function ∂φ₀(q, p)
+    E = V(q) + p*p/2
+    E > E₀ ? sign(p)*p*2π/S(E) : 0.0
+end
+
+# The last argument is required by the API
+function get_controls(γ, δ, recalculate)
 
     # Inverse temperature
     β = 1
@@ -20,8 +28,6 @@ function get_controls(γ, δ,_required_by_api)
     # This is only for the case of the cosine potential!
     # V(q) = (1 - cos(q))/2
     function diff_underdamped(β)
-        E₀, Estep, Einf = 1, .001, 20
-        Es = E₀:Estep:Einf
         inf = 100;
         Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besseli(0, β/2);
         S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
@@ -29,19 +35,11 @@ function get_controls(γ, δ,_required_by_api)
         (1/Zb)*(1/β)*8*π^2*integral;
     end
 
-    E₀ = 1
-    V_1d(q) = (1 - cos(q))/2;
-    S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
-    function ∂φ₀(q, p)
-        E = V_1d(q) + p*p/2
-        E > E₀ ? sign(p)*p*2π/S(E) : 0
-    end
-
     # This takes vectors!
     function solution_underdamped()
         E₀ = 1
         S = z -> 2^(5/2) * sqrt(z) * Elliptic.E(1/z);
-        diff(u, p, t) = t < E₀ ? 0 : 2π/S(t)
+        diff(_, _, t) = t < E₀ ? 0 : 2π/S(t)
         prob = DifferentialEquations.ODEProblem(diff, 0, (0, 100))
         sol = DifferentialEquations.solve(prob, reltol=1e-14, abstol=1e-14)
         V(q) = (1 - cos(q))/2;
@@ -52,8 +50,12 @@ function get_controls(γ, δ,_required_by_api)
 
     φ₀ = solution_underdamped();
     Dc = (1/γ)*diff_underdamped(β);
-    ψ(q, p) = φ₀(q, p)/γ
-    ∂ψ(q, p) = ∂φ₀(q, p)/γ
+    ψ = let φ₀ = φ₀, γ = γ
+        (q, p) -> φ₀(q, p)/γ
+    end
+    ∂ψ = let γ = γ, ∂φ₀ = ∂φ₀
+        (q, p) -> ∂φ₀(q, p)/γ
+    end
     return Dc, ψ, ∂ψ
 end
 

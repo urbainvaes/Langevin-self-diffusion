@@ -11,7 +11,12 @@ include("lib_sampling.jl")
 include("lib_underdamped.jl")
 
 # Parse arguments
-control_type = length(ARGS) > 0 ? ARGS[1] : "galerkin"
+control_type = length(ARGS) > 0 ? ARGS[1] : "underdamped"
+if control_type == "underdamped"
+    Control = Underdamped
+elseif control_type == "galerkin"
+    Control = Spectral
+end
 
 # Parameters
 β = 1
@@ -24,15 +29,8 @@ function get_diffusion(γ, δ)
     end
 
     # Control
-    if control_type == "galerkin"
-        # !!! φ is solution of -Lφ = p (negative sign) !!!
-        Dc, ψ, ∂ψ = get_controls(γ, true, false)
-    elseif control_type == "underdamped"
-        Dc = (1/γ)*diff_underdamped(β);
-        φ₀ = solution_underdamped();
-        ψ(q, p) = φ₀(q, p)/γ
-        ∂ψ(q, p) = ∂φ₀(q, p)/γ
-    end
+    recalculate = false
+    Dc, ψ, ∂ψ = Control.get_controls(γ, δ, recalculate)
     println(@Printf.sprintf("Dc = %.3E", Dc))
 
     listfiles = readdir(datadir);
@@ -101,10 +99,10 @@ function get_diffusion(γ, δ)
     return (wout_control, with_control)
 end
 
-
 # Parameters
-γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215,
-      .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
+# γs = [.00001, .0000215, .0000464, .0001, .000215, .000464, .001, .00215,
+#       .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
+γs = [.0001, .000215, .000464, .001, .00215, .00464, .01, .0215, .0464, .1, .215, .464, 1.0];
 δs = [.0, .04, .08, .16, .32, .64];
 # δs = [0.];
 β = 1;
@@ -133,10 +131,10 @@ for iγ in 1:length(γs)
     end
 end
 
-run(`mkdir -p "data"`)
-DelimitedFiles.writedlm("data/data-$control_type-D11_wo.txt", D11_wo);
-DelimitedFiles.writedlm("data/data-$control_type-σ11_wo.txt", σ11_wo);
-DelimitedFiles.writedlm("data/data-$control_type-D11_wi.txt", D11_wi);
-DelimitedFiles.writedlm("data/data-$control_type-σ11_wi.txt", σ11_wi);
-DelimitedFiles.writedlm("data/data-$control_type-γs.txt", γs);
-DelimitedFiles.writedlm("data/data-$control_type-δs.txt", δs);
+run(`mkdir -p "data_new"`)
+DelimitedFiles.writedlm("data_new/data-$control_type-D11_wo.txt", D11_wo);
+DelimitedFiles.writedlm("data_new/data-$control_type-σ11_wo.txt", σ11_wo);
+DelimitedFiles.writedlm("data_new/data-$control_type-D11_wi.txt", D11_wi);
+DelimitedFiles.writedlm("data_new/data-$control_type-σ11_wi.txt", σ11_wi);
+DelimitedFiles.writedlm("data_new/data-$control_type-γs.txt", γs);
+DelimitedFiles.writedlm("data_new/data-$control_type-δs.txt", δs);

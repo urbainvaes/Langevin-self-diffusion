@@ -199,3 +199,7 @@ plt.savefig("var-delta.pdf", bbox_inches='tight')
 #     # ax.plot(γs, σ11_wo[:, iδ]/σ11_wi[:, iδ], ".-")
 #     ax.set_xlabel("$γ$")
 #     plt.show()
+
+δs = [.04, .08, .16, .32]
+xs = [0.00014254, 0.00089145, 0.00488644, 0.01804228]
+plt.loglog(δs, xs, '.-')

@@ -76,29 +76,29 @@ function get_controls(γ, δ, recalculate)
 
     # Improve on φ
     β = 1
-    if !recalculate && isfile("$datadir/galerkin_D.txt")
-        println("Using existing approximate diffusion coefficient!")
-        D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
-    else
+    # if !recalculate && isfile("$datadir/galerkin_D.txt")
+    #     println("Using existing approximate diffusion coefficient!")
+    #     D = DelimitedFiles.readdlm("$datadir/galerkin_D.txt")[1];
+    # else
         # nsamples = 10^7
         # q, p = Sampling.sample_gibbs(q -> (1 - cos(q))/2, β, nsamples)
         # D = γ*Statistics.mean(∂φ.(q, p).^2)
         # println("Effective diffusion (Interpolant): $D")
         # DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
 
-        Vδ(q₁, q₂) = - cos(q₁)/2 - cos(q₂)/2 - δ*cos(q₁)*cos(q₂);
-        Zδ, _ = Cubature.hcubature(q -> exp(-β*Vδ(q[1], q[2])), [-π, -π], [π, π])
-        Zp = sqrt(2π/β)
+    Vδ(q₁, q₂) = - cos(q₁)/2 - cos(q₂)/2 - δ*cos(q₁)*cos(q₂);
+    Zδ, _ = Cubature.hcubature(q -> exp(-β*Vδ(q[1], q[2])), [-π, -π], [π, π])
+    Zp = sqrt(2π/β)
 
-        function integrand(x)
-            q₁, q₂, p₁ = x
-            μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
-            return φ(q₁, p₁)*p₁ * μ(q₁, q₂, p₁)
-        end
-        D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], maxevals=10^8)[1]
-        println("Effective diffusion (Interpolant): $D")
-        DelimitedFiles.writedlm("$datadir/galerkin_D.txt", D);
+    function integrand(x)
+        q₁, q₂, p₁ = x
+        μ(q₁, q₂, p₁) = exp(-β*(Vδ(q₁, q₂) + p₁^2/2)) / (Zδ * Zp)
+        return φ(q₁, p₁)*p₁ * μ(q₁, q₂, p₁)
     end
+    D = Cubature.hcubature(integrand, [-π, -π, -Lp], [π, π, Lp], maxevals=10^8)[1]
+    println("Effective diffusion (Interpolant): $D")
+    DelimitedFiles.writedlm("$datadir/galerkin_D_δ=$δ.txt", D);
+    # end
 
     return (D, φ, ∂φ)
 end

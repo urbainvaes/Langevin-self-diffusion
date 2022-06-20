@@ -26,7 +26,7 @@ function diff_underdamped_0(β)
     inf = 100;
     Zb = (2π)^(3/2) / β^(1/2) * exp(-β/2) * SpecialFunctions.besseli(0, β/2);
     integral = QuadGK.quadgk(z -> exp(-β*z) / S(z), 1, inf)[1];
-    D1 = (1/Zb)*(1/β)*8*π^2*integral;
+    (1/Zb)*(1/β)*8*π^2*integral;
 end
 
 function diff_underdamped(β, δ)
